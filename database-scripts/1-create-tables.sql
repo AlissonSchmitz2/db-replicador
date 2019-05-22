@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS	tb_replicacao_tabela
 -- habilitado		:	Habilita/Desabilita a replicação ORIGEM x DESTINO
 ----------------------------------------------
 
-CREATE TABLE IF NOT EXISTS	b_replicacao_direcao
+CREATE TABLE IF NOT EXISTS	tb_replicacao_direcao
 	(
 		codigo_direcao	serial CONSTRAINT tb_replicacao_direcao_pk PRIMARY KEY,
 		data_atual		timestamp NOT NULL DEFAULT localtimestamp,
