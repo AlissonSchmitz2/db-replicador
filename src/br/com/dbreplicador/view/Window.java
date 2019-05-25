@@ -7,7 +7,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +21,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
 
-import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 
 public class Window extends JFrame {
@@ -30,6 +28,7 @@ public class Window extends JFrame {
 
 	// Janelas do Menu
 	private ConnectionsFormWindow frameConnectionsForm;
+	private ProcessFormWindow frameProcessForm;
 	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
@@ -41,8 +40,6 @@ public class Window extends JFrame {
 	private JSeparator separador;
 
 	private JDesktopPane desktop;
-
-	private Connection CONNECTION = ConnectionFactory.getConnection("admin", "admin");
 
 	public Window() {
 		super();
@@ -134,6 +131,7 @@ public class Window extends JFrame {
 		menuCadastros.setFont(getDefaultFont());
 
 		menuCadastros.add(getMenuItemConexoes());
+		menuCadastros.add(getMenuItemProcessos());
 	
 		return menuCadastros;
 	}
@@ -145,8 +143,22 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameConnectionsForm = new ConnectionsFormWindow(desktop, CONNECTION);
+				frameConnectionsForm = new ConnectionsFormWindow(desktop);
 				abrirFrame(frameConnectionsForm);
+			}
+		});
+
+		return menuItem;
+	}
+	
+	private JMenuItem getMenuItemProcessos() {
+		JMenuItem menuItem = new JMenuItem("Processos");
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameProcessForm = new ProcessFormWindow(desktop);
+				abrirFrame(frameProcessForm);
 			}
 		});
 

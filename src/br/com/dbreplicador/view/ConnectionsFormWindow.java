@@ -8,7 +8,6 @@ import br.com.dbreplicador.image.MasterImage;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,17 +27,12 @@ public class ConnectionsFormWindow extends AbstractWindowFrame {
 	private JTextField txfDescription, txfAddressIP, txfPort, txfNameDB, txfCompany;
 	private JComboBox<String> cbxModelDB;
 	private JButton btnTestarConexo;
-	
-	//Conexão
-	private Connection CONNECTION;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 
-	public ConnectionsFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ConnectionsFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
-		
-		this.CONNECTION = CONNECTION;
 
 		createComponents();
 
@@ -95,7 +89,6 @@ public class ConnectionsFormWindow extends AbstractWindowFrame {
 		btnRemove.setEnabled(false);
 		btnSave = new JButton("Salvar", MasterImage.save_22x22);
 		btnSave.setToolTipText("Clique aqui para salvar");
-		formFields.add(btnSave);
 		btnSave.setEnabled(false);
 
 		// Labels
