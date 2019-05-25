@@ -6,12 +6,14 @@ import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -23,7 +25,8 @@ public class Window extends JFrame {
 	private static final long serialVersionUID = 3283754083146407662L;
 
 	// Janelas do Menu
-
+	private ConnectionsFormWindow frameConnectionsForm;
+	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
 	private JMenu menuProcessos;
@@ -126,9 +129,24 @@ public class Window extends JFrame {
 		menuCadastros = new JMenu("Cadastros");
 		menuCadastros.setFont(getDefaultFont());
 
-		//menuCadastros.add(getMenuItem1());
+		menuCadastros.add(getMenuItemConexoes());
 	
 		return menuCadastros;
+	}
+	
+
+	private JMenuItem getMenuItemConexoes() {
+		JMenuItem menuItem = new JMenuItem("Conexões");
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameConnectionsForm = new ConnectionsFormWindow(desktop);
+				abrirFrame(frameConnectionsForm);
+			}
+		});
+
+		return menuItem;
 	}
 
 	// Menu Processos
@@ -166,7 +184,6 @@ public class Window extends JFrame {
 		return menuItem;
 	}
 
-	/*
 	private void abrirFrame(AbstractWindowFrame frame) {
 		boolean frameAlreadyExists = false;
 
@@ -195,7 +212,6 @@ public class Window extends JFrame {
 					null);
 		}
 	}
-*/
 
 	private Font getDefaultFont() {
 		return new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12);
