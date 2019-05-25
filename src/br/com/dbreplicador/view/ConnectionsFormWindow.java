@@ -8,6 +8,7 @@ import br.com.dbreplicador.image.MasterImage;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +22,23 @@ import javax.swing.JComboBox;
 public class ConnectionsFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 3721635335554059099L;
 
+	//Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB, lblCompany;
 	private JTextField txfDescription, txfAddressIP, txfPort, txfNameDB, txfCompany;
 	private JComboBox<String> cbxModelDB;
 	private JButton btnTestarConexo;
+	
+	//Conexão
+	private Connection CONNECTION;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 
-	public ConnectionsFormWindow(JDesktopPane desktop) {
+	public ConnectionsFormWindow(JDesktopPane desktop, Connection CONNECTION) {
 		super("Cadastro de Conexões", 455, 330, desktop);
+		
+		this.CONNECTION = CONNECTION;
 
 		createComponents();
 

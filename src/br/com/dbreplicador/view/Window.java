@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +21,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
+
+import br.com.dbreplicador.database.ConnectionFactory;
+import br.com.dbreplicador.image.MasterImage;
 
 public class Window extends JFrame {
 	private static final long serialVersionUID = 3283754083146407662L;
@@ -38,7 +42,7 @@ public class Window extends JFrame {
 
 	private JDesktopPane desktop;
 
-	//private Connection CONNECTION;
+	private Connection CONNECTION = ConnectionFactory.getConnection("admin", "admin");
 
 	public Window() {
 		super();
@@ -99,7 +103,7 @@ public class Window extends JFrame {
 	}
 
 	private JMenuItem getMenuItemConfig() {
-		JMenuItem menuItem = new JMenuItem("Configurar");
+		JMenuItem menuItem = new JMenuItem("Configurar", MasterImage.setting_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
@@ -112,7 +116,7 @@ public class Window extends JFrame {
 	}
 
 	private JMenuItem getMenuItemSair() {
-		JMenuItem menuItem = new JMenuItem("Sair");
+		JMenuItem menuItem = new JMenuItem("Sair", MasterImage.exit_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
@@ -141,7 +145,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameConnectionsForm = new ConnectionsFormWindow(desktop);
+				frameConnectionsForm = new ConnectionsFormWindow(desktop, CONNECTION);
 				abrirFrame(frameConnectionsForm);
 			}
 		});
