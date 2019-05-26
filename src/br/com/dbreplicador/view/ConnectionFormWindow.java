@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
-public class ConnectionsFormWindow extends AbstractWindowFrame {
+public class ConnectionFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 3721635335554059099L;
 
 	//Componentes
@@ -31,7 +31,7 @@ public class ConnectionsFormWindow extends AbstractWindowFrame {
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 
-	public ConnectionsFormWindow(JDesktopPane desktop) {
+	public ConnectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
 
 		createComponents();

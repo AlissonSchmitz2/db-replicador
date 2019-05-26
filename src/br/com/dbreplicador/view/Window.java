@@ -27,16 +27,15 @@ public class Window extends JFrame {
 	private static final long serialVersionUID = 3283754083146407662L;
 
 	// Janelas do Menu
-	private ConnectionsFormWindow frameConnectionsForm;
+	private ConnectionFormWindow frameConnectionsForm;
 	private ProcessFormWindow frameProcessForm;
 	private TableFormWindow frameTableForm;
+	private DirectionFormWindow frameDirectionForm;
 	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
 	private JMenu menuProcessos;
 	private JMenu menuAjuda;
-
-	//private JLabel wallpaper;
 
 	private JSeparator separador;
 
@@ -51,8 +50,6 @@ public class Window extends JFrame {
 		setContentPane(desktop);
 
 		startingWindow();
-
-		// TODO: Wallpaper do sistema
 		
 		// Full screen
 		setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -131,21 +128,22 @@ public class Window extends JFrame {
 		menuCadastros = new JMenu("Cadastros");
 		menuCadastros.setFont(getDefaultFont());
 
-		menuCadastros.add(getMenuItemConexoes());
+		menuCadastros.add(getMenuItemConexao());
 		menuCadastros.add(getMenuItemProcessos());
 		menuCadastros.add(getMenuItemTabelas());
+		menuCadastros.add(getMenuItemDirecao());
 	
 		return menuCadastros;
 	}
 	
 
-	private JMenuItem getMenuItemConexoes() {
-		JMenuItem menuItem = new JMenuItem("Conexões");
+	private JMenuItem getMenuItemConexao() {
+		JMenuItem menuItem = new JMenuItem("Conex\u00E3o");
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameConnectionsForm = new ConnectionsFormWindow(desktop);
+				frameConnectionsForm = new ConnectionFormWindow(desktop);
 				abrirFrame(frameConnectionsForm);
 			}
 		});
@@ -168,7 +166,7 @@ public class Window extends JFrame {
 	}
 	
 	private JMenuItem getMenuItemTabelas() {
-		JMenuItem menuItem = new JMenuItem("Tabelas");
+		JMenuItem menuItem = new JMenuItem("Tabelas", MasterImage.details_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
@@ -180,17 +178,43 @@ public class Window extends JFrame {
 
 		return menuItem;
 	}
+	
+	private JMenuItem getMenuItemDirecao() {
+		JMenuItem menuItem = new JMenuItem("Dire\u00E7\u00E3o", MasterImage.direction_16x16);
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameDirectionForm = new DirectionFormWindow(desktop);
+				abrirFrame(frameDirectionForm);
+			}
+		});
+
+		return menuItem;
+	}
 
 	// Menu Processos
 	private JMenu getMenuProcessos() {
 		menuProcessos = new JMenu("Processos");
 		menuProcessos.setFont(getDefaultFont());
 
-		//menuCadastros.add(getMenuItem1());
+		menuProcessos.add(getMenuReplicar());
 
 		return menuProcessos;
 	}
 
+	private JMenuItem getMenuReplicar() {
+		JMenuItem menuItem = new JMenuItem("Replicar");
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO: Janela replicar
+			}
+		});
+
+		return menuItem;
+	}
 	
 	// MENU AJUDA
 	private JMenu getMenuAjuda() {
@@ -203,7 +227,7 @@ public class Window extends JFrame {
 	}
 
 	private JMenuItem getMenuItemSobre() {
-		JMenuItem menuItem = new JMenuItem("Sobre");
+		JMenuItem menuItem = new JMenuItem("Sobre", MasterImage.information_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {

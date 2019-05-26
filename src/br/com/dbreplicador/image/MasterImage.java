@@ -55,6 +55,12 @@ public final class MasterImage extends ImageIcon{
 	public static final MasterImage
 	setting_16x16 = LoadImage("16x16/configurar.png");
 	
+	public static final MasterImage
+	direction_16x16 = LoadImage("16x16/dependencia_inserir.png");
+	
+	public static final MasterImage
+	details_16x16 = LoadImage("16x16/detalhes.png");
+	
 	//22x22
 	public static final MasterImage
 	search_22x22 = LoadImage("22x22/localizar.png");
