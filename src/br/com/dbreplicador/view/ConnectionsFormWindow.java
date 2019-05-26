@@ -120,79 +120,83 @@ public class ConnectionsFormWindow extends AbstractWindowFrame {
 
 		btnTestarConexo = new JButton("Testar Conex\u00E3o");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout
-				.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout
-								.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup()
-										.addGap(15).addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-												.addGroup(groupLayout.createSequentialGroup()
-														.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95,
-																GroupLayout.PREFERRED_SIZE))
-												.addGroup(groupLayout.createSequentialGroup()
-														.addPreferredGap(ComponentPlacement.RELATED)
-														.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-																.addComponent(lblDescription).addComponent(lblAddressIP)
-																.addComponent(lblPort).addComponent(lblNameDB)
-																.addComponent(lblCompany).addComponent(lblModelDB))
-														.addPreferredGap(ComponentPlacement.UNRELATED)
-														.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-																.addComponent(txfCompany, GroupLayout.DEFAULT_SIZE, 315,
-																		Short.MAX_VALUE)
-																.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE,
-																		315, Short.MAX_VALUE)
-																.addComponent(txfDescription)
-																.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE,
-																		221, GroupLayout.PREFERRED_SIZE)
-																.addComponent(cbxModelDB, 0, 315, Short.MAX_VALUE)))))
-								.addGroup(
-										groupLayout.createSequentialGroup().addGap(165).addComponent(btnTestarConexo)))
-								.addContainerGap(14, Short.MAX_VALUE)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(5)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-						.addGap(18)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblDescription)
-								.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(12)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblAddressIP)
-								.addComponent(txfAddressIP, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblPort)
-								.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblNameDB)
-								.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(11)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblModelDB)
-								.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblCompany)
-								.addComponent(txfCompany, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(18).addComponent(btnTestarConexo, GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-						.addContainerGap()));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(15)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+									.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(lblCompany)
+										.addComponent(lblDescription)
+										.addComponent(lblAddressIP)
+										.addComponent(lblPort)
+										.addComponent(lblNameDB)
+										.addComponent(lblModelDB))
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(txfCompany, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+										.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+											.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+											.addComponent(txfDescription))
+										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+											.addComponent(cbxModelDB, Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addComponent(txfNameDB, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))))))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(165)
+							.addComponent(btnTestarConexo)))
+					.addContainerGap(14, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(5)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblDescription)
+						.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblAddressIP)
+						.addComponent(txfAddressIP, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblPort)
+						.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNameDB))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblModelDB))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfCompany, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblCompany))
+					.addGap(21)
+					.addComponent(btnTestarConexo, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(26, Short.MAX_VALUE))
+		);
 		getContentPane().setLayout(groupLayout);
 	}
 	
-	private boolean validateFields() {
-		//TODO: Validar campos
-		return true;
-	}
+//	private boolean validateFields() {
+//		//TODO: Validar campos
+//		return true;
+//	}
 }

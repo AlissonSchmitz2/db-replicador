@@ -123,17 +123,15 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 							.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
 							.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblDateOf)
 								.addComponent(lblProcess)
-								.addComponent(lblDescription)
-								.addComponent(lblDateOf))
+								.addComponent(lblDescription))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(jDateFor, GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-									.addGap(229))
 								.addComponent(txfDescription, GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
 								.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
+								.addComponent(jDateFor, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
 								.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
 								.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE))))
 					.addGap(14))
@@ -151,25 +149,25 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblProcess))
-					.addGap(12)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblDescription))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblDescription)
+						.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblDateOf)
 						.addComponent(jDateFor, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(18)
 					.addComponent(cbxIgnoreError)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cbxEnable)
-					.addGap(98))
+					.addContainerGap(38, Short.MAX_VALUE))
 		);
 		getContentPane().setLayout(groupLayout);
 	}
 	
-	private boolean validateFields() {
-		//TODO: Validar campos
-		return true;
-	}
+//	private boolean validateFields() {
+//		//TODO: Validar campos
+//		return true;
+//	}
 }

@@ -29,6 +29,7 @@ public class Window extends JFrame {
 	// Janelas do Menu
 	private ConnectionsFormWindow frameConnectionsForm;
 	private ProcessFormWindow frameProcessForm;
+	private TableFormWindow frameTableForm;
 	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
@@ -132,6 +133,7 @@ public class Window extends JFrame {
 
 		menuCadastros.add(getMenuItemConexoes());
 		menuCadastros.add(getMenuItemProcessos());
+		menuCadastros.add(getMenuItemTabelas());
 	
 		return menuCadastros;
 	}
@@ -159,6 +161,20 @@ public class Window extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				frameProcessForm = new ProcessFormWindow(desktop);
 				abrirFrame(frameProcessForm);
+			}
+		});
+
+		return menuItem;
+	}
+	
+	private JMenuItem getMenuItemTabelas() {
+		JMenuItem menuItem = new JMenuItem("Tabelas");
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameTableForm = new TableFormWindow(desktop);
+				abrirFrame(frameTableForm);
 			}
 		});
 
