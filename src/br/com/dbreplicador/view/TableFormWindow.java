@@ -39,6 +39,8 @@ public class TableFormWindow extends AbstractWindowFrame {
 	public TableFormWindow(JDesktopPane desktop) {
 			super("Cadastro de Tabelas", 470, 420, desktop);
 
+			setFrameIcon(MasterImage.details_16x16);
+			
 			createComponents();
 
 			// Por padrão campos são desabilitados ao iniciar

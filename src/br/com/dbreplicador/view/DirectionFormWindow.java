@@ -26,11 +26,11 @@ import java.awt.Color;
 public class DirectionFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 2082839251104219643L;
 
-	// Componentes
-	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
+	
+	// Componentes
+	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JPanel panelDiretion, panelOrigin, panelDestiny, panelPeriod;
 	private JLabel lblProcess, lblAutoMan, lblDuration, lblRetention, lblDBOrigin, lblUserOrigin, lblPasswordOrigin,
 			lblDBDestiny, lblPasswordDestiny, lblUserDestiny, lblYear, lblDay, lblMonth, lblSecond, lblMinute, lblHour;
@@ -42,6 +42,8 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 	public DirectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro da Direção", 555, 510, desktop);
 
+		setFrameIcon(MasterImage.direction_16x16);
+		
 		createComponents();
 
 		// Por padrão campos são desabilitados ao iniciar

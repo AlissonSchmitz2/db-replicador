@@ -34,6 +34,8 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	public ConnectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
 
+		setFrameIcon(MasterImage.aplication_16x16);
+		
 		createComponents();
 
 		// Por padrão campos são desabilitados ao iniciar

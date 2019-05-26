@@ -38,7 +38,7 @@ public final class MasterImage extends ImageIcon{
 	control_16x16 = LoadImage("16x16/control.png");
 	
 	public static final MasterImage
-	backup_restore_16x16 = LoadImage("16x16/stock-refresh.png");
+	replicator_16x16 = LoadImage("16x16/stock-refresh.png");
 	
 	public static final MasterImage
 	unlock_16x16 = LoadImage("16x16/liberar.png");
@@ -60,6 +60,9 @@ public final class MasterImage extends ImageIcon{
 	
 	public static final MasterImage
 	details_16x16 = LoadImage("16x16/detalhes.png");
+	
+	public static final MasterImage
+	process_16x16 = LoadImage("16x16/alterar.png");
 	
 	//22x22
 	public static final MasterImage

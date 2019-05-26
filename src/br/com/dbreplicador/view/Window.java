@@ -31,6 +31,7 @@ public class Window extends JFrame {
 	private ProcessFormWindow frameProcessForm;
 	private TableFormWindow frameTableForm;
 	private DirectionFormWindow frameDirectionForm;
+	private ReplicatorWindow frameReplicatorWindow;
 	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
@@ -138,7 +139,7 @@ public class Window extends JFrame {
 	
 
 	private JMenuItem getMenuItemConexao() {
-		JMenuItem menuItem = new JMenuItem("Conex\u00E3o");
+		JMenuItem menuItem = new JMenuItem("Conex\u00E3o", MasterImage.aplication_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
@@ -152,7 +153,7 @@ public class Window extends JFrame {
 	}
 	
 	private JMenuItem getMenuItemProcessos() {
-		JMenuItem menuItem = new JMenuItem("Processos");
+		JMenuItem menuItem = new JMenuItem("Processos", MasterImage.process_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
@@ -204,12 +205,13 @@ public class Window extends JFrame {
 	}
 
 	private JMenuItem getMenuReplicar() {
-		JMenuItem menuItem = new JMenuItem("Replicar");
+		JMenuItem menuItem = new JMenuItem("Replicar", MasterImage.replicator_16x16);
 		menuItem.setFont(getDefaultFont());
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: Janela replicar
+				frameReplicatorWindow = new ReplicatorWindow(desktop);
+				abrirFrame(frameReplicatorWindow);
 			}
 		});
 

@@ -35,6 +35,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		super("Cadastro de Processos", 455, 270, desktop);
 
 		createComponents();
+		
+		setFrameIcon(MasterImage.process_16x16);
 
 		// Por padrão campos são desabilitados ao iniciar
 		disableComponents(formFields);
