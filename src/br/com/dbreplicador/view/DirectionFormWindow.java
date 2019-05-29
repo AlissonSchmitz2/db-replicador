@@ -105,27 +105,35 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 				new TitledBorder(null, "Dire\u00E7\u00E3o", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-				.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup().addGap(15)
-								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(panelDiretion,
-								GroupLayout.PREFERRED_SIZE, 519, Short.MAX_VALUE)))
-				.addContainerGap()));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(5)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-						.addGap(18)
-						.addComponent(panelDiretion, GroupLayout.PREFERRED_SIZE, 377, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(40, Short.MAX_VALUE)));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(15)
+							.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+							.addComponent(btnAdd, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+							.addComponent(btnRemove, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+							.addComponent(btnSave, GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+							.addGap(104))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(panelDiretion, GroupLayout.PREFERRED_SIZE, 519, Short.MAX_VALUE)))
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(5)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addComponent(panelDiretion, GroupLayout.PREFERRED_SIZE, 377, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(40, Short.MAX_VALUE))
+		);
 		// COMPONENTES
 		lblProcess = new JLabel("Processo:");
 		lblDuration = new JLabel("Dura\u00E7\u00E3o:");
@@ -245,63 +253,66 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 		formFields.add(txfHour);
 		
 		GroupLayout gl_panelPeriod = new GroupLayout(panelPeriod);
-		gl_panelPeriod
-				.setHorizontalGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING).addGroup(Alignment.TRAILING,
-						gl_panelPeriod.createSequentialGroup().addGap(6)
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING)
-										.addGroup(gl_panelPeriod.createSequentialGroup().addComponent(lblYear)
-												.addPreferredGap(ComponentPlacement.RELATED).addComponent(
-														txfYear, GroupLayout.PREFERRED_SIZE, 189,
-														GroupLayout.PREFERRED_SIZE))
-										.addGroup(gl_panelPeriod.createSequentialGroup()
-												.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
-														.addComponent(lblMonth).addComponent(lblDay))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING, false)
-														.addComponent(txfMonth).addComponent(txfDay,
-																GroupLayout.PREFERRED_SIZE, 189,
-																GroupLayout.PREFERRED_SIZE))))
-								.addGap(18)
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING).addComponent(lblSecond)
-										.addComponent(lblMinute).addComponent(lblHour))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING)
-										.addComponent(txfHour, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-										.addComponent(txfMinute, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-										.addComponent(txfSecond, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
-								.addContainerGap()));
-		gl_panelPeriod.setVerticalGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING).addGroup(gl_panelPeriod
-				.createSequentialGroup()
-				.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING).addGroup(gl_panelPeriod
-						.createSequentialGroup()
-						.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING).addGroup(gl_panelPeriod
-								.createSequentialGroup()
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
-										.addComponent(txfHour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblHour))
-								.addPreferredGap(ComponentPlacement.RELATED).addComponent(txfMinute,
-										GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-								.addComponent(lblMinute))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE).addComponent(lblSecond)
-								.addComponent(txfSecond, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE)))
+		gl_panelPeriod.setHorizontalGroup(
+			gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelPeriod.createSequentialGroup()
+					.addGap(6)
+					.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panelPeriod.createSequentialGroup()
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
-										.addComponent(txfYear, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblYear))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE).addComponent(lblMonth)
-										.addComponent(txfMonth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE).addComponent(lblDay)
-										.addComponent(txfDay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE))))
-				.addContainerGap(98, Short.MAX_VALUE)));
+							.addComponent(lblYear)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txfYear, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))
+						.addGroup(gl_panelPeriod.createSequentialGroup()
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblMonth)
+								.addComponent(lblDay))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING)
+								.addComponent(txfMonth)
+								.addComponent(txfDay, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE))))
+					.addGap(18)
+					.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblSecond)
+						.addComponent(lblMinute)
+						.addComponent(lblHour))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelPeriod.createParallelGroup(Alignment.LEADING)
+						.addComponent(txfHour, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+						.addComponent(txfMinute, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+						.addComponent(txfSecond, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		gl_panelPeriod.setVerticalGroup(
+			gl_panelPeriod.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelPeriod.createSequentialGroup()
+					.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_panelPeriod.createSequentialGroup()
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_panelPeriod.createSequentialGroup()
+									.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
+										.addComponent(txfHour, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblHour))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(txfMinute, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(lblMinute))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblSecond)
+								.addComponent(txfSecond, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_panelPeriod.createSequentialGroup()
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txfYear, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblYear))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblMonth)
+								.addComponent(txfMonth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_panelPeriod.createParallelGroup(Alignment.BASELINE)
+								.addComponent(lblDay)
+								.addComponent(txfDay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+					.addContainerGap(13, Short.MAX_VALUE))
+		);
 		panelPeriod.setLayout(gl_panelPeriod);
 		
 		GroupLayout gl_panelDiretion = new GroupLayout(panelDiretion);
@@ -311,9 +322,9 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
 						.addComponent(panelPeriod, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addGroup(gl_panelDiretion.createSequentialGroup()
-							.addComponent(panelOrigin, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+							.addComponent(panelOrigin, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(panelDestiny, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(panelDestiny, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)))
 					.addGap(5))
 				.addGroup(gl_panelDiretion.createSequentialGroup()
 					.addGap(21)
@@ -324,12 +335,12 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxEnable)
-						.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
 							.addComponent(txfRetention)
 							.addComponent(txfDuration)
 							.addComponent(txfProcess, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
 							.addComponent(cbxAutomatic)))
-					.addContainerGap(272, Short.MAX_VALUE))
+					.addGap(272))
 		);
 		gl_panelDiretion.setVerticalGroup(
 			gl_panelDiretion.createParallelGroup(Alignment.LEADING)
