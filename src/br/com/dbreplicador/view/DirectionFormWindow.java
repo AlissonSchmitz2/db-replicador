@@ -19,7 +19,6 @@ import br.com.dbreplicador.image.MasterImage;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-import javax.swing.JComboBox;
 import javax.swing.UIManager;
 import java.awt.Color;
 
@@ -32,12 +31,11 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JPanel panelDiretion, panelOrigin, panelDestiny, panelPeriod;
-	private JLabel lblProcess, lblAutoMan, lblDuration, lblRetention, lblDBOrigin, lblUserOrigin, lblPasswordOrigin,
+	private JLabel lblProcess, lblDuration, lblRetention, lblDBOrigin, lblUserOrigin, lblPasswordOrigin,
 			lblDBDestiny, lblPasswordDestiny, lblUserDestiny, lblYear, lblDay, lblMonth, lblSecond, lblMinute, lblHour;
 	private JTextField txfProcess, txfDuration, txfRetention, txfDBOrigin, txfUserOrigin, txfPasswordOrigin,
 			txfDBDestiny, txfPasswordDestiny, txfUserDestiny, txfYear, txfDay, txfMonth, txfSecond, txfMinute, txfHour;
-	private JComboBox<String> cbxAutoMan;
-	private JCheckBox cbxEnable;
+	private JCheckBox cbxEnable, cbxAutomatic;
 
 	public DirectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro da Direção", 555, 510, desktop);
@@ -130,15 +128,12 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 						.addContainerGap(40, Short.MAX_VALUE)));
 		// COMPONENTES
 		lblProcess = new JLabel("Processo:");
-		lblAutoMan = new JLabel("Auto / Man:");
 		lblDuration = new JLabel("Dura\u00E7\u00E3o:");
 		lblRetention = new JLabel("Reten\u00E7\u00E3o:");
 		txfProcess = new JTextField("Teclar F9");
 		txfProcess.setColumns(10);
 		txfProcess.setBackground(Color.yellow);
 		txfProcess.setEnabled(false);
-		cbxAutoMan = new JComboBox<String>();
-		formFields.add(cbxAutoMan);
 		txfDuration = new JTextField();
 		txfDuration.setColumns(10);
 		formFields.add(txfDuration);
@@ -147,6 +142,7 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 		formFields.add(txfRetention);
 		cbxEnable = new JCheckBox("Habilitado");
 		formFields.add(cbxEnable);
+		cbxAutomatic = new JCheckBox("Autom\u00E1tico");
 
 		/********************* PAINEL ORIGEM ***********************************/
 		panelOrigin = new JPanel();
@@ -307,54 +303,60 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 												GroupLayout.PREFERRED_SIZE))))
 				.addContainerGap(98, Short.MAX_VALUE)));
 		panelPeriod.setLayout(gl_panelPeriod);
+		
 		GroupLayout gl_panelDiretion = new GroupLayout(panelDiretion);
-		gl_panelDiretion.setHorizontalGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelDiretion.createSequentialGroup().addGap(14)
-						.addGroup(gl_panelDiretion.createParallelGroup(Alignment.TRAILING).addComponent(lblProcess)
-								.addComponent(lblAutoMan).addComponent(lblDuration).addComponent(lblRetention))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(txfRetention).addComponent(txfDuration)
-								.addComponent(cbxAutoMan, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(txfProcess, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-								.addComponent(cbxEnable))
-						.addContainerGap())
-				.addGroup(gl_panelDiretion.createSequentialGroup().addGroup(gl_panelDiretion
-						.createParallelGroup(Alignment.LEADING)
+		gl_panelDiretion.setHorizontalGroup(
+			gl_panelDiretion.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelDiretion.createSequentialGroup()
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
 						.addComponent(panelPeriod, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addGroup(gl_panelDiretion.createSequentialGroup()
-								.addComponent(panelOrigin, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED).addComponent(panelDestiny,
-										GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)))
-						.addGap(5)));
-		gl_panelDiretion
-				.setVerticalGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelDiretion.createSequentialGroup()
-								.addGroup(gl_panelDiretion.createParallelGroup(Alignment.BASELINE)
-										.addComponent(lblProcess).addComponent(txfProcess, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addGap(4)
-								.addGroup(gl_panelDiretion.createParallelGroup(Alignment.BASELINE)
-										.addComponent(lblAutoMan).addComponent(cbxAutoMan, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_panelDiretion.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblDuration).addComponent(txfDuration, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(gl_panelDiretion.createParallelGroup(Alignment.BASELINE)
-										.addComponent(txfRetention, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblRetention))
-								.addGap(7).addComponent(cbxEnable).addPreferredGap(ComponentPlacement.UNRELATED)
-								.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
-										.addComponent(panelOrigin, GroupLayout.PREFERRED_SIZE, 100,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(panelDestiny, GroupLayout.PREFERRED_SIZE, 100,
-												GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(panelPeriod, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(20, Short.MAX_VALUE)));
+							.addComponent(panelOrigin, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(panelDestiny, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE)))
+					.addGap(5))
+				.addGroup(gl_panelDiretion.createSequentialGroup()
+					.addGap(21)
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblDuration)
+						.addComponent(lblProcess)
+						.addComponent(lblRetention))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
+						.addComponent(cbxEnable)
+						.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(txfRetention)
+							.addComponent(txfDuration)
+							.addComponent(txfProcess, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+							.addComponent(cbxAutomatic)))
+					.addContainerGap(272, Short.MAX_VALUE))
+		);
+		gl_panelDiretion.setVerticalGroup(
+			gl_panelDiretion.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelDiretion.createSequentialGroup()
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblProcess)
+						.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblDuration)
+						.addComponent(txfDuration, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfRetention, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblRetention))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(cbxAutomatic)
+					.addGap(3)
+					.addComponent(cbxEnable)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_panelDiretion.createParallelGroup(Alignment.LEADING)
+						.addComponent(panelOrigin, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+						.addComponent(panelDestiny, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panelPeriod, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
 
 		GroupLayout gl_panelOrigin = new GroupLayout(panelOrigin);
 		gl_panelOrigin.setHorizontalGroup(gl_panelOrigin.createParallelGroup(Alignment.LEADING)
