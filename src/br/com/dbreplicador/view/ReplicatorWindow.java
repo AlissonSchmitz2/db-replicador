@@ -15,11 +15,12 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import br.com.dbreplicador.controller.ReplicatorController;
 import br.com.dbreplicador.image.MasterImage;
 
 import javax.swing.JProgressBar;
 
-public class ReplicatorWindow extends AbstractWindowFrame {
+public class ReplicatorWindow extends AbstractWindowFrame implements ReplicatorController{
 	private static final long serialVersionUID = -4888464460307835343L;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
@@ -122,5 +123,47 @@ public class ReplicatorWindow extends AbstractWindowFrame {
 						.addComponent(btnReplicate, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
 						.addContainerGap(44, Short.MAX_VALUE)));
 		getContentPane().setLayout(groupLayout);
+	}
+
+	@Override
+	public void showDirection(String directionOrigin, String directionDestiny) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showTable(String table) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showCountTables(int count) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showErrors(int count) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showProcess(String process) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void progressValue(int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startProgressIndetermined(boolean start) {
+		// TODO Auto-generated method stub
+		
 	}
 }
