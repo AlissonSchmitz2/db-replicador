@@ -74,6 +74,11 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> {
 
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
+				int lastInsertedCode = rs.getInt(columnId);
+				
+				// Antes de retornar, seta o id ao objeto modalidade
+				model.setReplicationCode(lastInsertedCode);
+				
 				return model;
 			}
 		}
@@ -178,7 +183,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> {
 		ReplicationModel model = new ReplicationModel();
 
 		model.setReplicationCode(rst.getInt("codigo_replicacao"));
-		model.setCurrentDate(rst.getDate("data_atual"));
+		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
 		model.setName(rst.getString("nome"));
 		model.setAddress(rst.getString("endereco"));

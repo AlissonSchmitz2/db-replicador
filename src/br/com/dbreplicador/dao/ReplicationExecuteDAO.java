@@ -84,6 +84,11 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
+				int lastInsertedCode = rs.getInt(columnId);
+				
+				// Antes de retornar, seta o id ao objeto modalidade
+				model.setExecuteCode(lastInsertedCode);
+				
 				return model;
 			}
 		}

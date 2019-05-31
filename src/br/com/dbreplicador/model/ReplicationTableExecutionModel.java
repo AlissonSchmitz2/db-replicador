@@ -1,20 +1,20 @@
 package br.com.dbreplicador.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class ReplicationTableExecutionModel extends AbstractModel {
 	private Integer codigo_tabela;
-	private Date data_atual;
+	private Timestamp data_atual;
 	private String processo;
 	private String database_origem;
 	private String usuario_origem;
 	private String database_destino;
 	private String usuario_destino;
-	private Date execucao_inicio_data_hora;
+	private Timestamp execucao_inicio_data_hora;
 	private Integer ordem;
-	private Date inicio_data_hora;
-	private Date fim_data_hora;
-	private Date data_atual_ate;
+	private Timestamp inicio_data_hora;
+	private Timestamp fim_data_hora;
+	private Timestamp data_atual_ate;
 	private int linhas_processadas;
 	private boolean sucesso;
 	private String mensagem;
@@ -38,7 +38,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	/**
 	 * data_atual
 	 */
-	public Date getCurrentDate() {
+	public Timestamp getCurrentDate() {
 		return data_atual;
 	}
 	
@@ -47,7 +47,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	 * 
 	 * @param currentDate
 	 */
-	public void setCurrentDate(Date currentDate) {
+	public void setCurrentDate(Timestamp currentDate) {
 		this.data_atual = currentDate;
 	}
 	
@@ -134,7 +134,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	/**
 	 * execucao_inicio_data_hora
 	 */
-	public Date getExecutionStartDateTime() {
+	public Timestamp getExecutionStartDateTime() {
 		return execucao_inicio_data_hora;
 	}
 	
@@ -143,7 +143,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	 * 
 	 * @param executionStartDateTime
 	 */
-	public void setExecutionStartDateTime(Date executionStartDateTime) {
+	public void setExecutionStartDateTime(Timestamp executionStartDateTime) {
 		this.execucao_inicio_data_hora = executionStartDateTime;
 	}
 	
@@ -166,7 +166,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	/**
 	 * inicio_data_hora
 	 */
-	public Date getStartDateTime() {
+	public Timestamp getStartDateTime() {
 		return inicio_data_hora;
 	}
 	
@@ -175,14 +175,14 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	 * 
 	 * @param startDateTime
 	 */
-	public void setStartDateTime(Date startDateTime) {
+	public void setStartDateTime(Timestamp startDateTime) {
 		this.inicio_data_hora = startDateTime;
 	}
 	
 	/**
 	 * fim_data_hora
 	 */
-	public Date getFinishDateTime() {
+	public Timestamp getFinishDateTime() {
 		return fim_data_hora;
 	}
 	
@@ -191,14 +191,14 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	 * 
 	 * @param finishDateTime
 	 */
-	public void setFinishDateTime(Date finishDateTime) {
+	public void setFinishDateTime(Timestamp finishDateTime) {
 		this.fim_data_hora = finishDateTime;
 	}
 	
 	/**
 	 * data_atual_ate
 	 */
-	public Date getCurrentDateUntil() {
+	public Timestamp getCurrentDateUntil() {
 		return data_atual_ate;
 	}
 	
@@ -207,7 +207,7 @@ public class ReplicationTableExecutionModel extends AbstractModel {
 	 * 
 	 * @param currentDateUntil
 	 */
-	public void setCurrentDateUntil(Date currentDateUntil) {
+	public void setCurrentDateUntil(Timestamp currentDateUntil) {
 		this.data_atual_ate = currentDateUntil;
 	}
 	

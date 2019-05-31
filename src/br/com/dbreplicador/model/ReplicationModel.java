@@ -1,10 +1,10 @@
 package br.com.dbreplicador.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class ReplicationModel  extends AbstractModel {
 	private Integer codigo_replicacao;
-	private Date data_atual;
+	private Timestamp data_atual;
 	private String usuario;
 	private String nome;
 	private String endereco;
@@ -32,7 +32,7 @@ public class ReplicationModel  extends AbstractModel {
 	/**
 	 * data_atual
 	 */
-	public Date getCurrentDate() {
+	public Timestamp getCurrentDate() {
 		return data_atual;
 	}
 	
@@ -41,7 +41,7 @@ public class ReplicationModel  extends AbstractModel {
 	 * 
 	 * @param currentDate
 	 */
-	public void setCurrentDate(Date currentDate) {
+	public void setCurrentDate(Timestamp currentDate) {
 		this.data_atual = currentDate;
 	}
 	

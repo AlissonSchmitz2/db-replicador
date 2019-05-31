@@ -92,6 +92,11 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
+				int lastInsertedCode = rs.getInt(columnId);
+				
+				// Antes de retornar, seta o id ao objeto modalidade
+				model.setTableCode(lastInsertedCode);
+				
 				return model;
 			}
 		}
@@ -202,17 +207,17 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 		ReplicationTableExecutionModel model = new ReplicationTableExecutionModel();
 
 		model.setTableCode(rst.getInt("codigo_tabela"));
-		model.setCurrentDate(rst.getDate("data_atual"));
+		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setProcess(rst.getString("processo"));
 		model.setOriginDatabase(rst.getString("database_origem"));
 		model.setOriginUser(rst.getString("usuario_origem"));
 		model.setDestinationDatabase(rst.getString("database_destino"));
 		model.setDestinationUser(rst.getString("usuario_destino"));
-		model.setExecutionStartDateTime(rst.getDate("execucao_inicio_data_hora"));
+		model.setExecutionStartDateTime(rst.getTimestamp("execucao_inicio_data_hora"));
 		model.setOrder(rst.getInt("ordem"));
-		model.setStartDateTime(rst.getDate("inicio_data_hora"));
-		model.setFinishDateTime(rst.getDate("fim_data_hora"));
-		model.setCurrentDateUntil(rst.getDate("data_atual_ate"));
+		model.setStartDateTime(rst.getTimestamp("inicio_data_hora"));
+		model.setFinishDateTime(rst.getTimestamp("fim_data_hora"));
+		model.setCurrentDateUntil(rst.getTimestamp("data_atual_ate"));
 		model.setProcessedLines(rst.getInt("linhas_processadas"));
 		model.setSucess(rst.getBoolean("sucesso"));
 		model.setMessage(rst.getString("mensagem"));
