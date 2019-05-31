@@ -14,5 +14,5 @@ public interface ReplicatorController {
 
 	public void progressValue(final int value);
 
-	public void startProgressIndetermined(final boolean start);
+	public void startProgressIndeterminate(final boolean start);
 }
