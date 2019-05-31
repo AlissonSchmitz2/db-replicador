@@ -3,7 +3,10 @@ package br.com.dbreplicador.view;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -14,14 +17,18 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import br.com.dbreplicador.dao.ReplicationProcessDAO;
+import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.ReplicationProcessModel;
+
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JCheckBox;
 
 public class ProcessFormWindow extends AbstractWindowFrame{
 	private static final long serialVersionUID = -4888464460307835343L;
 	
-	//Componentes
+	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblProcess, lblDescription, lblDateOf;
 	private JTextField txfProcess, txfDescription;
@@ -30,6 +37,11 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
+	
+	private ReplicationProcessModel processModel;
+	private ReplicationProcessDAO processDAO;
+	// TODO: Conexão provisória (Refatorar)
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
 
 	public ProcessFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Processos", 455, 270, desktop);
@@ -37,6 +49,12 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		createComponents();
 		
 		setFrameIcon(MasterImage.process_16x16);
+		
+		try {
+			processDAO = new ReplicationProcessDAO(CONNECTION);
+		} catch (Exception error) {
+			error.printStackTrace();
+		}
 
 		// Por padrão campos são desabilitados ao iniciar
 		disableComponents(formFields);
@@ -55,9 +73,17 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Seta form para modo Cadastro
+				setFormMode(CREATE_MODE);
 				
 				// Ativa campos
 				enableComponents(formFields);
+				
+				// Limpar dados dos campos
+				clearFormFields(formFields);
+				
+				// Cria nova entidade model
+				processModel = new ReplicationProcessModel();
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -67,14 +93,87 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		btnRemove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Remover
+				try {
+					if(isEditing()) {
+						if(processDAO.delete(processModel)) {
+							bubbleSuccess("Processo excluído com sucesso");
+							
+							// Seta form para modo Cadastro
+							setFormMode(CREATE_MODE);
+
+							// Desativa campos
+							disableComponents(formFields);
+
+							// Limpar dados dos campos
+							clearFormFields(formFields);
+							
+							// Cria nova entidade model
+							processModel = new ReplicationProcessModel();
+							
+							// Desativa botão salvar
+							btnSave.setEnabled(false);
+
+							// Desativa botão remover
+							btnRemove.setEnabled(false);
+						} else {
+							bubbleError("Houve um erro ao tentar excluir o processo");
+						}
+					}
+				} catch (Exception error) {
+					bubbleError(error.getMessage());
+					error.printStackTrace();
+				}
 			}
 		});
 
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Ação Salvar
+				if(!validateFields()) {
+					return;
+				}
+				
+				processModel.setCurrentDate(getDateTime(new Date()));
+				processModel.setUser("admin");
+				processModel.setProcess(txfProcess.getText());
+				processModel.setDescription(txfDescription.getText());
+				processModel.setCurrentDateOf(getDateTime(jDateFor.getDate()));
+				processModel.setEnable(cbxEnable.isSelected());
+				processModel.setErrorIgnore(cbxIgnoreError.isSelected());
+				
+				try {
+					// EDIÇÃO CADASTRO
+					if(isEditing()) {
+						if(processDAO.update(processModel)) {
+							bubbleSuccess("Processo editado com sucesso");
+						} else {
+							bubbleError("Houve um erro ao editar o processo");
+						}
+					} 
+					// NOVO CADASTRO
+					else {
+						// Insere o processo no banco de dados
+						ReplicationProcessModel insertedModel = processDAO.insert(processModel);
+						
+						if(insertedModel != null) {
+							// Atribui o model recém criado ao model
+							processModel = insertedModel;
+
+							// Seta form para edição
+							setFormMode(UPDATE_MODE);
+
+							// Ativa botão Remover
+							btnRemove.setEnabled(true);
+							
+							bubbleSuccess("Processo cadastrado com sucesso");
+						} else {
+							bubbleError("Houve um erro ao cadastrar o processo");
+						}
+					}
+				} catch (Exception error) {
+					error.printStackTrace();
+					bubbleError(error.getMessage());
+				}
 			}
 		});
 	}
@@ -168,8 +267,21 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		getContentPane().setLayout(groupLayout);
 	}
 	
-//	private boolean validateFields() {
-//		//TODO: Validar campos
-//		return true;
-//	}
+	private boolean validateFields() {
+		if(txfProcess.getText().isEmpty() || txfProcess.getText() == null) {
+			bubbleWarning("Informe o nome do processo");
+			return false;
+		} else if(txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
+			bubbleWarning("Informe uma descrição para o processo");
+			return false;
+		} 		
+		
+		return true;
+	}
+	
+	private Timestamp getDateTime(Date date) {
+		long dataTime = date.getTime();
+		Timestamp ts = new Timestamp(dataTime);
+		return ts;
+	}
 }

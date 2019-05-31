@@ -7,12 +7,19 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyVetoException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+
+import com.toedter.calendar.JDateChooser;
 
 public abstract class AbstractWindowFrame extends JInternalFrame {
 	private static final long serialVersionUID = -9124809980962961247L;
@@ -87,6 +94,22 @@ public abstract class AbstractWindowFrame extends JInternalFrame {
 
 	protected void setFormMode(String mode) {
 		formMode = mode;
+	}
+	
+	protected void clearFormFields(List<Component> components) {
+		components.forEach(component -> {
+			if (component instanceof JTextField) {
+				((JTextField) component).setText("");
+			} else if (component instanceof JTextArea) {
+				((JTextArea) component).setText("");
+			} else if (component instanceof JComboBox) {
+				((JComboBox<?>) component).setSelectedIndex(0);
+			} else if (component instanceof JDateChooser) {
+				((JDateChooser) component).setDate(new Date());
+			} else if(component instanceof JCheckBox) {
+				((JCheckBox) component).setSelected(false);
+			}
+		});
 	}
 
 	protected void disableComponents(List<Component> components) {

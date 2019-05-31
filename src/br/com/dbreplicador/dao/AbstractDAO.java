@@ -22,7 +22,7 @@ public abstract class AbstractDAO<T> {
 		} else if (value instanceof Character) {
 			pst.setString(position,((Character) value).toString());
 		} else if (value	instanceof	Boolean) {
-			pst.setString(position,((Boolean) value).booleanValue() ? "S" : "N");
+			pst.setBoolean(position, (boolean) value);
 		} else if (value	instanceof	BigDecimal) {
 			pst.setBigDecimal(position,(BigDecimal) value);
 		} else if(value instanceof Float) {

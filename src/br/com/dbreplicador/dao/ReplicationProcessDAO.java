@@ -71,6 +71,11 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
+				int lastInsertedCode = rs.getInt(columnId);
+				
+				// Antes de retornar, seta o id ao objeto modalidade
+				model.setProcessCode(lastInsertedCode);
+				
 				return model;
 			}
 		}
@@ -174,11 +179,11 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 		ReplicationProcessModel model = new ReplicationProcessModel();
 
 		model.setProcessCode(rst.getInt("codigo_processo"));
-		model.setCurrentDate(rst.getDate("data_atual"));
+		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
 		model.setProcess(rst.getString("processo"));
 		model.setDescription(rst.getString("descricao"));
-		model.setCurrentDateOf(rst.getDate("data_atual_de"));
+		model.setCurrentDateOf(rst.getTimestamp("data_atual_de"));
 		model.setErrorIgnore(rst.getBoolean("erro_ignorar"));
 		model.setEnable(rst.getBoolean("habilitado"));
 
