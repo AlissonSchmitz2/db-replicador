@@ -3,7 +3,10 @@ package br.com.dbreplicador.view;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 
+import br.com.dbreplicador.enums.Databases;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.pojos.Database;
+import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -25,7 +28,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB, lblCompany;
 	private JTextField txfDescription, txfAddressIP, txfPort, txfNameDB, txfCompany;
-	private JComboBox<String> cbxModelDB;
+	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
@@ -131,7 +134,14 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		txfNameDB = new JTextField();
 		txfNameDB.setColumns(10);
 		formFields.add(txfNameDB);
-		cbxModelDB = new JComboBox<String>();
+		
+		List<Database> databaseList = new ArrayList<>();
+		databaseList.add(new Database("", "-- Selecione --"));
+		Databases.getDatabases().forEach((code, description) -> databaseList.add(new Database(code, description)));
+		
+		cbxModelDB = new JComboBox<Database>();
+		cbxModelDB.setModel(new GenericComboModel<Database>(databaseList));
+		cbxModelDB.setSelectedIndex(0);
 		formFields.add(cbxModelDB);
 		txfCompany = new JTextField();
 		txfCompany.setColumns(10);
@@ -227,7 +237,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		}  else if(txfNameDB.getText().isEmpty() || txfNameDB.getText() == null) {
 			bubbleWarning("Informe o nome do banco!");
 			return false;
-		}  else if(cbxModelDB.getSelectedItem().equals("--- Selecione ---")|| cbxModelDB.getSelectedItem() == null) {
+		}  else if(cbxModelDB.getSelectedItem().equals("-- Selecione --")|| cbxModelDB.getSelectedItem() == null) {
 			bubbleWarning("Selecione o modelo do banco!");
 			return false;
 		}  else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
