@@ -74,7 +74,24 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(!validateFields()) {
+					return;
+				}
+				
 				// TODO Ação Salvar
+			}
+		});
+		
+		btnTestarConexo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!validateFields()) {
+					return;
+				}
+				
+				// TODO Testar conexao com bd
+				
 			}
 		});
 	}
@@ -197,8 +214,27 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		getContentPane().setLayout(groupLayout);
 	}
 	
-//	private boolean validateFields() {
-//		//TODO: Validar campos
-//		return true;
-//	}
+	private boolean validateFields() {
+		if(txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
+			bubbleWarning("Informe uma descrição para a conexão!");
+			return false;
+		} else if(txfAddressIP.getText().isEmpty() || txfAddressIP.getText() == null) {
+			bubbleWarning("Informe o endereço de IP!");
+			return false;
+		}  else if(txfPort.getText().isEmpty() || txfPort.getText() == null) {
+			bubbleWarning("Informe a porta do endereço da conexão!");
+			return false;
+		}  else if(txfNameDB.getText().isEmpty() || txfNameDB.getText() == null) {
+			bubbleWarning("Informe o nome do banco!");
+			return false;
+		}  else if(cbxModelDB.getSelectedItem().equals("--- Selecione ---")|| cbxModelDB.getSelectedItem() == null) {
+			bubbleWarning("Selecione o modelo do banco!");
+			return false;
+		}  else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
+			bubbleWarning("Informe o estabelecimento!");
+			return false;
+		} 
+		
+		return true;
+	}
 }
