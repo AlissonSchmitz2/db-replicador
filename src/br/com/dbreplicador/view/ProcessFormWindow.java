@@ -269,10 +269,10 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	
 	private boolean validateFields() {
 		if(txfProcess.getText().isEmpty() || txfProcess.getText() == null) {
-			bubbleWarning("Informe o nome do processo");
+			bubbleWarning("Informe o nome do processo!");
 			return false;
 		} else if(txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
-			bubbleWarning("Informe uma descrição para o processo");
+			bubbleWarning("Informe uma descrição para o processo!");
 			return false;
 		} 		
 		

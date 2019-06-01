@@ -235,7 +235,7 @@ public class TableFormWindow extends AbstractWindowFrame {
 	}
 
 	private boolean validateFields() {
-		if (txfProcess.getText().isEmpty() || txfProcess.getText().equals("Teclar F9")) {
+		if (txfProcess.getText().equals("Teclar F9")) {
 			bubbleWarning("Selecione o processo!");
 			return false;
 		} else if (txfOrder.getText().isEmpty() || txfOrder.getText() == null) {
