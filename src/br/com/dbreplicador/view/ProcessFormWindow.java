@@ -10,20 +10,22 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.InternalFrameEvent;
+
+import com.toedter.calendar.JDateChooser;
 
 import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ProcessModel;
-
-import com.toedter.calendar.JDateChooser;
-import javax.swing.JCheckBox;
+import br.com.dbreplicador.util.InternalFrameListener;
 
 public class ProcessFormWindow extends AbstractWindowFrame{
 	private static final long serialVersionUID = -4888464460307835343L;
@@ -34,9 +36,12 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	private JTextField txfProcess, txfDescription;
 	private JDateChooser jDateFor;
 	private JCheckBox cbxIgnoreError, cbxEnable;
+	private JDesktopPane desktop;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
+	
+	private ListProcessFormWindow searchProcessWindow;
 	
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
@@ -46,6 +51,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	public ProcessFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Processos", 455, 270, desktop);
 
+		this.desktop = desktop;
+		
 		createComponents();
 		
 		setFrameIcon(MasterImage.process_16x16);
@@ -67,6 +74,43 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Acão Buscar
+				if (searchProcessWindow == null) {
+					searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+
+					searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
+						
+						@Override
+						public void internalFrameClosed(InternalFrameEvent e) {
+							ProcessModel selectedModel = ((ListProcessFormWindow) e.getInternalFrame())
+									.getSelectedModel();
+
+							if (selectedModel != null) {
+								// Atribui o model selecionado
+								processModel = selectedModel;
+
+								// Seta dados do model para os campos
+								txfProcess.setText(processModel.getProcess());
+								txfDescription.setText(processModel.getDescription());
+								jDateFor.setDate(processModel.getCurrentDateOf());
+								
+								// Seta form para modo Edição
+								setFormMode(UPDATE_MODE);
+
+								// Ativa campos
+								enableComponents(formFields);
+
+								// Ativa botão salvar
+								btnSave.setEnabled(true);
+
+								// Ativa botão remover
+								btnRemove.setEnabled(true);
+							}
+
+							// Reseta janela
+							searchProcessWindow = null;
+						}
+					});
+				}
 			}
 		});
 

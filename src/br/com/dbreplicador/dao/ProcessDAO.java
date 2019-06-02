@@ -8,39 +8,23 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.dbreplicador.dao.contracts.Searchable;
 import br.com.dbreplicador.model.ProcessModel;
 
-public class ProcessDAO extends AbstractCrudDAO<ProcessModel>{
+public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements Searchable<ProcessModel> {
 	private static final String TABLE_NAME = "tb_replicacao_processo";
 
 	private String columnId = "codigo_processo";
 
 	private String defaultOrderBy = "codigo_processo ASC";
 
-	private String[] defaultValuesToInsert = new String[] {
-			"DEFAULT"
-	};
+	private String[] defaultValuesToInsert = new String[] { "DEFAULT" };
 
-	private String[] columnsToInsert = new String[] {
-			"codigo_processo",
-			"data_atual",
-			"usuario",
-			"processo",
-			"descricao",
-			"data_atual_de",
-			"erro_ignorar",
-			"habilitado"
-	};
-	
-	private String[] columnsToUpdate = new String[] {
-			"data_atual",
-			"usuario",
-			"processo",
-			"descricao",
-			"data_atual_de",
-			"erro_ignorar",
-			"habilitado"
-	};
+	private String[] columnsToInsert = new String[] { "codigo_processo", "data_atual", "usuario", "processo",
+			"descricao", "data_atual_de", "erro_ignorar", "habilitado" };
+
+	private String[] columnsToUpdate = new String[] { "data_atual", "usuario", "processo", "descricao", "data_atual_de",
+			"erro_ignorar", "habilitado" };
 
 	Connection connection;
 
@@ -72,10 +56,10 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel>{
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
 				int lastInsertedCode = rs.getInt(columnId);
-				
+
 				// Antes de retornar, seta o id ao objeto modalidade
 				model.setProcessCode(lastInsertedCode);
-				
+
 				return model;
 			}
 		}
@@ -167,7 +151,7 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel>{
 
 		return model;
 	}
-	
+
 	/**
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
@@ -188,6 +172,26 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel>{
 		model.setEnable(rst.getBoolean("habilitado"));
 
 		return model;
-	}	
+	}
+
+	@Override
+	public List<ProcessModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+
+		List<ProcessModel> processList = new ArrayList<ProcessModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			ProcessModel model = createModelFromResultSet(rst);
+
+			processList.add(model);
+		}
+
+		return processList;
+	}
 
 }
