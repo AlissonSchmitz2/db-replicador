@@ -2,6 +2,6 @@ package br.com.dbreplicador.dao.contracts;
 
 import java.sql.SQLException;
 
-public interface Insertable<T> {
+public interface IInsertable<T> {
 	public T insert(T model) throws SQLException;
 }
