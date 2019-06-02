@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.model.ReplicationExecuteModel;
+import br.com.dbreplicador.model.ExecutionModel;
 
-public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteModel>{
+public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 	private static final String TABLE_NAME = "tb_replicacao_execucao";
 
 	private String columnId = "codigo_execucao";
@@ -52,7 +52,7 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 
 	Connection connection;
 
-	public ReplicationExecuteDAO(Connection connection) throws SQLException {
+	public ExecutionDAO(Connection connection) throws SQLException {
 		this.connection = connection;
 
 		this.connection.setAutoCommit(false);
@@ -60,7 +60,7 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 
 	
 	@Override
-	public ReplicationExecuteModel insert(ReplicationExecuteModel model) throws SQLException {
+	public ExecutionModel insert(ExecutionModel model) throws SQLException {
 		String query = getInsertQuery(TABLE_NAME, columnsToInserts, defaultValuesToInsert);
 
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -97,7 +97,7 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 	}
 
 	@Override
-	public boolean update(ReplicationExecuteModel model) throws SQLException {
+	public boolean update(ExecutionModel model) throws SQLException {
 		String query = getUpdateQuery(TABLE_NAME, columnId, columnsToUpdate);
 
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -128,7 +128,7 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 	}
 
 	@Override
-	public boolean delete(ReplicationExecuteModel model) throws SQLException {
+	public boolean delete(ExecutionModel model) throws SQLException {
 		return deleteById(model.getExecuteCode());
 	}
 
@@ -150,17 +150,17 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 	}
 
 	@Override
-	public List<ReplicationExecuteModel> selectAll() throws SQLException {
+	public List<ExecutionModel> selectAll() throws SQLException {
 		String query = getSelectAllQuery(TABLE_NAME, "*", defaultOrderBy);
 
 		PreparedStatement pst = connection.prepareStatement(query);
 
-		List<ReplicationExecuteModel> replicationsList = new ArrayList<ReplicationExecuteModel>();
+		List<ExecutionModel> replicationsList = new ArrayList<ExecutionModel>();
 
 		ResultSet rst = pst.executeQuery();
 
 		while (rst.next()) {
-			ReplicationExecuteModel model = createModelFromResultSet(rst);
+			ExecutionModel model = createModelFromResultSet(rst);
 
 			replicationsList.add(model);
 		}
@@ -169,8 +169,8 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 	}
 
 	@Override
-	public ReplicationExecuteModel findById(Integer id) throws SQLException {
-		ReplicationExecuteModel model = null;
+	public ExecutionModel findById(Integer id) throws SQLException {
+		ExecutionModel model = null;
 
 		String query = getFindByQuery(TABLE_NAME, columnId, "*", defaultOrderBy);
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -189,11 +189,11 @@ public class ReplicationExecuteDAO extends AbstractCrudDAO<ReplicationExecuteMod
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
 	 * @param rst
-	 * @return ReplicationExecuteModel
+	 * @return ExecutionModel
 	 * @throws SQLException
 	 */
-	private ReplicationExecuteModel createModelFromResultSet(ResultSet rst) throws SQLException {
-		ReplicationExecuteModel model = new ReplicationExecuteModel();
+	private ExecutionModel createModelFromResultSet(ResultSet rst) throws SQLException {
+		ExecutionModel model = new ExecutionModel();
 
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setCurrenteDateTo(rst.getTimestamp("data_atual_ate"));

@@ -2,7 +2,7 @@ package br.com.dbreplicador.model;
 
 import java.sql.Timestamp;
 
-public class ReplicationProcessModel extends AbstractModel {
+public class ProcessModel extends AbstractModel {
 	private Integer codigo_processo;
 	private Timestamp data_atual;
 	private String usuario;

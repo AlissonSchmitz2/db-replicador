@@ -17,10 +17,10 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import br.com.dbreplicador.dao.ReplicationProcessDAO;
+import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.ReplicationProcessModel;
+import br.com.dbreplicador.model.ProcessModel;
 
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JCheckBox;
@@ -38,8 +38,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 	
-	private ReplicationProcessModel processModel;
-	private ReplicationProcessDAO processDAO;
+	private ProcessModel processModel;
+	private ProcessDAO processDAO;
 	// TODO: Conexão provisória (Refatorar)
 	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
 
@@ -51,7 +51,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		setFrameIcon(MasterImage.process_16x16);
 		
 		try {
-			processDAO = new ReplicationProcessDAO(CONNECTION);
+			processDAO = new ProcessDAO(CONNECTION);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -83,7 +83,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				clearFormFields(formFields);
 				
 				// Cria nova entidade model
-				processModel = new ReplicationProcessModel();
+				processModel = new ProcessModel();
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -108,7 +108,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 							clearFormFields(formFields);
 							
 							// Cria nova entidade model
-							processModel = new ReplicationProcessModel();
+							processModel = new ProcessModel();
 							
 							// Desativa botão salvar
 							btnSave.setEnabled(false);
@@ -153,7 +153,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 					// NOVO CADASTRO
 					else {
 						// Insere o processo no banco de dados
-						ReplicationProcessModel insertedModel = processDAO.insert(processModel);
+						ProcessModel insertedModel = processDAO.insert(processModel);
 						
 						if(insertedModel != null) {
 							// Atribui o model recém criado ao model

@@ -3,7 +3,7 @@ package br.com.dbreplicador.model;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-public class ReplicationDirectionModel extends AbstractModel{
+public class DirectionModel extends AbstractModel{
 	
 	private int codigo_direcao;
 	private Timestamp data_atual;

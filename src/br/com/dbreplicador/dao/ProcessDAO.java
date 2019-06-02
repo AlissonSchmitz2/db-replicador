@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.model.ReplicationProcessModel;
+import br.com.dbreplicador.model.ProcessModel;
 
-public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessModel>{
+public class ProcessDAO extends AbstractCrudDAO<ProcessModel>{
 	private static final String TABLE_NAME = "tb_replicacao_processo";
 
 	private String columnId = "codigo_processo";
@@ -44,14 +44,14 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 
 	Connection connection;
 
-	public ReplicationProcessDAO(Connection connection) throws SQLException {
+	public ProcessDAO(Connection connection) throws SQLException {
 		this.connection = connection;
 
 		this.connection.setAutoCommit(false);
 	}
 
 	@Override
-	public ReplicationProcessModel insert(ReplicationProcessModel model) throws SQLException {
+	public ProcessModel insert(ProcessModel model) throws SQLException {
 		String query = getInsertQuery(TABLE_NAME, columnsToInsert, defaultValuesToInsert);
 
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -84,7 +84,7 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 	}
 
 	@Override
-	public boolean update(ReplicationProcessModel model) throws SQLException {
+	public boolean update(ProcessModel model) throws SQLException {
 		String query = getUpdateQuery(TABLE_NAME, columnId, columnsToUpdate);
 
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -111,7 +111,7 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 	}
 
 	@Override
-	public boolean delete(ReplicationProcessModel model) throws SQLException {
+	public boolean delete(ProcessModel model) throws SQLException {
 		return deleteById(model.getProcessCode());
 	}
 
@@ -133,17 +133,17 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 	}
 
 	@Override
-	public List<ReplicationProcessModel> selectAll() throws SQLException {
+	public List<ProcessModel> selectAll() throws SQLException {
 		String query = getSelectAllQuery(TABLE_NAME, "*", defaultOrderBy);
 
 		PreparedStatement pst = connection.prepareStatement(query);
 
-		List<ReplicationProcessModel> replicationsProcessList = new ArrayList<ReplicationProcessModel>();
+		List<ProcessModel> replicationsProcessList = new ArrayList<ProcessModel>();
 
 		ResultSet rst = pst.executeQuery();
 
 		while (rst.next()) {
-			ReplicationProcessModel model = createModelFromResultSet(rst);
+			ProcessModel model = createModelFromResultSet(rst);
 
 			replicationsProcessList.add(model);
 		}
@@ -152,8 +152,8 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 	}
 
 	@Override
-	public ReplicationProcessModel findById(Integer id) throws SQLException {
-		ReplicationProcessModel model = null;
+	public ProcessModel findById(Integer id) throws SQLException {
+		ProcessModel model = null;
 
 		String query = getFindByQuery(TABLE_NAME, columnId, "*", defaultOrderBy);
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -172,11 +172,11 @@ public class ReplicationProcessDAO extends AbstractCrudDAO<ReplicationProcessMod
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
 	 * @param rst
-	 * @return ReplicationProcessModel
+	 * @return ProcessModel
 	 * @throws SQLException
 	 */
-	private ReplicationProcessModel createModelFromResultSet(ResultSet rst) throws SQLException {
-		ReplicationProcessModel model = new ReplicationProcessModel();
+	private ProcessModel createModelFromResultSet(ResultSet rst) throws SQLException {
+		ProcessModel model = new ProcessModel();
 
 		model.setProcessCode(rst.getInt("codigo_processo"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));

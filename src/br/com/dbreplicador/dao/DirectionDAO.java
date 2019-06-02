@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.model.ReplicationDirectionModel;
+import br.com.dbreplicador.model.DirectionModel;
 
-public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectionModel>{
+public class DirectionDAO extends AbstractCrudDAO<DirectionModel>{
 	private static final String TABLE_NAME = "tb_replicacao_direcao";
 
 	private String columnId = "codigo_direcao";
@@ -78,14 +78,14 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 
 	Connection connection;
 
-	public ReplicationDirectionDAO(Connection connection) throws SQLException {
+	public DirectionDAO(Connection connection) throws SQLException {
 		this.connection = connection;
 
 		this.connection.setAutoCommit(false);
 	}
 
 	@Override
-	public ReplicationDirectionModel insert(ReplicationDirectionModel model) throws SQLException {
+	public DirectionModel insert(DirectionModel model) throws SQLException {
 		String query = getInsertQuery(TABLE_NAME, columnsToInsert, defaultValuesToInsert);
 		PreparedStatement pst = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS); 
 		
@@ -137,7 +137,7 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 	}
 
 	@Override
-	public boolean update(ReplicationDirectionModel model) throws SQLException {
+	public boolean update(DirectionModel model) throws SQLException {
 		String query = getUpdateQuery(TABLE_NAME, columnId, columnsToUpdate);
 		
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -181,7 +181,7 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 	}
 
 	@Override
-	public boolean delete(ReplicationDirectionModel model) throws SQLException {
+	public boolean delete(DirectionModel model) throws SQLException {
 		return deleteById(model.getDirectionCode());
 	}
 
@@ -201,17 +201,17 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 	}
 
 	@Override
-	public List<ReplicationDirectionModel> selectAll() throws SQLException {
+	public List<DirectionModel> selectAll() throws SQLException {
 		String query = getSelectAllQuery(TABLE_NAME, "*" , columnId);
 		
 		PreparedStatement pst = connection.prepareStatement(query);
 		
-		List<ReplicationDirectionModel> listModel = new ArrayList<ReplicationDirectionModel>();
+		List<DirectionModel> listModel = new ArrayList<DirectionModel>();
 		
 		ResultSet rst = pst.executeQuery();
 		
 		while(rst.next()) {
-			ReplicationDirectionModel model = createModelFromResultSet(rst);
+			DirectionModel model = createModelFromResultSet(rst);
 			
 			listModel.add(model);
 		}
@@ -220,7 +220,7 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 	}
 
 	@Override
-	public ReplicationDirectionModel findById(Integer id) throws SQLException {
+	public DirectionModel findById(Integer id) throws SQLException {
 		String query = getFindByQuery(TABLE_NAME, columnId, "*", defaultOrderBy);
 		
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -228,7 +228,7 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 		
 		ResultSet rst = pst.executeQuery();
 		
-		ReplicationDirectionModel model = null;
+		DirectionModel model = null;
 		
 		if(rst.next()) {
 			model = createModelFromResultSet(rst);
@@ -241,11 +241,11 @@ public class ReplicationDirectionDAO extends AbstractCrudDAO<ReplicationDirectio
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
 	 * @param rst
-	 * @return ReplicationExecuteModel
+	 * @return ExecutionModel
 	 * @throws SQLException
 	 */
-	private ReplicationDirectionModel createModelFromResultSet(ResultSet rst) throws SQLException {
-		ReplicationDirectionModel model = new ReplicationDirectionModel();
+	private DirectionModel createModelFromResultSet(ResultSet rst) throws SQLException {
+		DirectionModel model = new DirectionModel();
 
 		model.setDirectionCode(rst.getInt("codigo_direcao"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));

@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.model.ReplicationTableExecutionModel;
+import br.com.dbreplicador.model.TableExecutionModel;
 
-public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTableExecutionModel>{
+public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 	private static final String TABLE_NAME = "tb_replicacao_tabela_execucao";
 
 	private String columnId = "codigo_tabela";
@@ -58,14 +58,14 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 
 	Connection connection;
 
-	public ReplicationTableExecutionDAO(Connection connection) throws SQLException {
+	public TableExecutionDAO(Connection connection) throws SQLException {
 		this.connection = connection;
 
 		this.connection.setAutoCommit(false);
 	}
 
 	@Override
-	public ReplicationTableExecutionModel insert(ReplicationTableExecutionModel model) throws SQLException {
+	public TableExecutionModel insert(TableExecutionModel model) throws SQLException {
 		String query = getInsertQuery(TABLE_NAME, columnsToInsert, defaultValuesToInsert);
 
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -105,7 +105,7 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 	}
 
 	@Override
-	public boolean update(ReplicationTableExecutionModel model) throws SQLException {
+	public boolean update(TableExecutionModel model) throws SQLException {
 		String query = getUpdateQuery(TABLE_NAME, columnId, columnsToUpdate);
 
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -139,7 +139,7 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 	}
 
 	@Override
-	public boolean delete(ReplicationTableExecutionModel model) throws SQLException {
+	public boolean delete(TableExecutionModel model) throws SQLException {
 		return deleteById(model.getTableCode());
 	}
 
@@ -161,17 +161,17 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 	}
 
 	@Override
-	public List<ReplicationTableExecutionModel> selectAll() throws SQLException {
+	public List<TableExecutionModel> selectAll() throws SQLException {
 		String query = getSelectAllQuery(TABLE_NAME, "*", defaultOrderBy);
 
 		PreparedStatement pst = connection.prepareStatement(query);
 
-		List<ReplicationTableExecutionModel> replicationsTableExecutionList = new ArrayList<ReplicationTableExecutionModel>();
+		List<TableExecutionModel> replicationsTableExecutionList = new ArrayList<TableExecutionModel>();
 
 		ResultSet rst = pst.executeQuery();
 
 		while (rst.next()) {
-			ReplicationTableExecutionModel model = createModelFromResultSet(rst);
+			TableExecutionModel model = createModelFromResultSet(rst);
 
 			replicationsTableExecutionList.add(model);
 		}
@@ -180,8 +180,8 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 	}
 
 	@Override
-	public ReplicationTableExecutionModel findById(Integer id) throws SQLException {
-		ReplicationTableExecutionModel model = null;
+	public TableExecutionModel findById(Integer id) throws SQLException {
+		TableExecutionModel model = null;
 
 		String query = getFindByQuery(TABLE_NAME, columnId, "*", defaultOrderBy);
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -200,11 +200,11 @@ public class ReplicationTableExecutionDAO extends AbstractCrudDAO<ReplicationTab
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
 	 * @param rst
-	 * @return ReplicationTableExecutionModel
+	 * @return TableExecutionModel
 	 * @throws SQLException
 	 */
-	private ReplicationTableExecutionModel createModelFromResultSet(ResultSet rst) throws SQLException {
-		ReplicationTableExecutionModel model = new ReplicationTableExecutionModel();
+	private TableExecutionModel createModelFromResultSet(ResultSet rst) throws SQLException {
+		TableExecutionModel model = new TableExecutionModel();
 
 		model.setTableCode(rst.getInt("codigo_tabela"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
