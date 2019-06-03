@@ -8,10 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.dao.contracts.Searchable;
+import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.ProcessModel;
 
-public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements Searchable<ProcessModel> {
+public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearchable<ProcessModel> {
 	private static final String TABLE_NAME = "tb_replicacao_processo";
 
 	private String columnId = "codigo_processo";
@@ -152,6 +152,26 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements Searcha
 		return model;
 	}
 
+	@Override
+	public List<ProcessModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+
+		List<ProcessModel> processList = new ArrayList<ProcessModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			ProcessModel model = createModelFromResultSet(rst);
+
+			processList.add(model);
+		}
+
+		return processList;
+	}
+	
 	/**
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
@@ -172,26 +192,6 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements Searcha
 		model.setEnable(rst.getBoolean("habilitado"));
 
 		return model;
-	}
-
-	@Override
-	public List<ProcessModel> search(String word) throws SQLException {
-		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
-		PreparedStatement pst = connection.prepareStatement(query);
-
-		setParam(pst, 1, "%" + word + "%");
-
-		List<ProcessModel> processList = new ArrayList<ProcessModel>();
-
-		ResultSet rst = pst.executeQuery();
-
-		while (rst.next()) {
-			ProcessModel model = createModelFromResultSet(rst);
-
-			processList.add(model);
-		}
-
-		return processList;
 	}
 
 }
