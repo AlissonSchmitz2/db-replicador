@@ -42,6 +42,12 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 		setFrameIcon(MasterImage.process_16x16);
 		
 		createComponents();
+		
+		try {
+			processDAO = new ProcessDAO(CONNECTION);
+		} catch (SQLException error) {
+			error.printStackTrace();
+		}
 
 		txfSearch.requestFocusInWindow();
 

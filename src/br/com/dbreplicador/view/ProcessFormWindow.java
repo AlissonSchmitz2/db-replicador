@@ -73,7 +73,6 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
 				if (searchProcessWindow == null) {
 					searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
 
@@ -92,6 +91,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 								txfProcess.setText(processModel.getProcess());
 								txfDescription.setText(processModel.getDescription());
 								jDateFor.setDate(processModel.getCurrentDateOf());
+								cbxEnable.setSelected(processModel.isEnable());
+								cbxIgnoreError.setSelected(processModel.isErrorIgnore());
 								
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
@@ -187,7 +188,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				
 				try {
 					// EDIÇÃO CADASTRO
-					if(isEditing()) {
+					if(isEditing()) {						
 						if(processDAO.update(processModel)) {
 							bubbleSuccess("Processo editado com sucesso");
 						} else {
