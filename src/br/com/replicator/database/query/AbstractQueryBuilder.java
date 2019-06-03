@@ -1,5 +1,7 @@
 package br.com.replicator.database.query;
 
+import java.util.TreeMap;
+
 import br.com.replicator.database.query.contracts.IQuery;
 import br.com.replicator.database.query.contracts.IQueryBuilder;
 import br.com.replicator.enums.QueryTypes;
@@ -15,28 +17,24 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Número de colunas é diferente do número de colunas");
 		}
 		
+		TreeMap<String, String> columnsValuesPairs = new TreeMap<String, String>();
+		for (int i = 0; i < columns.length; i++) {
+			if(values.length > i && values[i] != null) {
+				columnsValuesPairs.put(columns[i], "'" + values[i] + "'");
+			}
+        }
+		
 		String query = "INSERT INTO " + tableName + " (";
 		
 		// Concatena colunas	
-		query += String.join(",", columns);
+		query += String.join(",", columnsValuesPairs.keySet());
 		
 		query += ") VALUES (";
 		
 		// Concatena valores
-		String concatenedValues = "";
-		for (int i = 0; i < columns.length; i++) {
-			if (!concatenedValues.isEmpty()) {
-				concatenedValues += ", ";
-			}
-			
-			if(values.length > i && values[i] != null) {
-				concatenedValues += "'" + values[i] + "'";
-			} else {
-				concatenedValues += "''";
-			}
-        }
+		query += String.join(",", columnsValuesPairs.values());
 		
-		query += concatenedValues + ")";
+		query += ")";
 		
 		return new Query(query, QueryTypes.INSERT);
 	}
@@ -58,13 +56,17 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		
 		String[] columnsValuesPairs = new String[columns.length];
 		for (int i = 0; i < columns.length; i++) {
-			columnsValuesPairs[i] = columns[i] + "='" + values[i] + "'";
+			if (values.length > i && values[i] != null) {
+				columnsValuesPairs[i] = columns[i] + "='" + values[i] + "'";
+			} else {
+				columnsValuesPairs[i] = columns[i] + "=" + values[i];
+			}
         }
 		
 		// Concatena colunas
 		query += String.join(", ", columnsValuesPairs);
 		query += " ";
-		query += createWhereCondition(identifierColumn, identifierValue);
+		query += createWhereCondition(identifierColumn, "=", identifierValue);
 		
 		return new Query(query, QueryTypes.UPDATE);
 	}
@@ -74,17 +76,17 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		String query = "DELETE FROM " + tableName + " " + createWhereCondition(identifierColumn, identifierValue);
+		String query = "DELETE FROM " + tableName + " " + createWhereCondition(identifierColumn, "=", identifierValue);
 		
 		return new Query(query, QueryTypes.DELETE);
 	}
 	
-	public IQuery find(String tableName, String identifierColumn, String identifierValue, String columns) throws InvalidQueryAttributesException {
+	public IQuery find(String tableName, String identifierColumn, String operator, String identifierValue, String columns) throws InvalidQueryAttributesException {
 		if (identifierColumn.isEmpty() || identifierValue.isEmpty()) {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		String query = "SELECT " + columns + " FROM " + tableName + " " + createWhereCondition(identifierColumn, identifierValue);
+		String query = "SELECT " + columns + " FROM " + tableName + " " + createWhereCondition(identifierColumn, operator, identifierValue);
 		
 		return new Query(query, QueryTypes.SELECT);
 	}
@@ -95,7 +97,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		return new Query(query, QueryTypes.SELECT);
 	}
 	
-	private String createWhereCondition(String identifierColumn, String identifierValue) {
-		return "WHERE " + identifierColumn + "='" + identifierValue +"'";
+	private String createWhereCondition(String identifierColumn, String operator, String identifierValue) {
+		return "WHERE " + identifierColumn + operator + "'" + identifierValue +"'";
 	}
 }

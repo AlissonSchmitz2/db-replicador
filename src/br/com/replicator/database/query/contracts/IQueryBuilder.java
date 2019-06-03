@@ -9,7 +9,7 @@ public interface IQueryBuilder {
 	
 	public IQuery delete(String tableName, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException;
 	
-	public IQuery find(String tableName, String identifierColumn, String identifierValue, String columns) throws InvalidQueryAttributesException;
+	public IQuery find(String tableName, String identifierColumn, String operator, String identifierValue, String columns) throws InvalidQueryAttributesException;
 	
 	public IQuery select(String tableName, String columns) throws InvalidQueryAttributesException;
 }
