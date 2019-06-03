@@ -3,11 +3,13 @@ package br.com.replicator.database.query.contracts;
 import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public interface IQueryBuilder {
-	public String createInsert(String tableName, String[] columns, String[] values) throws InvalidQueryAttributesException;
+	public IQuery insert(String tableName, String[] columns, String[] values) throws InvalidQueryAttributesException;
 	
-	public String createUpdate(String tableName, String[] columns, String[] values, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException;
+	public IQuery update(String tableName, String[] columns, String[] values, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException;
 	
-	public String createDelete(String tableName, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException;
+	public IQuery delete(String tableName, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException;
 	
-	public String createFind(String tableName, String identifierColumn, String identifierValue, String columns) throws InvalidQueryAttributesException;
+	public IQuery find(String tableName, String identifierColumn, String identifierValue, String columns) throws InvalidQueryAttributesException;
+	
+	public IQuery select(String tableName, String columns) throws InvalidQueryAttributesException;
 }

@@ -1,7 +1,7 @@
 package br.com.replicator.database.query;
 
-import br.com.replicator.SupportedTypes;
 import br.com.replicator.database.query.contracts.IQueryBuilder;
+import br.com.replicator.enums.SupportedTypes;
 import br.com.replicator.exceptions.InvalidDatabaseTypeException;
 
 abstract public class QueryBuilderFactory {
