@@ -2,6 +2,7 @@ package br.com.dbreplicador.view;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
+import javax.swing.JFormattedTextField;
 
 import br.com.dbreplicador.dao.ReplicationDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
@@ -9,6 +10,7 @@ import br.com.dbreplicador.enums.Databases;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ReplicationModel;
 import br.com.dbreplicador.pojos.Database;
+import br.com.dbreplicador.util.RegexFormatter;
 import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
 import java.awt.Component;
@@ -19,10 +21,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -33,10 +37,16 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	//Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB;
-	private JTextField txfDescription, txfAddressIP, txfPort, txfNameDB;
+	private JTextField txfDescription, txfPort, txfNameDB;
+	private JFormattedTextField txfAddressIP;
 	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
-
+	
+	// Expressão regular para verificar se o IP digitado  é valido
+	private String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+	private Pattern p = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
+	private RegexFormatter ipFormatter = new RegexFormatter(p);
+	
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 	
@@ -49,7 +59,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 
 	public ConnectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
-
+		
 		setFrameIcon(MasterImage.aplication_16x16);
 		
 		try {
@@ -236,7 +246,8 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		txfDescription = new JTextField();
 		txfDescription.setColumns(10);
 		formFields.add(txfDescription);
-		txfAddressIP = new JTextField();
+		txfAddressIP = new JFormattedTextField();
+		txfAddressIP.setFormatterFactory(new DefaultFormatterFactory(ipFormatter));
 		txfAddressIP.setColumns(10);
 		formFields.add(txfAddressIP);
 		txfPort = new JTextField();
