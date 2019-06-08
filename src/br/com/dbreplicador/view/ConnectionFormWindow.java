@@ -154,14 +154,6 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				replicationModel.setDatebaseType(cbxModelDB.getSelectedItem().toString());
 				replicationModel.setName(txfDescription.getText());
 
-				if(cbxModelDB.getSelectedItem().toString().equals("MySQL")) {
-					//TODO: Montar URL MY SQL
-					replicationModel.setUrl("URL MySQL");
-				} else if (cbxModelDB.getSelectedItem().toString().equals("PostgreSQL")) {
-					//TODO: Montar URL postgres
-					replicationModel.setUrl("URL PostgreSQL");
-				}
-				
 				try {
 					replicationModel.setDoor(Integer.parseInt(txfPort.getText()));
 				} catch (Exception error) {
@@ -169,6 +161,14 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 					return;
 				}	
 				
+				if(cbxModelDB.getSelectedItem().toString().equals("MySQL")) {
+					replicationModel.setUrl("mysql://" + replicationModel.getAddress() + ":"
+							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+				} else if (cbxModelDB.getSelectedItem().toString().equals("PostgreSQL")) {					
+					replicationModel.setUrl("postgresql://" + replicationModel.getAddress() + ":"
+							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+				}
+												
 				try {
 					// EDIÇÃO CADASTRO
 					if(isEditing()) {						
