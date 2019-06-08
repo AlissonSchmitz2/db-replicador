@@ -43,6 +43,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	
 	private ListProcessFormWindow searchProcessWindow;
 	
+	// Banco de dados
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
 	// TODO: Conexão provisória (Refatorar)
