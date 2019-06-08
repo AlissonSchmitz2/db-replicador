@@ -1,26 +1,30 @@
 
 package br.com.dbreplicador.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.image.MasterImage;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-import javax.swing.UIManager;
-import java.awt.Color;
+import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.util.InternalFrameListener;
 
 public class DirectionFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 2082839251104219643L;
@@ -37,10 +41,20 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 	private JTextField txfProcess, txfDuration, txfRetention, txfDBOrigin, txfUserOrigin, txfPasswordOrigin,
 			txfDBDestiny, txfPasswordDestiny, txfUserDestiny, txfYear, txfDay, txfMonth, txfSecond, txfMinute, txfHour;
 	private JCheckBox cbxEnable, cbxAutomatic;
+	private JDesktopPane desktop;
 
+	private ListDirectionFormWindow searchDirectionWindow;
+	private DirectionModel directionModel;
+
+	//Banco de dados
+	private Connection CONNECTION;
+	
 	public DirectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro da Direção", 555, 510, desktop);
 
+		
+		this.desktop = desktop;
+		
 		setFrameIcon(MasterImage.direction_16x16);
 
 		createComponents();
@@ -55,7 +69,52 @@ public class DirectionFormWindow extends AbstractWindowFrame {
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
+				if (searchDirectionWindow == null) {
+					searchDirectionWindow = new ListDirectionFormWindow(desktop, CONNECTION);
+
+					searchDirectionWindow.addInternalFrameListener(new InternalFrameListener() {
+						
+						@Override
+						public void internalFrameClosed(InternalFrameEvent e) {
+							DirectionModel selectedModel = ((ListDirectionFormWindow) e.getInternalFrame())
+									.getSelectedModel();
+
+							if (selectedModel != null) {
+								// Atribui o model selecionado
+								directionModel = selectedModel;
+
+								// Seta dados do model para os campos
+								txfProcess.setText(directionModel.getProcess());
+//								txfDuration.setText(directionModel.getMaxDuration());
+//								txfRetention.setText(directionModel.getRetention());
+								cbxAutomatic.setSelected(directionModel.isAutomaticManual());
+								cbxEnable.setSelected(directionModel.isEnabled());
+								txfDBOrigin.setText(directionModel.getOriginDatabase());
+								txfUserOrigin.setText(directionModel.getOriginUser());
+								txfPasswordOrigin.setText(directionModel.getOriginPassword());
+								txfDBDestiny.setText(directionModel.getDestinationDatabase());
+								txfUserDestiny.setText(directionModel.getDestinationUser());
+								txfPasswordDestiny.setText(directionModel.getDestinationPassword());
+								
+								
+								// Seta form para modo Edição
+								setFormMode(UPDATE_MODE);
+
+								// Ativa campos
+								enableComponents(formFields);
+
+								// Ativa botão salvar
+								btnSave.setEnabled(true);
+
+								// Ativa botão remover
+								btnRemove.setEnabled(true);
+							}
+
+							// Reseta janela
+							searchDirectionWindow = null;
+						}
+					});
+				}
 			}
 		});
 
