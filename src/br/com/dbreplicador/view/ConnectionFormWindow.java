@@ -10,6 +10,7 @@ import br.com.dbreplicador.enums.Databases;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ReplicationModel;
 import br.com.dbreplicador.pojos.Database;
+import br.com.dbreplicador.util.InternalFrameListener;
 import br.com.dbreplicador.util.RegexFormatter;
 import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -41,6 +43,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	private JFormattedTextField txfAddressIP;
 	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
+	private JDesktopPane desktop;
 	
 	// Expressão regular para verificar se o IP digitado  é valido
 	private String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
@@ -49,6 +52,8 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
+	
+	private ListConnectionFormWindow searchConnectionWindow;
 	
 	// Banco de dados
 	private ReplicationModel replicationModel;
@@ -59,6 +64,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 
 	public ConnectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
+		this.desktop = desktop;
 		
 		setFrameIcon(MasterImage.aplication_16x16);
 		
@@ -80,7 +86,50 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
+				if (searchConnectionWindow == null) {
+					searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
+
+					searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
+						
+						@Override
+						public void internalFrameClosed(InternalFrameEvent e) {
+							ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
+									.getSelectedModel();
+
+							if (selectedModel != null) {
+								// Atribui o model selecionado
+								replicationModel = selectedModel;
+
+								// Seta dados do model para os campos
+								txfDescription.setText(replicationModel.getName());
+								txfAddressIP.setText(replicationModel.getAddress());
+								txfPort.setText(replicationModel.getDoor().toString());
+								txfNameDB.setText(replicationModel.getDatabase());
+
+								if(replicationModel.getDatebaseType().equals("PostgreSQL")) {
+									cbxModelDB.setSelectedIndex(2);
+								} else {
+									cbxModelDB.setSelectedIndex(1);
+								}
+								
+								// Seta form para modo Edição
+								setFormMode(UPDATE_MODE);
+
+								// Ativa campos
+								enableComponents(formFields);
+
+								// Ativa botão salvar
+								btnSave.setEnabled(true);
+
+								// Ativa botão remover
+								btnRemove.setEnabled(true);
+							}
+
+							// Reseta janela
+							searchConnectionWindow = null;
+						}
+					});
+				}
 			}
 		});
 

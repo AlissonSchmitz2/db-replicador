@@ -8,9 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.ReplicationModel;
 
-public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> {
+public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements ISearchable<ReplicationModel> {
 	private static final String TABLE_NAME = "tb_replicacao";
 
 	private String columnId = "codigo_replicacao";
@@ -193,6 +194,27 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> {
 		model.setUrl(rst.getString("url"));
 
 		return model;
+	}
+
+	@Override
+	public List<ReplicationModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE nome ILIKE ? OR database ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+		setParam(pst, 2, "%" + word + "%");
+
+		List<ReplicationModel> replicationList = new ArrayList<ReplicationModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			ReplicationModel model = createModelFromResultSet(rst);
+
+			replicationList.add(model);
+		}
+
+		return replicationList;
 	}
 	
 }
