@@ -8,10 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.dbreplicador.dao.contracts.Searchable;
+import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.ProcessModel;
 
-public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements Searchable<ProcessModel> {
+public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearchable<ProcessModel> {
 	private static final String TABLE_NAME = "tb_replicacao_processo";
 
 	private String columnId = "codigo_processo";

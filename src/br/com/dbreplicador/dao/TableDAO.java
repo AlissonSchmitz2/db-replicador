@@ -8,9 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.TableModel;
 
-public class TableDAO extends AbstractCrudDAO<TableModel> {
+public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable<TableModel>{
 	private static final String TABLE_NAME = "tb_replicacao_tabela";
 
 	private String columnId = "codigo_replicacao";
@@ -213,6 +214,26 @@ public class TableDAO extends AbstractCrudDAO<TableModel> {
 		model.setEnable(rst.getBoolean("habilitado"));
 
 		return model;
+	}
+	
+	@Override
+	public List<TableModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+
+		List<TableModel> tablesList = new ArrayList<TableModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			TableModel model = createModelFromResultSet(rst);
+
+			tablesList.add(model);
+		}
+
+		return tablesList;
 	}
 	
 }
