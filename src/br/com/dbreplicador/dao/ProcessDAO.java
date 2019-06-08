@@ -152,6 +152,26 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearch
 		return model;
 	}
 
+	@Override
+	public List<ProcessModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+
+		List<ProcessModel> processList = new ArrayList<ProcessModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			ProcessModel model = createModelFromResultSet(rst);
+
+			processList.add(model);
+		}
+
+		return processList;
+	}
+	
 	/**
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
@@ -172,26 +192,6 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearch
 		model.setEnable(rst.getBoolean("habilitado"));
 
 		return model;
-	}
-
-	@Override
-	public List<ProcessModel> search(String word) throws SQLException {
-		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
-		PreparedStatement pst = connection.prepareStatement(query);
-
-		setParam(pst, 1, "%" + word + "%");
-
-		List<ProcessModel> processList = new ArrayList<ProcessModel>();
-
-		ResultSet rst = pst.executeQuery();
-
-		while (rst.next()) {
-			ProcessModel model = createModelFromResultSet(rst);
-
-			processList.add(model);
-		}
-
-		return processList;
 	}
 
 }

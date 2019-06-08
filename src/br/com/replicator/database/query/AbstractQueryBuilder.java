@@ -1,10 +1,14 @@
 package br.com.replicator.database.query;
 
+import java.util.TreeMap;
+
+import br.com.replicator.database.query.contracts.IQuery;
 import br.com.replicator.database.query.contracts.IQueryBuilder;
+import br.com.replicator.enums.QueryTypes;
 import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public abstract class AbstractQueryBuilder implements IQueryBuilder {
-	public String createInsert(String tableName, String[] columns, String[] values) throws InvalidQueryAttributesException {
+	public IQuery insert(String tableName, String[] columns, String[] values) throws InvalidQueryAttributesException {
 		if (columns.length == 0) {
 			throw new InvalidQueryAttributesException("O total de colunas não pode ser zero");
 		}
@@ -13,33 +17,29 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Número de colunas é diferente do número de colunas");
 		}
 		
+		TreeMap<String, String> columnsValuesPairs = new TreeMap<String, String>();
+		for (int i = 0; i < columns.length; i++) {
+			if(values.length > i && values[i] != null) {
+				columnsValuesPairs.put(columns[i], "'" + values[i] + "'");
+			}
+        }
+		
 		String query = "INSERT INTO " + tableName + " (";
 		
 		// Concatena colunas	
-		query += String.join(",", columns);
+		query += String.join(",", columnsValuesPairs.keySet());
 		
 		query += ") VALUES (";
 		
 		// Concatena valores
-		String concatenedValues = "";
-		for (int i = 0; i < columns.length; i++) {
-			if (!concatenedValues.isEmpty()) {
-				concatenedValues += ", ";
-			}
-			
-			if(values.length > i && values[i] != null) {
-				concatenedValues += "'" + values[i] + "'";
-			} else {
-				concatenedValues += "''";
-			}
-        }
+		query += String.join(",", columnsValuesPairs.values());
 		
-		query += concatenedValues + ")";
+		query += ")";
 		
-		return query;
+		return new Query(query, QueryTypes.INSERT);
 	}
 	
-	public String createUpdate(String tableName, String[] columns, String[] values, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
+	public IQuery update(String tableName, String[] columns, String[] values, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
 		if (columns.length == 0) {
 			throw new InvalidQueryAttributesException("O total de colunas não pode ser zero");
 		}
@@ -56,34 +56,48 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		
 		String[] columnsValuesPairs = new String[columns.length];
 		for (int i = 0; i < columns.length; i++) {
-			columnsValuesPairs[i] = columns[i] + "='" + values[i] + "'";
+			if (values.length > i && values[i] != null) {
+				columnsValuesPairs[i] = columns[i] + "='" + values[i] + "'";
+			} else {
+				columnsValuesPairs[i] = columns[i] + "=" + values[i];
+			}
         }
 		
 		// Concatena colunas
 		query += String.join(", ", columnsValuesPairs);
 		query += " ";
-		query += createWhereCondition(identifierColumn, identifierValue);
+		query += createWhereCondition(identifierColumn, "=", identifierValue);
 		
-		return query;
+		return new Query(query, QueryTypes.UPDATE);
 	}
 	
-	public String createDelete(String tableName, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
+	public IQuery delete(String tableName, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
 		if (identifierColumn.isEmpty() || identifierValue.isEmpty()) {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		return "DELETE FROM " + tableName + " " + createWhereCondition(identifierColumn, identifierValue);
+		String query = "DELETE FROM " + tableName + " " + createWhereCondition(identifierColumn, "=", identifierValue);
+		
+		return new Query(query, QueryTypes.DELETE);
 	}
 	
-	public String createFind(String tableName, String identifierColumn, String identifierValue, String columns) throws InvalidQueryAttributesException {
+	public IQuery find(String tableName, String identifierColumn, String operator, String identifierValue, String columns) throws InvalidQueryAttributesException {
 		if (identifierColumn.isEmpty() || identifierValue.isEmpty()) {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		return "SELECT " + columns + " FROM " + tableName + " " + createWhereCondition(identifierColumn, identifierValue);	
+		String query = "SELECT " + columns + " FROM " + tableName + " " + createWhereCondition(identifierColumn, operator, identifierValue);
+		
+		return new Query(query, QueryTypes.SELECT);
 	}
 	
-	private String createWhereCondition(String identifierColumn, String identifierValue) {
-		return "WHERE " + identifierColumn + "=" + identifierValue;
+	public IQuery select(String tableName, String columns) throws InvalidQueryAttributesException {
+		String query = "SELECT " + columns + " FROM " + tableName;
+		
+		return new Query(query, QueryTypes.SELECT);
+	}
+	
+	private String createWhereCondition(String identifierColumn, String operator, String identifierValue) {
+		return "WHERE " + identifierColumn + operator + "'" + identifierValue +"'";
 	}
 }

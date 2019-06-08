@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface IQueryProcessor {
-	public ResultSet executeQuery(String query) throws SQLException;
+	public ResultSet executeQuery(IQuery query) throws SQLException;
 	
-	public int executeUpdate(String query) throws SQLException;
+	public Integer executeUpdate(IQuery query) throws SQLException;
+	
+	public ResultSet execute(IQuery query) throws SQLException;
 }

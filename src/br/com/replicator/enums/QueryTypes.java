@@ -1,17 +1,20 @@
-package br.com.replicator;
+package br.com.replicator.enums;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum SupportedTypes {
-	POSTGRESQL("postgresql", "PostgreSQL");
+public enum QueryTypes {
+	INSERT("insert", "Insert"),
+	UPDATE("update", "Update"),
+	DELETE("delete", "Delete"),
+	SELECT("select", "Select");
 
 	private final String code;
 	private final String description;
 	private static final Map<String, String> mMap = Collections.unmodifiableMap(initializeMapping());
 
-	private SupportedTypes(String code, String description) {
+	private QueryTypes(String code, String description) {
 		this.code = code;
 		this.description = description;
 	}
@@ -45,7 +48,7 @@ public enum SupportedTypes {
 
 	private static Map<String, String> initializeMapping() {
 		Map<String, String> mMap = new HashMap<String, String>();
-		for (SupportedTypes s : SupportedTypes.values()) {
+		for (QueryTypes s : QueryTypes.values()) {
 			mMap.put(s.code, s.description);
 		}
 		return mMap;
