@@ -199,7 +199,7 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 	private TableModel createModelFromResultSet(ResultSet rst) throws SQLException {
 		TableModel model = new TableModel();
 
-		//model.setReplicationCode(rst.getInt("codigo_processo"));
+		model.setReplicationCode(rst.getInt("codigo_replicacao"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
 		model.setProcess(rst.getString("processo"));
