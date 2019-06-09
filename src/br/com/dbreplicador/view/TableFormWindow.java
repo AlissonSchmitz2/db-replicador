@@ -7,6 +7,8 @@ import java.awt.KeyEventPostProcessor;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -48,10 +50,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey;
+	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey, cbxColumnType;
 	private JLabel lblTableOrigin, lblOperation, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnType;
 	private JCheckBox cbxEnable, cbxIgnoreError;
-	private JComboBox<String> cbxColumnType;
 	private JDesktopPane desktop;
 	
 	// TODO: Conexão provisória (Refatorar)
@@ -115,7 +116,6 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
 				if (searchListTableWindow == null) {
 					searchListTableWindow = new ListTableFormWindow(desktop, CONNECTION);
 
@@ -140,7 +140,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-//								cbxColumnType.setSelectedIndex();
+  								cbxColumnType.setText(tableModel.getTypeColumn());;
 								
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
@@ -209,6 +209,8 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 							// Desativa botão remover
 							btnRemove.setEnabled(false);
+							
+							txfProcess.setText("Teclar F9");
 						} else {
 							bubbleError("Houve um erro ao tentar excluir a tabela");
 						}
@@ -237,7 +239,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
 				tableModel.setOriginTable(txfTableOrigin.getText());
 				tableModel.setProcess(txfProcess.getText());
-				tableModel.setTypeColumn("Integer"); //TODO:Verificar
+				tableModel.setTypeColumn(cbxColumnType.getText());
 				tableModel.setUser("admin");
 				
 				try {
@@ -355,7 +357,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		formFields.add(cbxIgnoreError);
 		txfColumnKey = new JTextField();
 		formFields.add(txfColumnKey);
-		cbxColumnType = new JComboBox<String>();
+		cbxColumnType = new JTextField();
 		formFields.add(cbxColumnType);
 
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -448,6 +450,17 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 										GroupLayout.PREFERRED_SIZE))
 						.addGap(113)));
 		getContentPane().setLayout(groupLayout);
+		
+		txfProcess.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				openSearchProcess();
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+		});
 	}
 
 	private boolean validateFields() {
@@ -472,10 +485,10 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
 			bubbleWarning("Informe a chave da coluna!");
 			return false;
-		} //else if (cbxColumnType.getSelectedItem().equals("--- Selecione ---") || cbxColumnType.getSelectedItem() == null) {
-		//	bubbleWarning("Selecione o tipo da coluna!");
-		//	return false;
-	//	}
+		} else if (cbxColumnType.getText().isEmpty() || cbxColumnType.getText() == null) {
+			bubbleWarning("Selecione o tipo da coluna!");
+			return false;
+		}
 
 		return true;
 	}
