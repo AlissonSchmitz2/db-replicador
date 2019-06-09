@@ -33,6 +33,7 @@ import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
+import br.com.dbreplicador.model.ReplicationModel;
 import br.com.dbreplicador.util.InternalFrameListener;
 
 public class DirectionFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor{
@@ -57,7 +58,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 	private DirectionDAO directionDAO;
 	
 	private ListProcessFormWindow searchProcessWindow;
-	
+	private ListConnectionFormWindow searchConnectionWindow;	
 	
 	// TODO: Conexão provisória (Refatorar)
 	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
@@ -105,9 +106,14 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		// Abre tela seleção cidade ao clicar F9
 		if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_F9) {
 			if (btnSave.isEnabled()) {
-			
+				System.out.println(txfProcess.getText());
+				if(txfProcess.getText().equals("Teclar F9")) {
 					openSearchProcess();
-				
+				}else if(txfDBDestiny.getText().equals("Teclar F9")) {
+					openSearchDBDestiny();
+				}else if(txfDBOrigin.getText().equals("Teclar F9")) {
+					openSearchDBOrigin();
+				}
 			}
 
 			return true;
@@ -138,42 +144,42 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 	}
 	
 	private void openSearchDBDestiny() {
-		if (searchProcessWindow == null) {
-			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+		if (searchConnectionWindow == null) {
+			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
 
-			searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
+			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ProcessModel selectedModel = ((ListProcessFormWindow) e.getInternalFrame()).getSelectedModel();
+					ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model
-						txfProcess.setText(selectedModel.getProcess());
+						txfDBDestiny.setText(selectedModel.getDatabase());
 					}
 
 					// Reseta janela
-					searchProcessWindow = null;
+					searchConnectionWindow = null;
 				}
 			});
 		}
 	}
 	
 	private void openSearchDBOrigin() {
-		if (searchProcessWindow == null) {
-			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+		if (searchConnectionWindow == null) {
+			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
 
-			searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
+			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ProcessModel selectedModel = ((ListProcessFormWindow) e.getInternalFrame()).getSelectedModel();
+					ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model
-						txfProcess.setText(selectedModel.getProcess());
+						txfDBOrigin.setText(selectedModel.getDatabase());
 					}
 
 					// Reseta janela
-					searchProcessWindow = null;
+					searchConnectionWindow = null;
 				}
 			});
 		}
