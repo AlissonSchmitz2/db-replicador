@@ -24,7 +24,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import java.awt.Color;
 
-public class ReplicatorWindow extends AbstractWindowFrame implements ReplicatorController {
+public class ReplicationWindow extends AbstractWindowFrame implements ReplicatorController {
 	private static final long serialVersionUID = -4888464460307835343L;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
@@ -38,9 +38,9 @@ public class ReplicatorWindow extends AbstractWindowFrame implements ReplicatorC
 	private JPanel panelConnections, paneLog;
 	
 	//Referência da janela
-	private ReplicatorExecute replicatorExecute = null;
+	private ReplicationExecute replicatorExecute = null;
 
-	public ReplicatorWindow(JDesktopPane desktop) {
+	public ReplicationWindow(JDesktopPane desktop) {
 		super("Replicar", 625, 345, desktop);
 
 		setFrameIcon(MasterImage.replicator_16x16);
@@ -62,7 +62,7 @@ public class ReplicatorWindow extends AbstractWindowFrame implements ReplicatorC
 					btnReplicate.setText("PAUSAR");
 
 					if(replicatorExecute == null) {
-					replicatorExecute = new ReplicatorExecute(ReplicatorWindow.this);
+					replicatorExecute = new ReplicationExecute(ReplicationWindow.this);
 					}
 					
 					replicatorExecute.ReplicacaoIniciar();
