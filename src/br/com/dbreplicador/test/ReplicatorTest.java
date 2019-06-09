@@ -15,7 +15,7 @@ import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public class ReplicatorTest {
 	public ReplicatorTest() {
-		ConnectionInfo originConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "localhost", 5432, "master", "admin", "admin");
+		ConnectionInfo originConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "127.0.0.1", 5432, "master", "admin", "admin");
 		ConnectionInfo destinationConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "localhost", 5432, "nocaute2", "admin", "admin");
 
 		try {

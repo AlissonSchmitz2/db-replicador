@@ -31,7 +31,7 @@ public class Window extends JFrame {
 	private ProcessFormWindow frameProcessForm;
 	private TableFormWindow frameTableForm;
 	private DirectionFormWindow frameDirectionForm;
-	private ReplicatorWindow frameReplicatorWindow;
+	private ReplicationWindow frameReplicatorWindow;
 	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
@@ -210,7 +210,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameReplicatorWindow = new ReplicatorWindow(desktop);
+				frameReplicatorWindow = new ReplicationWindow(desktop);
 				abrirFrame(frameReplicatorWindow);
 			}
 		});

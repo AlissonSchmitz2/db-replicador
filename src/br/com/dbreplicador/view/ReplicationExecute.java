@@ -1,13 +1,12 @@
 package br.com.dbreplicador.view;
 
-public class ReplicatorExecute {
+public class ReplicationExecute {
 
-	private ReplicatorWindow window;
+	private ReplicationWindow window;
 
 	int i = 0;
 	
-	public ReplicatorExecute(ReplicatorWindow window) {
-
+	public ReplicationExecute(ReplicationWindow window) {
 		// Guardo a referencia.
 		this.window = window;
 
