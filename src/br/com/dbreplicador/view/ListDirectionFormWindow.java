@@ -19,32 +19,32 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import br.com.dbreplicador.dao.ProcessDAO;
+import br.com.dbreplicador.dao.DirectionDAO;
 import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.ProcessModel;
-import br.com.dbreplicador.view.tableModel.ProcessTableModel;
+import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.view.tableModel.DirectionTableModel;
 
-public class ListProcessFormWindow extends AbstractGridWindow {
-	private static final long serialVersionUID = -7052617068919847790L;
-	
-	private ProcessDAO processDAO;
-	private ProcessModel processModel;
+public class ListDirectionFormWindow extends AbstractGridWindow {
+	private static final long serialVersionUID = 4268006949976074802L;
+
+	private DirectionDAO directionDAO;
+	private DirectionModel directionModel;
 
 	private JButton btnSearch;
 	private JTextField txfSearch;
 
-	private ProcessTableModel processTableModel;
+	private DirectionTableModel directionTableModel;
 	private JTable jTableModels;
 
-	public ListProcessFormWindow(JDesktopPane desktop, Connection CONNECTION) {
-		super("Processos", 445, 310, desktop, true);
+	public ListDirectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+		super("Direção", 445, 310, desktop, true);
 
-		setFrameIcon(MasterImage.process_16x16);
+		setFrameIcon(MasterImage.direction_16x16);
 		
 		createComponents();
 		
 		try {
-			processDAO = new ProcessDAO(CONNECTION);
+			directionDAO = new DirectionDAO(CONNECTION);
 		} catch (SQLException error) {
 			error.printStackTrace();
 		}
@@ -54,8 +54,8 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 		setButtonsActions();
 	}
 
-	public ProcessModel getSelectedModel() {
-		return processModel;
+	public DirectionModel getSelectedModel() {
+		return directionModel;
 	}
 
 	private void setButtonsActions() {
@@ -70,7 +70,7 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 	private void createComponents() {
 
 		txfSearch = new JTextField();
-		txfSearch.setToolTipText("Informe o processo");
+		txfSearch.setToolTipText("Informe a direção");
 		txfSearch.requestFocusInWindow();
 		txfSearch.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent ke) {
@@ -110,15 +110,15 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 	}
 
 	private void createGrid() {
-		processTableModel = new ProcessTableModel();
-		jTableModels = new JTable(processTableModel);
+		directionTableModel = new DirectionTableModel();
+		jTableModels = new JTable(directionTableModel);
 
 		jTableModels.addMouseListener(new MouseAdapter() {
 
 			public void mouseClicked(MouseEvent me) {
 				if (me.getClickCount() == 2) {
 					// Atribui o model da linha clicada
-					processModel = processTableModel.getModel(jTableModels.getSelectedRow());
+					directionModel = directionTableModel.getModel(jTableModels.getSelectedRow());
 
 					// Fecha a janela
 					try {
@@ -139,7 +139,7 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 			public void keyPressed(KeyEvent ke) {
 				if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_ENTER) {
 					// Atribui o model da linha selecionada
-					processModel = processTableModel.getModel(jTableModels.getSelectedRow());
+					directionModel = directionTableModel.getModel(jTableModels.getSelectedRow());
 
 					// Fecha a janela
 					try {
@@ -170,10 +170,10 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 		  return;
 		}
 
-		processTableModel.clear();
+		directionTableModel.clear();
 
 		try {
-			processTableModel.addModelsList(processDAO.search(word));
+			directionTableModel.addModelsList(directionDAO.search(word));
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}

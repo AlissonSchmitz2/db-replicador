@@ -5,26 +5,32 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.image.MasterImage;
-import javax.swing.JCheckBox;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
+import br.com.dbreplicador.model.TableModel;
+import br.com.dbreplicador.util.InternalFrameListener;
 
 public class TableFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 3242592994592829458L;
 	private JLabel lblProcess, lblOrder;
 	private JTextField txfProcess;
+	
+	private ListTableFormWindow searchListTableWindow;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
@@ -35,12 +41,17 @@ public class TableFormWindow extends AbstractWindowFrame {
 	private JLabel lblTableOrigin, lblOperation, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnType;
 	private JCheckBox cbxEnable, cbxIgnoreError;
 	private JComboBox<String> cbxColumnType;
+	private JDesktopPane desktop;
+	private Connection CONNECTION;
+	private TableModel tableModel;
 
 	public TableFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Tabelas", 470, 420, desktop);
 
 		setFrameIcon(MasterImage.details_16x16);
 
+		this.desktop = desktop;
+		
 		createComponents();
 
 		// Por padrão campos são desabilitados ao iniciar
@@ -54,6 +65,50 @@ public class TableFormWindow extends AbstractWindowFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Acão Buscar
+				if (searchListTableWindow == null) {
+					searchListTableWindow = new ListTableFormWindow(desktop, CONNECTION);
+
+					searchListTableWindow.addInternalFrameListener(new InternalFrameListener() {
+						
+						@Override
+						public void internalFrameClosed(InternalFrameEvent e) {
+							TableModel selectedModel = ((ListTableFormWindow) e.getInternalFrame())
+									.getSelectedModel();
+
+							if (selectedModel != null) {
+								// Atribui o model selecionado
+								tableModel = selectedModel;
+
+								// Seta dados do model para os campos
+								txfProcess.setText(tableModel.getProcess());
+								txfOrder.setText(tableModel.getOrder().toString());
+								txfTableOrigin.setText(tableModel.getOriginTable());
+//								txfOperation.setText(tableModel.isOperation()) ;REFATORAR
+								txfTableDestiny.setText(tableModel.getDestinationTable());
+								txfSaveAfter.setText(tableModel.getMaximumLines().toString());
+								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
+								cbxEnable.setSelected(tableModel.isEnable());
+								txfColumnKey.setText(tableModel.getKeyColumn());
+//								cbxColumnType.setSelectedIndex();
+								
+								// Seta form para modo Edição
+								setFormMode(UPDATE_MODE);
+
+								// Ativa campos
+								enableComponents(formFields);
+
+								// Ativa botão salvar
+								btnSave.setEnabled(true);
+
+								// Ativa botão remover
+								btnRemove.setEnabled(true);
+							}
+
+							// Reseta janela
+							searchListTableWindow = null;
+						}
+					});
+				}
 			}
 		});
 

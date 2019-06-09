@@ -2,21 +2,33 @@ package br.com.dbreplicador.view;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
+import javax.swing.JFormattedTextField;
 
+import br.com.dbreplicador.dao.ReplicationDAO;
+import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.enums.Databases;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.ReplicationModel;
 import br.com.dbreplicador.pojos.Database;
+import br.com.dbreplicador.util.InternalFrameListener;
+import br.com.dbreplicador.util.RegexFormatter;
 import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -26,18 +38,41 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 
 	//Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB, lblCompany;
-	private JTextField txfDescription, txfAddressIP, txfPort, txfNameDB, txfCompany;
+	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB;
+	private JTextField txfDescription, txfPort, txfNameDB;
+	private JFormattedTextField txfAddressIP;
 	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
-
+	private JDesktopPane desktop;
+	
+	// Expressão regular para verificar se o IP digitado  é valido
+	private String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+	private Pattern p = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
+	private RegexFormatter ipFormatter = new RegexFormatter(p);
+	
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
+	
+	private ListConnectionFormWindow searchConnectionWindow;
+	
+	// Banco de dados
+	private ReplicationModel replicationModel;
+	private ReplicationDAO replicationDAO;
+	// TODO: Conexão provisória (Refatorar)
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	
 
 	public ConnectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Conexões", 455, 330, desktop);
-
+		this.desktop = desktop;
+		
 		setFrameIcon(MasterImage.aplication_16x16);
+		
+		try {
+			replicationDAO = new ReplicationDAO(CONNECTION);
+		} catch (Exception error) {
+			error.printStackTrace();
+		}
 		
 		createComponents();
 
@@ -51,16 +86,67 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
+				if (searchConnectionWindow == null) {
+					searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
+
+					searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
+						
+						@Override
+						public void internalFrameClosed(InternalFrameEvent e) {
+							ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
+									.getSelectedModel();
+
+							if (selectedModel != null) {
+								// Atribui o model selecionado
+								replicationModel = selectedModel;
+
+								// Seta dados do model para os campos
+								txfDescription.setText(replicationModel.getName());
+								txfAddressIP.setText(replicationModel.getAddress());
+								txfPort.setText(replicationModel.getDoor().toString());
+								txfNameDB.setText(replicationModel.getDatabase());
+
+								if(replicationModel.getDatebaseType().equals("PostgreSQL")) {
+									cbxModelDB.setSelectedIndex(2);
+								} else {
+									cbxModelDB.setSelectedIndex(1);
+								}
+								
+								// Seta form para modo Edição
+								setFormMode(UPDATE_MODE);
+
+								// Ativa campos
+								enableComponents(formFields);
+
+								// Ativa botão salvar
+								btnSave.setEnabled(true);
+
+								// Ativa botão remover
+								btnRemove.setEnabled(true);
+							}
+
+							// Reseta janela
+							searchConnectionWindow = null;
+						}
+					});
+				}
 			}
 		});
 
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Seta form para modo Cadastro
+				setFormMode(CREATE_MODE);
 				
 				// Ativa campos
 				enableComponents(formFields);
+				
+				// Limpar dados dos campos
+				clearFormFields(formFields);
+				
+				// Cria nova entidade model
+				replicationModel = new ReplicationModel();
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -70,7 +156,36 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		btnRemove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Remover
+				try {
+					if(isEditing()) {
+						if(replicationDAO.delete(replicationModel)) {
+							bubbleSuccess("Conexão excluída com sucesso");
+							
+							// Seta form para modo Cadastro
+							setFormMode(CREATE_MODE);
+
+							// Desativa campos
+							disableComponents(formFields);
+
+							// Limpar dados dos campos
+							clearFormFields(formFields);
+							
+							// Cria nova entidade model
+							replicationModel = new ReplicationModel();
+							
+							// Desativa botão salvar
+							btnSave.setEnabled(false);
+
+							// Desativa botão remover
+							btnRemove.setEnabled(false);
+						} else {
+							bubbleError("Houve um erro ao tentar excluir a conexão");
+						}
+					}
+				} catch (Exception error) {
+					bubbleError(error.getMessage());
+					error.printStackTrace();
+				}
 			}
 		});
 
@@ -81,7 +196,62 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 					return;
 				}
 				
-				// TODO Ação Salvar
+				replicationModel.setAddress(txfAddressIP.getText());
+				replicationModel.setCurrentDate(getDateTime(new Date()));
+				replicationModel.setUser("admin");
+				replicationModel.setDatabase(txfNameDB.getText());
+				replicationModel.setDatebaseType(cbxModelDB.getSelectedItem().toString());
+				replicationModel.setName(txfDescription.getText());
+
+				try {
+					replicationModel.setDoor(Integer.parseInt(txfPort.getText()));
+				} catch (Exception error) {
+					bubbleError("A porta digitada é inválida!");
+					return;
+				}	
+				
+				if(cbxModelDB.getSelectedItem().toString().equals("MySQL")) {
+					replicationModel.setUrl("mysql://" + replicationModel.getAddress() + ":"
+							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+				} else if (cbxModelDB.getSelectedItem().toString().equals("PostgreSQL")) {					
+					replicationModel.setUrl("postgresql://" + replicationModel.getAddress() + ":"
+							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+				}
+												
+				try {
+					// EDIÇÃO CADASTRO
+					if(isEditing()) {						
+						if(replicationDAO.update(replicationModel)) {
+							bubbleSuccess("Conexão editada com sucesso");
+						} else {
+							bubbleError("Houve um erro ao editar a conexão");
+						}
+					} 
+					// NOVO CADASTRO
+					else {
+						// Insere a conexão no banco de dados
+						ReplicationModel insertedModel = replicationDAO.insert(replicationModel);
+						
+						if(insertedModel != null) {
+							// Atribui o model recém criado ao model
+							replicationModel = insertedModel;
+
+							// Seta form para edição
+							setFormMode(UPDATE_MODE);
+
+							// Ativa botão Remover
+							btnRemove.setEnabled(true);
+							
+							bubbleSuccess("Conexão cadastrada com sucesso");
+						} else {
+							bubbleError("Houve um erro ao cadastrar a conexão");
+						}
+					}
+				} catch (Exception error) {
+					error.printStackTrace();
+					bubbleError(error.getMessage());
+				}
+				
 			}
 		});
 		
@@ -119,13 +289,14 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		lblPort = new JLabel("Porta:");
 		lblNameDB = new JLabel("Nome do Banco:");
 		lblModelDB = new JLabel("Modelo do Banco:");
-		lblCompany = new JLabel("Estabelecimento:");
+		//lblCompany = new JLabel("Estabelecimento:");
 
 		// TextFields
 		txfDescription = new JTextField();
 		txfDescription.setColumns(10);
 		formFields.add(txfDescription);
-		txfAddressIP = new JTextField();
+		txfAddressIP = new JFormattedTextField();
+		txfAddressIP.setFormatterFactory(new DefaultFormatterFactory(ipFormatter));
 		txfAddressIP.setColumns(10);
 		formFields.add(txfAddressIP);
 		txfPort = new JTextField();
@@ -143,9 +314,9 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		cbxModelDB.setModel(new GenericComboModel<Database>(databaseList));
 		cbxModelDB.setSelectedIndex(0);
 		formFields.add(cbxModelDB);
-		txfCompany = new JTextField();
-		txfCompany.setColumns(10);
-		formFields.add(txfCompany);
+		//txfCompany = new JTextField();
+		//txfCompany.setColumns(10);
+		//formFields.add(txfCompany);
 
 		btnTestarConexo = new JButton("Testar Conex\u00E3o");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -163,7 +334,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 									.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblCompany)
+										//.addComponent(lblCompany)
 										.addComponent(lblDescription)
 										.addComponent(lblAddressIP)
 										.addComponent(lblPort)
@@ -171,7 +342,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 										.addComponent(lblModelDB))
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(txfCompany, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+										//.addComponent(txfCompany, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
 										.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)
 										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 											.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
@@ -214,9 +385,9 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 						.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblModelDB))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+					/*.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txfCompany, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblCompany))
+						.addComponent(lblCompany))*/
 					.addGap(21)
 					.addComponent(btnTestarConexo, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(26, Short.MAX_VALUE))
@@ -240,11 +411,17 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		}  else if(cbxModelDB.getSelectedItem().equals("-- Selecione --")|| cbxModelDB.getSelectedItem() == null) {
 			bubbleWarning("Selecione o modelo do banco!");
 			return false;
-		}  else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
+		}  /*else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
 			bubbleWarning("Informe o estabelecimento!");
 			return false;
-		} 
+		} */
 		
 		return true;
+	}
+	
+	private Timestamp getDateTime(Date date) {
+		long dataTime = date.getTime();
+		Timestamp ts = new Timestamp(dataTime);
+		return ts;
 	}
 }

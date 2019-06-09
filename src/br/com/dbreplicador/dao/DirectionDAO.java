@@ -8,9 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.DirectionModel;
 
-public class DirectionDAO extends AbstractCrudDAO<DirectionModel>{
+public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISearchable<DirectionModel>{
 	private static final String TABLE_NAME = "tb_replicacao_direcao";
 
 	private String columnId = "codigo_direcao";
@@ -275,4 +276,25 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel>{
 		
 		return model;
 	}
+	
+	@Override
+	public List<DirectionModel> search(String word) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, "%" + word + "%");
+
+		List<DirectionModel> directionList = new ArrayList<DirectionModel>();
+
+		ResultSet rst = pst.executeQuery();
+
+		while (rst.next()) {
+			DirectionModel model = createModelFromResultSet(rst);
+
+			directionList.add(model);
+		}
+
+		return directionList;
+	}
+	
 }
