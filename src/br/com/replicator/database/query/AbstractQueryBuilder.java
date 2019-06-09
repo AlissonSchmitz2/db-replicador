@@ -1,6 +1,8 @@
 package br.com.replicator.database.query;
 
+import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import br.com.replicator.database.query.contracts.IQuery;
 import br.com.replicator.database.query.contracts.IQueryBuilder;
@@ -20,7 +22,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		TreeMap<String, String> columnsValuesPairs = new TreeMap<String, String>();
 		for (int i = 0; i < columns.length; i++) {
 			if(values.length > i && values[i] != null) {
-				columnsValuesPairs.put(columns[i], "'" + values[i] + "'");
+				columnsValuesPairs.put(columns[i], "'" + values[i].toString().replaceAll("'", "''") + "'");
 			}
         }
 		
@@ -57,7 +59,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		String[] columnsValuesPairs = new String[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			if (values.length > i && values[i] != null) {
-				columnsValuesPairs[i] = columns[i] + "='" + values[i] + "'";
+				columnsValuesPairs[i] = columns[i] + "='" + values[i].toString().replaceAll("'", "''") + "'";
 			} else {
 				columnsValuesPairs[i] = columns[i] + "=" + values[i];
 			}
@@ -66,7 +68,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		// Concatena colunas
 		query += String.join(", ", columnsValuesPairs);
 		query += " ";
-		query += createWhereCondition(identifierColumn, "=", identifierValue);
+		query += createSimpleWhereCondition(identifierColumn, "=", identifierValue);
 		
 		return new Query(query, QueryTypes.UPDATE);
 	}
@@ -76,7 +78,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		String query = "DELETE FROM " + tableName + " " + createWhereCondition(identifierColumn, "=", identifierValue);
+		String query = "DELETE FROM " + tableName + " " + createSimpleWhereCondition(identifierColumn, "=", identifierValue);
 		
 		return new Query(query, QueryTypes.DELETE);
 	}
@@ -86,7 +88,19 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
 		}
 		
-		String query = "SELECT " + columns + " FROM " + tableName + " " + createWhereCondition(identifierColumn, operator, identifierValue);
+		String query = "SELECT " + columns + " FROM " + tableName + " " + createSimpleWhereCondition(identifierColumn, operator, identifierValue);
+		
+		return new Query(query, QueryTypes.SELECT);
+	}
+	
+	public IQuery findNotIn(String tableName, String identifierColumn, List<String> identifierValues, String columns) throws InvalidQueryAttributesException {
+		if (identifierColumn.isEmpty() || identifierValues.isEmpty()) {
+			throw new InvalidQueryAttributesException("Valor do identificador é inválido");
+		}
+		
+		List<String> parsedValues = identifierValues.stream().map(value -> "'" + value.toString().replaceAll("'", "''") + "'").collect(Collectors.toList());
+		
+		String query = "SELECT " + columns + " FROM " + tableName + " WHERE " + identifierColumn + " NOT IN (" + String.join(",", parsedValues) + ")";
 		
 		return new Query(query, QueryTypes.SELECT);
 	}
@@ -97,7 +111,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		return new Query(query, QueryTypes.SELECT);
 	}
 	
-	private String createWhereCondition(String identifierColumn, String operator, String identifierValue) {
+	private String createSimpleWhereCondition(String identifierColumn, String operator, String identifierValue) {
 		return "WHERE " + identifierColumn + operator + "'" + identifierValue +"'";
 	}
 }

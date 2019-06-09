@@ -1,72 +1,64 @@
 package br.com.dbreplicador.test;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.util.List;
 
-import br.com.replicator.database.ConnectionFactory;
-import br.com.replicator.database.query.QueryBuilderFactory;
-import br.com.replicator.database.query.QueryProcessor;
+import br.com.replicator.Replicator;
+import br.com.replicator.contracts.IReplicator;
+import br.com.replicator.contracts.IReplicatorProvider;
+import br.com.replicator.database.ConnectionInfo;
 import br.com.replicator.database.query.contracts.IQuery;
-import br.com.replicator.database.query.contracts.IQueryBuilder;
-import br.com.replicator.database.query.contracts.IQueryProcessor;
 import br.com.replicator.enums.SupportedTypes;
+import br.com.replicator.exceptions.InvalidDatabaseTypeException;
+import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public class ReplicatorTest {
 	public ReplicatorTest() {
-		Connection connOrigin = ConnectionFactory.getConnection("postgresql", "localhost", 5432, "master", "admin", "admin");
-		Connection connDestination = ConnectionFactory.getConnection("postgresql", "localhost", 5432, "nocaute2", "admin", "admin");
-	
-		try {
-			IQueryBuilder queryBuilder = QueryBuilderFactory.getQueryBuilder(SupportedTypes.POSTGRESQL);
-			IQueryProcessor processor = new QueryProcessor(connOrigin);
-			IQueryProcessor destinationProcessor = new QueryProcessor(connDestination);
-			
-			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-			/*String date = new SimpleDateFormat("dd/MM/yyyy").format(timestamp.getTime());*/
-			System.out.println(timestamp.toString());
-			
-			//FIND
-			IQuery findQuery = queryBuilder.find("alunos", "ultima_atualizacao", "<", timestamp.toString(), "*");
-			
-			ResultSet rst = processor.execute(findQuery);
-			while (rst.next()) {
-				IQuery findQueryDestination = queryBuilder.find("alunos", "codigo_aluno", "=", rst.getString("codigo_aluno"), "*");
-				
-				ResultSet rst2 = destinationProcessor.execute(findQueryDestination);
-				
-				ResultSetMetaData rstmd = rst.getMetaData();
-				
-				String[] columns = new String[rstmd.getColumnCount()];
-				String[] values = new String[rstmd.getColumnCount()];
-				
-				for (int i = 1; i <= rstmd.getColumnCount(); i++) {
-					columns[i-1] = rstmd.getColumnName(i);
-					values[i-1] = rst.getString(i);
-				}
-				
-				if (rst2.next()) {
-					//Update
-					IQuery updateQuery = queryBuilder.update("alunos", columns, values, "codigo_aluno", rst.getString("codigo_aluno"));
-					
-					System.out.println(updateQuery);
-					
-					destinationProcessor.execute(updateQuery);
-				} else {
-					//Insert
-					IQuery insertQuery = queryBuilder.insert("alunos", columns, values);
-					
-					System.out.println(insertQuery);
-					
-					destinationProcessor.execute(insertQuery);
-				}
+		ConnectionInfo originConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "localhost", 5432, "master", "admin", "admin");
+		ConnectionInfo destinationConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "localhost", 5432, "nocaute2", "admin", "admin");
 
-				System.out.println("Find: " + rst.getString("aluno"));
+		try {
+			//Primeira sincronização de uma tabela deve-se passar 0 como timestamp
+			Timestamp timestamp = new Timestamp(0);
+			
+			//Salva System.currentTimeMillis() no banco de dados como última data de atualização
+			//TODO
+			
+			//Sincroniza as alterações feitas apartir da última data salva no banco de dados
+			//TODO
+			
+			//Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+			IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);
+
+			List<IQuery> queries = replicator.getQueriesForReplication("cidades", "id_cidade", "ultima_atualizacao", timestamp);
+			
+			IReplicatorProvider provider = replicator.getDestinationProvider();
+			
+			//Desabilita auto commit
+			provider.getConn().setAutoCommit(false);
+
+			//Processa cada query
+			for (int i = 0; i < queries.size(); i++) {
+				Integer result = provider.getProcessor()
+						.executeUpdate(queries.get(i), "id_cidade");
+				
+				if (result > 0) {
+					System.out.println("Sucesso: " + queries.get(i).toString());
+				} else {
+					System.out.println("Erro: " + queries.get(i).toString());
+				}
+				
+				if (i % 15 == 0) {
+					provider.getConn().commit();
+				}
 			}
 			
-		} catch (Exception e) {
+			//Comita mudanças
+			provider.getConn().commit();
+			
+		} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
 			e.printStackTrace();
 		}
 	}

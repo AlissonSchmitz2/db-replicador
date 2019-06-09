@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import br.com.replicator.database.ConnectionFactory;
+import br.com.replicator.database.ConnectionInfo;
 import br.com.replicator.database.query.QueryBuilderFactory;
 import br.com.replicator.database.query.QueryProcessor;
 import br.com.replicator.database.query.contracts.IQuery;
@@ -12,11 +13,12 @@ import br.com.replicator.database.query.contracts.IQueryProcessor;
 import br.com.replicator.enums.SupportedTypes;
 
 public class ReplicatorCRUDTest {
-	public ReplicatorCRUDTest(){
-		Connection connOrigin = ConnectionFactory.getConnection("postgresql", "localhost", 5432, "master", "admin", "admin");
-		Connection connDestination = ConnectionFactory.getConnection("postgresql", "localhost", 5432, "nocaute2", "admin", "admin");
-		
+	public ReplicatorCRUDTest() {
 		try {
+			ConnectionInfo originConnInfo = new ConnectionInfo(SupportedTypes.POSTGRESQL, "localhost", 5432, "master", "admin", "admin");
+			Connection connOrigin = ConnectionFactory.getConnection(originConnInfo);
+		
+		
 			IQueryBuilder queryBuilder = QueryBuilderFactory.getQueryBuilder(SupportedTypes.POSTGRESQL);
 			IQueryProcessor processor = new QueryProcessor(connOrigin);
 			
@@ -32,7 +34,7 @@ public class ReplicatorCRUDTest {
 						"Aluno 2"
 					});
 			
-			Integer resultInsert = processor.executeUpdate(insertQuery);
+			Object resultInsert = processor.executeUpdate(insertQuery);
 			System.out.println("Inserted: " + resultInsert);
 			
 			//UPDATED
@@ -44,7 +46,7 @@ public class ReplicatorCRUDTest {
 						"Aluno 2 - Updated"
 					},
 					"codigo_aluno", "2");
-			Integer resultUpdate = processor.executeUpdate(updateQuery);
+			Object resultUpdate = processor.executeUpdate(updateQuery);
 			System.out.println("Updated: " + resultUpdate);
 			
 			//FIND
@@ -57,7 +59,7 @@ public class ReplicatorCRUDTest {
 			
 			//DELETE
 			IQuery deleteQuery = queryBuilder.delete("alunos", "codigo_aluno", "2");
-			Integer resultDelete = processor.executeUpdate(deleteQuery);
+			Object resultDelete = processor.executeUpdate(deleteQuery);
 			System.out.println("Delete: " + resultDelete);
 			
 		} catch (Exception e) {

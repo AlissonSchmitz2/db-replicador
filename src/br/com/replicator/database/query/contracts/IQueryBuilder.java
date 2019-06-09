@@ -1,5 +1,7 @@
 package br.com.replicator.database.query.contracts;
 
+import java.util.List;
+
 import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public interface IQueryBuilder {
@@ -11,5 +13,7 @@ public interface IQueryBuilder {
 	
 	public IQuery find(String tableName, String identifierColumn, String operator, String identifierValue, String columns) throws InvalidQueryAttributesException;
 	
+	public IQuery findNotIn(String tableName, String identifierColumn, List<String> identifierValues, String columns) throws InvalidQueryAttributesException
+;
 	public IQuery select(String tableName, String columns) throws InvalidQueryAttributesException;
 }
