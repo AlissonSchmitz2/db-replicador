@@ -15,8 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import br.com.dbreplicador.controller.ReplicatorController;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.view.contracts.IReplicationInfoControl;
 
 import javax.swing.JProgressBar;
 import javax.swing.JPanel;
@@ -24,7 +24,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import java.awt.Color;
 
-public class ReplicationWindow extends AbstractWindowFrame implements ReplicatorController {
+public class ReplicationWindow extends AbstractWindowFrame implements IReplicationInfoControl {
 	private static final long serialVersionUID = -4888464460307835343L;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
@@ -38,7 +38,7 @@ public class ReplicationWindow extends AbstractWindowFrame implements Replicator
 	private JPanel panelConnections, paneLog;
 	
 	//Referência da janela
-	private ReplicationExecute replicatorExecute = null;
+	private ReplicationExecutor replicationExecutor = null;
 
 	public ReplicationWindow(JDesktopPane desktop) {
 		super("Replicar", 625, 345, desktop);
@@ -50,30 +50,27 @@ public class ReplicationWindow extends AbstractWindowFrame implements Replicator
 		// Por padrão campos são desabilitados ao iniciar
 		disableComponents(formFields);
 		
+		//Executor da replicação
+		replicationExecutor = new ReplicationExecutor(ReplicationWindow.this);
+		
 		setButtonsActions();
 	}
 
 	private void setButtonsActions() {
-
 		btnReplicate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (btnReplicate.getText().equals("REPLICAR")) {
+				if (!replicationExecutor.isRunning()) {
 					btnReplicate.setText("PAUSAR");
-
-					if(replicatorExecute == null) {
-					replicatorExecute = new ReplicationExecute(ReplicationWindow.this);
-					}
 					
-					replicatorExecute.ReplicacaoIniciar();
-
+					replicationExecutor.start();
 				} else {
 					btnReplicate.setText("REPLICAR");
-					progressBarIndeterminate.setIndeterminate(false);
+					
+					replicationExecutor.pause();
 				}
 			}
 		});
-
 	}
 
 	private void createComponents() {
@@ -232,38 +229,38 @@ public class ReplicationWindow extends AbstractWindowFrame implements Replicator
 	}
 
 	@Override
-	public void showDirection(String directionOrigin, String directionDestiny) {
+	public void setCurrentDirections(String directionOrigin, String directionDestiny) {
 		txfOrigin.setText(directionOrigin);
 		txfDestiny.setText(directionDestiny);
 	}
 
 	@Override
-	public void showTable(String table) {
+	public void setCurrentTable(String table) {
 		txfTable.setText(table);
 	}
 
 	@Override
-	public void showCountTables(int count) {
+	public void setTotalOfTables(int count) {
 		txfTables.setText(String.valueOf(count));
 	}
 
 	@Override
-	public void showErrors(int count) {
+	public void setTotalOfErrors(int count) {
 		txfError.setText(String.valueOf(count));
 	}
 
 	@Override
-	public void showProcess(String process) {
+	public void setCurrentProcess(String process) {
 		txfProcess.setText(process);
 	}
 
 	@Override
-	public void progressValue(int value) {
+	public void setProgressBarValue(int value) {
 		progressBarValue.setValue(value);
 	}
 
 	@Override
-	public void startProgressIndeterminate(boolean start) {
+	public void setProgressIndeterminate(boolean start) {
 		progressBarIndeterminate.setIndeterminate(start);
 	}
 }
