@@ -59,7 +59,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	private ReplicationModel replicationModel;
 	private ReplicationDAO replicationDAO;
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
 	
 
 	public ConnectionFormWindow(JDesktopPane desktop) {

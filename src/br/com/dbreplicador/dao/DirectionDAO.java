@@ -92,31 +92,30 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		
 		pst.clearParameters();
 		
-		setParam(pst, 1, model.getDirectionCode());
-		setParam(pst, 2, model.getCurrentDate());
-		setParam(pst, 3, model.getUser());
-		setParam(pst, 4, model.getProcess());
-		setParam(pst, 5, model.getOriginDatabase());
-		setParam(pst, 6, model.getOriginUser());
-		setParam(pst, 7, model.getOriginPassword());
-		setParam(pst, 8, model.getDestinationDatabase());
-		setParam(pst, 9, model.getDestinationUser());
-		setParam(pst, 10, model.getDestinationPassword());
-		setParam(pst, 11, model.isAutomaticManual());
-		setParam(pst, 12, model.getYearPeriod());
-		setParam(pst, 13, model.getMounthPeriod());
-		setParam(pst, 14, model.getDayPeriod());
-		setParam(pst, 15, model.getHourPeriod());
-		setParam(pst, 16, model.getMinutePeriod());
-		setParam(pst, 17, model.getSecundPeriod());
-		setParam(pst, 18, model.getExecuteDayOf());
-		setParam(pst, 19, model.getExecuteDayTo());
-		setParam(pst, 20, model.getExecuteHourOf());
-		setParam(pst, 21, model.getExecuteHourTo());
-		setParam(pst, 22, model.getMaxDuration());
-		setParam(pst, 23, model.getExecuteLast());
-		setParam(pst, 24, model.getRetention());
-		setParam(pst, 25, model.isEnabled());
+		setParam(pst, 1, model.getCurrentDate());
+		setParam(pst, 2, model.getUser());
+		setParam(pst, 3, model.getProcess());
+		setParam(pst, 4, model.getOriginDatabase());
+		setParam(pst, 5, model.getOriginUser());
+		setParam(pst, 6, model.getOriginPassword());
+		setParam(pst, 7, model.getDestinationDatabase());
+		setParam(pst, 8, model.getDestinationUser());
+		setParam(pst, 9, model.getDestinationPassword());
+		setParam(pst, 10, model.isAutomaticManual());
+		setParam(pst, 11, model.getYearPeriod());
+		setParam(pst, 12, model.getMounthPeriod());
+		setParam(pst, 13, model.getDayPeriod());
+		setParam(pst, 14, model.getHourPeriod());
+		setParam(pst, 15, model.getMinutePeriod());
+		setParam(pst, 16, model.getSecondPeriod());
+		setParam(pst, 17, model.getExecuteDayOf());
+		setParam(pst, 18, model.getExecuteDayTo());
+		setParam(pst, 19, model.getExecuteHourOf());
+		setParam(pst, 20, model.getExecuteHourTo());
+		setParam(pst, 21, model.getMaxDuration());
+		setParam(pst, 22, model.getExecuteLast());
+		setParam(pst, 23, model.getRetention());
+		setParam(pst, 24, model.isEnabled());
 		
 		int result = pst.executeUpdate();
 		
@@ -158,7 +157,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		setParam(pst, 13, model.getDayPeriod());
 		setParam(pst, 14, model.getHourPeriod());
 		setParam(pst, 15, model.getMinutePeriod());
-		setParam(pst, 16, model.getSecundPeriod());
+		setParam(pst, 16, model.getSecondPeriod());
 		setParam(pst, 17, model.getExecuteDayOf());
 		setParam(pst, 18, model.getExecuteDayTo());
 		setParam(pst, 19, model.getExecuteHourOf());
@@ -251,7 +250,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		model.setDirectionCode(rst.getInt("codigo_direcao"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
-		model.setProcess(rst.getString("process"));
+		model.setProcess(rst.getString("processo"));
 		model.setOriginDatabase(rst.getString("database_origem"));
 		model.setOriginUser(rst.getString("usuario_origem"));
 		model.setOriginPassword(rst.getString("senha_origem"));
@@ -260,11 +259,11 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		model.setDestinationPassword(rst.getString("senha_destino"));
 		model.setAutomaticManual(rst.getBoolean("automatico_manual"));
 		model.setYearPeriod(rst.getInt("periodo_ano"));
-		model.setMounthPeriod(rst.getInt("periodo_mes"));
+		model.setMonthPeriod(rst.getInt("periodo_mes"));
 		model.setDayPeriod(rst.getInt("periodo_dia"));
 		model.setHourPeriod(rst.getInt("periodo_hora"));
 		model.setMinutePeriod(rst.getInt("periodo_minuto"));
-		model.setSecundPeriod(rst.getInt("periodo_segundo"));
+		model.setSecondPeriod(rst.getInt("periodo_segundo"));
 		model.setExecuteDayOf(rst.getInt("executar_dia_de"));
 		model.setExecuteDayTo(rst.getInt("executar_dia_ate"));
 		model.setExecuteHourOf(rst.getInt("executar_hora_de"));

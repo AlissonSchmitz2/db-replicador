@@ -47,7 +47,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
 
 	public ProcessFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Processos", 455, 270, desktop);

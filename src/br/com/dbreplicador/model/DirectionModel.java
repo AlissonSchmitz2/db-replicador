@@ -1,6 +1,6 @@
 package br.com.dbreplicador.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Timestamp;
 
 public class DirectionModel extends AbstractModel{
@@ -209,7 +209,7 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @param mounthPeriod
 	 */
-	public void setMounthPeriod(int mounthPeriod) {
+	public void setMonthPeriod(int mounthPeriod) {
 		this.periodo_mes = mounthPeriod;
 	}
 	
@@ -258,14 +258,14 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @return the periodo_segundo
 	 */
-	public int getSecundPeriod() {
+	public int getSecondPeriod() {
 		return periodo_segundo;
 	}
 	
 	/**
 	 * @param secundPeriod
 	 */
-	public void setSecundPeriod(int secundPeriod) {
+	public void setSecondPeriod(int secundPeriod) {
 		this.periodo_segundo = secundPeriod;
 	}
 	

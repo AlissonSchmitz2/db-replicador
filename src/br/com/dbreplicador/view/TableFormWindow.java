@@ -3,10 +3,17 @@ package br.com.dbreplicador.view;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.KeyEventPostProcessor;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -21,14 +28,20 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.event.InternalFrameEvent;
 
+import br.com.dbreplicador.dao.ProcessDAO;
+import br.com.dbreplicador.dao.TableDAO;
+import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.model.TableModel;
 import br.com.dbreplicador.util.InternalFrameListener;
 
-public class TableFormWindow extends AbstractWindowFrame {
+public class TableFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor{
 	private static final long serialVersionUID = 3242592994592829458L;
 	private JLabel lblProcess, lblOrder;
 	private JTextField txfProcess;
+	private ListProcessFormWindow searchProcessWindow;
 	
 	private ListTableFormWindow searchListTableWindow;
 
@@ -37,13 +50,16 @@ public class TableFormWindow extends AbstractWindowFrame {
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey;
+	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey, cbxColumnType;
 	private JLabel lblTableOrigin, lblOperation, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnType;
 	private JCheckBox cbxEnable, cbxIgnoreError;
-	private JComboBox<String> cbxColumnType;
 	private JDesktopPane desktop;
-	private Connection CONNECTION;
+	
+	// TODO: Conexão provisória (Refatorar)
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
+	
 	private TableModel tableModel;
+	private TableDAO tableDAO;
 
 	public TableFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Tabelas", 470, 420, desktop);
@@ -53,18 +69,53 @@ public class TableFormWindow extends AbstractWindowFrame {
 		this.desktop = desktop;
 		
 		createComponents();
+		
+		try {
+			tableDAO = new TableDAO(CONNECTION);
+		} catch (Exception error) {
+			error.printStackTrace();
+		}
 
 		// Por padrão campos são desabilitados ao iniciar
 		disableComponents(formFields);
 
 		setButtonsActions();
+		// Key events
+		registerKeyEvent();
+	}
+	
+	private void registerKeyEvent() {
+		// Register key event post processor.
+		TableFormWindow windowInstance = this;
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(windowInstance);
+
+		// Unregister key event
+		addInternalFrameListener(new InternalFrameListener() {
+			@Override
+			public void internalFrameClosed(InternalFrameEvent e) {
+				KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventPostProcessor(windowInstance);
+			}
+		});
+	}
+	
+	@Override
+	public boolean postProcessKeyEvent(KeyEvent ke) {
+		// Abre tela seleção cidade ao clicar F9
+		if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_F9) {
+			if (btnSave.isEnabled()) {
+				openSearchProcess();
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void setButtonsActions() {
 		btnSearch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Buscar
 				if (searchListTableWindow == null) {
 					searchListTableWindow = new ListTableFormWindow(desktop, CONNECTION);
 
@@ -89,7 +140,7 @@ public class TableFormWindow extends AbstractWindowFrame {
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-//								cbxColumnType.setSelectedIndex();
+  								cbxColumnType.setText(tableModel.getTypeColumn());;
 								
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
@@ -116,8 +167,17 @@ public class TableFormWindow extends AbstractWindowFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				// Seta form para modo Cadastro
+				setFormMode(CREATE_MODE);
+				
 				// Ativa campos
 				enableComponents(formFields);
+				
+				// Limpar dados dos campos
+				//clearFormFields(formFields);
+				
+				// Cria nova entidade model
+				tableModel = new TableModel();
 
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -127,7 +187,38 @@ public class TableFormWindow extends AbstractWindowFrame {
 		btnRemove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Acão Remover
+				try {
+					if(isEditing()) {
+						if(tableDAO.delete(tableModel)) {
+							bubbleSuccess("Tabela excluída com sucesso");
+							
+							// Seta form para modo Cadastro
+							setFormMode(CREATE_MODE);
+
+							// Desativa campos
+							disableComponents(formFields);
+
+							// Limpar dados dos campos
+							clearFormFields(formFields);
+							
+							// Cria nova entidade model
+							tableModel = new TableModel();
+							
+							// Desativa botão salvar
+							btnSave.setEnabled(false);
+
+							// Desativa botão remover
+							btnRemove.setEnabled(false);
+							
+							txfProcess.setText("Teclar F9");
+						} else {
+							bubbleError("Houve um erro ao tentar excluir a tabela");
+						}
+					}
+				} catch (Exception error) {
+					bubbleError(error.getMessage());
+					error.printStackTrace();
+				}
 			}
 		});
 
@@ -138,9 +229,81 @@ public class TableFormWindow extends AbstractWindowFrame {
 					return;
 				}
 				
-				// TODO Ação Salvar
+				tableModel.setCurrentDate(getDateTime(new Date()));
+				tableModel.setDestinationTable(txfTableDestiny.getText());
+				tableModel.setEnable(cbxEnable.isSelected());
+				tableModel.setErrorIgnore(cbxIgnoreError.isSelected());
+				tableModel.setKeyColumn(txfColumnKey.getText());
+				tableModel.setMaximumLines(Integer.parseInt(txfSaveAfter.getText()));
+				tableModel.setOperation(true);//TODO:Verificar esse campo
+				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
+				tableModel.setOriginTable(txfTableOrigin.getText());
+				tableModel.setProcess(txfProcess.getText());
+				tableModel.setTypeColumn(cbxColumnType.getText());
+				tableModel.setUser("admin");
+				
+				try {
+					// EDIÇÃO CADASTRO
+					if(isEditing()) {						
+						if(tableDAO.update(tableModel)) {
+							bubbleSuccess("Tabela editada com sucesso");
+						} else {
+							bubbleError("Houve um erro ao editar a tabela!");
+						}
+					} 
+					// NOVO CADASTRO
+					else {
+						// Insere a tabela no banco de dados
+						TableModel insertedModel = tableDAO.insert(tableModel);
+						
+						if(insertedModel != null) {
+							// Atribui o model recém criado ao model
+							tableModel = insertedModel;
+
+							// Seta form para edição
+							setFormMode(UPDATE_MODE);
+
+							// Ativa botão Remover
+							btnRemove.setEnabled(true);
+							
+							bubbleSuccess("Tabelas cadastradas com sucesso");
+						} else {
+							bubbleError("Houve um erro ao cadastrar as tabelas!");
+						}
+					}
+				} catch (Exception error) {
+					error.printStackTrace();
+					bubbleError(error.getMessage());
+				}
 			}
 		});
+	}
+		
+	private Timestamp getDateTime(Date date) {
+		long dataTime = date.getTime();
+		Timestamp ts = new Timestamp(dataTime);
+		return ts;
+	}
+	
+	private void openSearchProcess() {
+		if (searchProcessWindow == null) {
+			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+
+			searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
+				@Override
+				public void internalFrameClosed(InternalFrameEvent e) {
+					ProcessModel selectedModel = ((ListProcessFormWindow) e.getInternalFrame()).getSelectedModel();
+
+					if (selectedModel != null) {
+						// Atribui cidade para o model
+						txfProcess.setText(selectedModel.getProcess());
+					}
+
+					// Reseta janela
+					searchProcessWindow = null;
+				}
+			});
+		}
 	}
 
 	private void createComponents() {
@@ -194,7 +357,7 @@ public class TableFormWindow extends AbstractWindowFrame {
 		formFields.add(cbxIgnoreError);
 		txfColumnKey = new JTextField();
 		formFields.add(txfColumnKey);
-		cbxColumnType = new JComboBox<String>();
+		cbxColumnType = new JTextField();
 		formFields.add(cbxColumnType);
 
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -287,6 +450,17 @@ public class TableFormWindow extends AbstractWindowFrame {
 										GroupLayout.PREFERRED_SIZE))
 						.addGap(113)));
 		getContentPane().setLayout(groupLayout);
+		
+		txfProcess.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				openSearchProcess();
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+			}
+		});
 	}
 
 	private boolean validateFields() {
@@ -311,7 +485,7 @@ public class TableFormWindow extends AbstractWindowFrame {
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
 			bubbleWarning("Informe a chave da coluna!");
 			return false;
-		} else if (cbxColumnType.getSelectedItem().equals("--- Selecione ---") || cbxColumnType.getSelectedItem() == null) {
+		} else if (cbxColumnType.getText().isEmpty() || cbxColumnType.getText() == null) {
 			bubbleWarning("Selecione o tipo da coluna!");
 			return false;
 		}

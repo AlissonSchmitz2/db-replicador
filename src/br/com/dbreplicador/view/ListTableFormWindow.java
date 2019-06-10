@@ -19,6 +19,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.dao.TableDAO;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.TableModel;
@@ -43,6 +44,12 @@ public class ListTableFormWindow extends AbstractGridWindow {
 		
 		createComponents();
 
+		try {
+			tableDAO = new TableDAO(CONNECTION);
+		} catch (SQLException error) {
+			error.printStackTrace();
+		}
+		
 		txfSearch.requestFocusInWindow();
 
 		setButtonsActions();
