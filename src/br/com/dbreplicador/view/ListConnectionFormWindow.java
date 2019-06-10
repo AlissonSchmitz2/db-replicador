@@ -21,14 +21,14 @@ import javax.swing.GroupLayout.Alignment;
 
 import br.com.dbreplicador.dao.ReplicationDAO;
 import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.ReplicationModel;
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.view.tableModel.ConnectionTableModel;
 
 public class ListConnectionFormWindow extends AbstractGridWindow {
 	private static final long serialVersionUID = -959168673441667719L;
 	
 	private ReplicationDAO replicationDAO;
-	private ReplicationModel replicationModel;
+	private ConnectionModel replicationModel;
 	
 	private JButton btnSearch;
 	private JTextField txfSearch;
@@ -54,7 +54,7 @@ public class ListConnectionFormWindow extends AbstractGridWindow {
 		setButtonsActions();
 	}
 	
-	public ReplicationModel getSelectedModel() {
+	public ConnectionModel getSelectedModel() {
 		return replicationModel;
 	}
 

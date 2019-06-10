@@ -1,20 +1,40 @@
 package br.com.dbreplicador.view;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.model.TableModel;
+import br.com.dbreplicador.pojos.ReplicationQueueItem;
+import br.com.dbreplicador.view.contracts.IReplicationExecutor;
 import br.com.dbreplicador.view.contracts.IReplicationInfoControl;
+import br.com.replicator.Replicator;
+import br.com.replicator.contracts.IReplicator;
+import br.com.replicator.contracts.IReplicatorProvider;
+import br.com.replicator.database.ConnectionInfo;
+import br.com.replicator.database.query.contracts.IQuery;
+import br.com.replicator.enums.SupportedTypes;
+import br.com.replicator.exceptions.InvalidDatabaseTypeException;
+import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
-public class ReplicationExecutor {
-	private static int EXECUTOR_TIMEOUT = 1000;
+public class ReplicationExecutor implements IReplicationExecutor {
+	private static int EXECUTOR_TIMEOUT = 50;
 	
 	private IReplicationInfoControl window;
+	
+	private Timestamp toDate;
 	
 	private volatile Thread executionThread;
 	private boolean threadSuspended = true;
 	
-	private AbstractMap<Integer, DirectionModel> queue = new HashMap<Integer, DirectionModel>();
+	private AbstractMap<Integer, ReplicationQueueItem> queue = new HashMap<Integer, ReplicationQueueItem>();
+	private AbstractMap<String, TableModel> processedTables = new HashMap<String, TableModel>();
+	private Integer currentQueueIndex = 0;
+	private Integer totalErrors = 0;
 	
 	public ReplicationExecutor(IReplicationInfoControl window) {
 		//Guarda a referência da tela de replicação
@@ -25,20 +45,26 @@ public class ReplicationExecutor {
 		// Instancia os DAO de controle.
 	}
 
-	public void start() {
+	public void start(Timestamp fromDate) {
 		//Se a thread for nula, um novo processo é inicializado
 		//Ou seja, o processo de replicação é iniciado do zero
-		if (executionThread == null) {
-			initializeProcessing();
-			
-			executionThread.start();
-		}
+		initializeProcessing(fromDate);
 		
-		//Caso o processo já exista, o mesmo é retirado da suspensão
+		//O processo é retirado da suspensão
 		threadSuspended = false;
 		
 		//Ativa indicador de processamento
 		window.setProgressIndeterminate(true);
+	}
+	
+	public void resume() {
+		if (executionThread != null) {
+			//Caso o processo exista, o mesmo é retirado da suspensão
+			threadSuspended = false;
+			
+			//Ativa indicador de processamento
+			window.setProgressIndeterminate(true);
+		}
 	}
 	
 	public void pause() {
@@ -71,46 +97,119 @@ public class ReplicationExecutor {
 		return executionThread.isAlive() && !threadSuspended;
 	}
 	
-	private void initializeProcessing() {
-		//TODO: Iterar para recuperar os registros a serem replicados
+	public boolean isClosed() {
+		return executionThread == null;
+	}
+	
+	private void initializeProcessing(Timestamp toDate) {
+		resetStatistics();
 		
-		// Conexão: host, porta, banco e tipo
+		this.toDate = toDate;
 		
-				// Processo: processo, data de, ignorar erro e habilitado
-				
-				// Direção: (processo), duração, retenção, automatico, habilitado
-				   // Origem: (Conexão: database), usuario e senha
-				   // Destino: (Conexão: database), usuario e senha
-				   // Período: Data e hora
-				
-				// Tabela: processo, ordem, tabela origem, operacao, tabela destino, salvar após, ignorar erro, habilitado, coluna chave
-				
-				//Direção
-				//a -> b (Contém os dados para a conexão)
-				//Lista de tabelas para replicação
-				/*
-				[ 'Direção 1' =>
-					'tabelas' => [
-					    'tabela 1',
-					    'tabela 2',
-					    'tabela 3'
-					]
-				],
-				
-				[ 'Direção 2' =>
-					'tabelas' => [
-					    'tabela 1',
-					    'tabela 2',
-					    'tabela 3'
-					]
-				]
-				
-				*/
+		//---------------- Para ser refatorado ----------------------//
 		
+		//TODO: Recuperar conexões para processamento através do DAO
+		//Nota: Ao criar o DAO, levar em consideração somente os ativos
+		ConnectionModel originConnection = new ConnectionModel();
+		originConnection.setDatebaseType("PostgreSQL");
+		originConnection.setAddress("localhost");
+		originConnection.setDatabase("master");
+		originConnection.setPort(5432);
+		
+		ConnectionModel destinationConnection = new ConnectionModel();
+		destinationConnection.setDatebaseType("PostgreSQL");
+		destinationConnection.setAddress("localhost");
+		destinationConnection.setDatabase("nocaute2");
+		destinationConnection.setPort(5432);
+
+		DirectionModel direction1 = new DirectionModel();
+		direction1.setOriginConnectionModel(originConnection);
+		direction1.setOriginUser("admin");
+		direction1.setOriginPassword("admin");
+		
+		direction1.setDestinationConnectionModel(destinationConnection);
+		direction1.setDestinationUser("admin");
+		direction1.setDestinationPassword("admin");
+		
+		//Tables
+		TableModel cityTable = new TableModel();
+		cityTable.setOrder(1);
+		cityTable.setOriginTable("cidades");
+		cityTable.setDestinationTable("cidades");
+		cityTable.setCurrentDate(new Timestamp(0));//TODO: deve vir do banco de dados
+		//TODO: setColumnControl,
+		//TODO: setUniqueKey
+		cityTable.setMaximumLines(50);
+		cityTable.setErrorIgnore(true);
+		cityTable.setEnable(true);
+		
+		AbstractMap<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
+		tables.put(1, cityTable);
+		direction1.setTables(tables);
+		//End Tables
+		
+		AbstractMap<Integer, DirectionModel> daoReturn = new HashMap<Integer, DirectionModel>();
+		
+		//Adiciona a conexão a fila para processamento
+		daoReturn.put(1, direction1);
+		
+		//---------------- final - refatoração ----------------------//
+		
+		//Apartir das conexões retornadas do banco de dados, gera a fila de queries para processamento
+		generateQueue(daoReturn);
+
+		//Cria a thread responsável pelo processamento
 		createThread();
 	}
 	
+	private void generateQueue(AbstractMap<Integer, DirectionModel> directions) {
+		for (DirectionModel direction : directions.values()) {
+			ConnectionInfo originConnInfo = new ConnectionInfo(
+				getDatabaseType(direction.getOriginConnectionModel().getDatebaseType()),
+				direction.getOriginConnectionModel().getAddress(),
+				direction.getOriginConnectionModel().getPort(),
+				direction.getOriginConnectionModel().getDatabase(),
+				direction.getOriginUser(),
+				direction.getOriginPassword()
+			);
+			ConnectionInfo destinationConnInfo = new ConnectionInfo(
+				getDatabaseType(direction.getDestinationConnectionModel().getDatebaseType()),
+				direction.getDestinationConnectionModel().getAddress(),
+				direction.getDestinationConnectionModel().getPort(),
+				direction.getDestinationConnectionModel().getDatabase(),
+				direction.getDestinationUser(),
+				direction.getDestinationPassword()
+			);
+			
+			try {
+				IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);
+				
+				//Desabilita auto commit da conexão de destino
+				replicator.getDestinationProvider().getConn().setAutoCommit(false);
+					
+				for (TableModel table : direction.getTables().values()) {
+					List<IQuery> queries = replicator.getQueriesForReplication(
+						table.getOriginTable(),
+						table.getDestinationTable(),
+						"id_cidade",//TODO
+						"ultima_atualizacao",//TODO
+						table.getCurrentDate()
+					);
+					
+					//Adiciona as queries a fila
+					queries.forEach(query -> {
+						queue.put((queue.size() + 1), new ReplicationQueueItem(query, replicator.getDestinationProvider(), direction, table));
+					});
+				}
+			} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void createThread() {
+		System.out.println("Create");
+		
 		executionThread = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -118,26 +217,87 @@ public class ReplicationExecutor {
 					
 					while (!Thread.currentThread().isInterrupted() && executionThread == thisThread) {
 						System.out.println("...");
-						
 						if (!threadSuspended) {
-							System.out.println("Runninnnnnnnnnnnnnnng!!!");
+							currentQueueIndex = currentQueueIndex == 0 ? 1 : currentQueueIndex;
 							
-							window.setProgressBarValue(66);
-							// TODO: Realizar replicacao
+							//Se o index controlador for maior que tamanho da fila, o processamento é considerado finalizado
+							if (currentQueueIndex > queue.size()) {
+								System.out.println("Finished");
+								
+								//Recupera o último item da fila
+								ReplicationQueueItem lastItem = queue.get(queue.size());
+								
+								//Comita dados pendentes
+								if (lastItem != null) {
+									lastItem.getProvider().getConn().commit();
+								}
+
+								//Encerra a thread
+								threadSuspended = true;
+								executionThread = null;
+								
+								//Desativa indicador de processamento
+								window.setProgressIndeterminate(false);
+								
+								//Reseta controles
+								currentQueueIndex = 0;
+								totalErrors = 0;
+								processedTables.clear();
+								
+								//Salva o log do processo concluído
+								//TODO: deve-se levar em consideração toDate
+								
+								//Informa subscribers que o processo acabou
+								//TODO
+								
+								continue;
+							}
 							
-							//TESTE
-							/*window.showDirection("master", "masterCopy");
-							window.showProcess("Manual");
-							window.showTable("Alunos");
-							window.showCountTables(4);
-							window.showErrors(1);
-							window.startProgressIndeterminate(true);
-							window.progressValue(i+=25);
-							if(i == 100) {
-								i = 0;
-								window.showCountTables(3);
-							}*/
-							////
+							//Usa o primeiro elemento da sequência para descobrir a quantidade de itens a serem salvos
+							Integer indexLimit = currentQueueIndex + queue.get(currentQueueIndex).getTableModel().getMaximumLines();
+							indexLimit = indexLimit > queue.size() ? queue.size() : indexLimit;
+							
+							IReplicatorProvider provider = null;
+							
+							for (int i = currentQueueIndex; i <= indexLimit; i++) {
+								ReplicationQueueItem currentItem = queue.get(currentQueueIndex);
+								
+								processedTables.put(currentItem.getTableModel().getOriginTable(), currentItem.getTableModel());
+								
+								//Seta direções
+								window.setCurrentDirections(
+									currentItem.getDirectionModel().getOriginConnectionModel().getDatabase(),
+									currentItem.getDirectionModel().getDestinationConnectionModel().getDatabase()
+								);
+								window.setCurrentProcess("anything"); //TODO
+								window.setCurrentTable(currentItem.getTableModel().getOriginTable());
+								
+								if (provider != null && currentItem.getProvider() != provider) {
+									//Antes da troca do provider, comita valores não salvos
+									provider.getConn().commit();
+								}
+								
+								provider = queue.get(currentQueueIndex).getProvider();
+								
+								Integer result = provider.getProcessor()
+										.executeUpdate(queue.get(i).getQuery(), "id_cidade");
+								//TODO: Pegar do item ao invés do valor chumbado
+
+								if (result > 0) {
+									Integer progressValue = (currentQueueIndex * 100) / queue.size();
+									window.setProgressBarValue(progressValue);
+								} else {
+									totalErrors++;
+									
+									window.setTotalOfTables(totalErrors);
+								}
+								
+								currentQueueIndex++;
+							}
+							
+							window.setTotalOfTables(processedTables.size());
+
+							provider.getConn().commit();
 						}
 						
 						try {
@@ -151,6 +311,19 @@ public class ReplicationExecutor {
 				}
 			}
 		});
+		
+		executionThread.start();
+	}
+	
+	private SupportedTypes getDatabaseType(String databaseType) {
+		switch(databaseType) {
+			case "PostgreSQL":
+			return SupportedTypes.POSTGRESQL;
+			case "MySQL":
+			return SupportedTypes.MYSQL;
+		}
+		
+		return null;
 	}
 	
 	private void resetStatistics() {

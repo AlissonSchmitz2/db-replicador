@@ -1,6 +1,8 @@
 package br.com.dbreplicador.model;
 
+import java.util.AbstractMap;
 import java.util.Date;
+import java.util.HashMap;
 import java.sql.Timestamp;
 
 public class DirectionModel extends AbstractModel{
@@ -30,6 +32,13 @@ public class DirectionModel extends AbstractModel{
 	private Date execucao_ultima;
 	private int retencao;					
 	private boolean habilitado;
+	
+	/*
+	 * Relacionamentos
+	 */
+	private ConnectionModel originConnectionModel;
+	private ConnectionModel destinationConnectionModel;
+	private AbstractMap<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
 	
 	/**
 	 * @return codigo_direcao
@@ -102,6 +111,20 @@ public class DirectionModel extends AbstractModel{
 	}
 	
 	/**
+	 * @return originConnectionModel
+	 */
+	public ConnectionModel getOriginConnectionModel() {
+		return originConnectionModel;
+	}
+	
+	/**
+	 * @param connectionModel
+	 */
+	public void setOriginConnectionModel(ConnectionModel connectionModel) {
+		this.originConnectionModel = connectionModel;
+	}
+	
+	/**
 	 * @return the usuario_origem
 	 */
 	public String getOriginUser() {
@@ -141,6 +164,20 @@ public class DirectionModel extends AbstractModel{
 	 */
 	public void setDestinationDatabase(String destinationDatabase) {
 		this.database_destino = destinationDatabase;
+	}
+	
+	/**
+	 * @return destinationConnectionModel
+	 */
+	public ConnectionModel getDestinationConnectionModel() {
+		return destinationConnectionModel;
+	}
+	
+	/**
+	 * @param connectionModel
+	 */
+	public void setDestinationConnectionModel(ConnectionModel connectionModel) {
+		this.destinationConnectionModel = connectionModel;
 	}
 	
 	/**
@@ -381,5 +418,17 @@ public class DirectionModel extends AbstractModel{
 		this.habilitado = enable;
 	}
 	
+	/**
+	 * @return tables
+	 */
+	public AbstractMap<Integer, TableModel> getTables() {
+		return tables;
+	}
 	
+	/**
+	 * @param tables 
+	 */
+	public void setTables(AbstractMap<Integer, TableModel> tables) {
+		this.tables = tables;
+	}
 }

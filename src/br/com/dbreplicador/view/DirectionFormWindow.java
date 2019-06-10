@@ -33,7 +33,7 @@ import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
-import br.com.dbreplicador.model.ReplicationModel;
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.util.InternalFrameListener;
 
 public class DirectionFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor{
@@ -150,7 +150,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
+					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model
@@ -171,7 +171,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
+					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model

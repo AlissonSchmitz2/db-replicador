@@ -8,7 +8,8 @@ import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public interface IReplicator {
 	public List<IQuery> getQueriesForReplication(
-			String tableName,
+			String originTableName,
+			String destinationTableName,
 			String tableUniqueKey,
 			String replicationColumnControl,
 			Object replicationControlValue

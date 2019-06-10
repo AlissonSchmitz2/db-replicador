@@ -32,7 +32,7 @@ public class ReplicatorTest {
 
 			IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);
 
-			List<IQuery> queries = replicator.getQueriesForReplication("cidades", "id_cidade", "ultima_atualizacao", timestamp);
+			List<IQuery> queries = replicator.getQueriesForReplication("cidades", "cidades", "id_cidade", "ultima_atualizacao", timestamp);
 			
 			IReplicatorProvider provider = replicator.getDestinationProvider();
 			

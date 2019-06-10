@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.dbreplicador.dao.contracts.ISearchable;
-import br.com.dbreplicador.model.ReplicationModel;
+import br.com.dbreplicador.model.ConnectionModel;
 
-public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements ISearchable<ReplicationModel> {
+public class ReplicationDAO extends AbstractCrudDAO<ConnectionModel> implements ISearchable<ConnectionModel> {
 	private static final String TABLE_NAME = "tb_replicacao";
 
 	private String columnId = "codigo_replicacao";
@@ -54,7 +54,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 
 	@Override
-	public ReplicationModel insert(ReplicationModel model) throws SQLException {
+	public ConnectionModel insert(ConnectionModel model) throws SQLException {
 		String query = getInsertQuery(TABLE_NAME, columnsToInsert, defaultValuesToInsert);
 
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -64,7 +64,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 		setParam(pst, 2, model.getUser());
 		setParam(pst, 3, model.getName());
 		setParam(pst, 4, model.getAddress());
-		setParam(pst, 5, model.getDoor());
+		setParam(pst, 5, model.getPort());
 		setParam(pst, 6, model.getDatabase());
 		setParam(pst, 7, model.getDatebaseType());
 		setParam(pst, 8, model.getUrl());
@@ -88,7 +88,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 
 	@Override
-	public boolean update(ReplicationModel model) throws SQLException {
+	public boolean update(ConnectionModel model) throws SQLException {
 		String query = getUpdateQuery(TABLE_NAME, columnId, columnsToUpdate);
 
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -97,7 +97,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 		setParam(pst, 2, model.getUser());
 		setParam(pst, 3, model.getName());
 		setParam(pst, 4, model.getAddress());
-		setParam(pst, 5, model.getDoor());
+		setParam(pst, 5, model.getPort());
 		setParam(pst, 6, model.getDatabase());
 		setParam(pst, 7, model.getDatebaseType());
 		setParam(pst, 8, model.getUrl());
@@ -116,7 +116,7 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 
 	@Override
-	public boolean delete(ReplicationModel model) throws SQLException {
+	public boolean delete(ConnectionModel model) throws SQLException {
 		return deleteById(model.getReplicationCode());
 	}
 
@@ -138,8 +138,8 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 	
 	@Override
-	public ReplicationModel findById(Integer id) throws SQLException {
-		ReplicationModel model = null;
+	public ConnectionModel findById(Integer id) throws SQLException {
+		ConnectionModel model = null;
 
 		String query = getFindByQuery(TABLE_NAME, columnId, "*", defaultOrderBy);
 		PreparedStatement pst = connection.prepareStatement(query);
@@ -155,17 +155,17 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 	
 	@Override
-	public List<ReplicationModel> selectAll() throws SQLException {
+	public List<ConnectionModel> selectAll() throws SQLException {
 		String query = getSelectAllQuery(TABLE_NAME, "*", defaultOrderBy);
 
 		PreparedStatement pst = connection.prepareStatement(query);
 
-		List<ReplicationModel> replicationsList = new ArrayList<ReplicationModel>();
+		List<ConnectionModel> replicationsList = new ArrayList<ConnectionModel>();
 
 		ResultSet rst = pst.executeQuery();
 
 		while (rst.next()) {
-			ReplicationModel model = createModelFromResultSet(rst);
+			ConnectionModel model = createModelFromResultSet(rst);
 
 			replicationsList.add(model);
 		}
@@ -177,18 +177,18 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
 	 * @param rst
-	 * @return ReplicationModel
+	 * @return ConnectionModel
 	 * @throws SQLException
 	 */
-	private ReplicationModel createModelFromResultSet(ResultSet rst) throws SQLException {
-		ReplicationModel model = new ReplicationModel();
+	private ConnectionModel createModelFromResultSet(ResultSet rst) throws SQLException {
+		ConnectionModel model = new ConnectionModel();
 
 		model.setReplicationCode(rst.getInt("codigo_replicacao"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
 		model.setName(rst.getString("nome"));
 		model.setAddress(rst.getString("endereco"));
-		model.setDoor(rst.getInt("porta"));
+		model.setPort(rst.getInt("porta"));
 		model.setDatabase(rst.getString("database"));
 		model.setDatebaseType(rst.getString("tipo_banco"));
 		model.setUrl(rst.getString("url"));
@@ -197,19 +197,19 @@ public class ReplicationDAO extends AbstractCrudDAO<ReplicationModel> implements
 	}
 
 	@Override
-	public List<ReplicationModel> search(String word) throws SQLException {
+	public List<ConnectionModel> search(String word) throws SQLException {
 		String query = "SELECT * FROM " + TABLE_NAME + " WHERE nome ILIKE ? OR database ILIKE ? ORDER BY " + defaultOrderBy;
 		PreparedStatement pst = connection.prepareStatement(query);
 
 		setParam(pst, 1, "%" + word + "%");
 		setParam(pst, 2, "%" + word + "%");
 
-		List<ReplicationModel> replicationList = new ArrayList<ReplicationModel>();
+		List<ConnectionModel> replicationList = new ArrayList<ConnectionModel>();
 
 		ResultSet rst = pst.executeQuery();
 
 		while (rst.next()) {
-			ReplicationModel model = createModelFromResultSet(rst);
+			ConnectionModel model = createModelFromResultSet(rst);
 
 			replicationList.add(model);
 		}

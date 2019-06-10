@@ -4,6 +4,7 @@ package br.com.dbreplicador.view;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.view.contracts.IReplicationExecutor;
 import br.com.dbreplicador.view.contracts.IReplicationInfoControl;
 
 import javax.swing.JProgressBar;
@@ -38,7 +40,7 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 	private JPanel panelConnections, paneLog;
 	
 	//Referência da janela
-	private ReplicationExecutor replicationExecutor = null;
+	private IReplicationExecutor replicationExecutor = null;
 
 	public ReplicationWindow(JDesktopPane desktop) {
 		super("Replicar", 625, 345, desktop);
@@ -63,7 +65,13 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 				if (!replicationExecutor.isRunning()) {
 					btnReplicate.setText("PAUSAR");
 					
-					replicationExecutor.start();
+					if (replicationExecutor.isClosed()) {
+						Timestamp fromDate = new Timestamp(System.currentTimeMillis());
+						
+						replicationExecutor.start(fromDate);
+					} else {
+						replicationExecutor.resume();
+					}
 				} else {
 					btnReplicate.setText("REPLICAR");
 					

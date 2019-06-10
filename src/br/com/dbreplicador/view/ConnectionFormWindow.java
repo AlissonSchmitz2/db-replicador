@@ -8,7 +8,7 @@ import br.com.dbreplicador.dao.ReplicationDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.enums.Databases;
 import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.ReplicationModel;
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.pojos.Database;
 import br.com.dbreplicador.util.InternalFrameListener;
 import br.com.dbreplicador.util.RegexFormatter;
@@ -56,7 +56,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	private ListConnectionFormWindow searchConnectionWindow;
 	
 	// Banco de dados
-	private ReplicationModel replicationModel;
+	private ConnectionModel replicationModel;
 	private ReplicationDAO replicationDAO;
 	// TODO: Conexão provisória (Refatorar)
 	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
@@ -93,7 +93,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 						
 						@Override
 						public void internalFrameClosed(InternalFrameEvent e) {
-							ReplicationModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
+							ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
 									.getSelectedModel();
 
 							if (selectedModel != null) {
@@ -103,7 +103,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 								// Seta dados do model para os campos
 								txfDescription.setText(replicationModel.getName());
 								txfAddressIP.setText(replicationModel.getAddress());
-								txfPort.setText(replicationModel.getDoor().toString());
+								txfPort.setText(replicationModel.getPort().toString());
 								txfNameDB.setText(replicationModel.getDatabase());
 
 								if(replicationModel.getDatebaseType().equals("PostgreSQL")) {
@@ -146,7 +146,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				clearFormFields(formFields);
 				
 				// Cria nova entidade model
-				replicationModel = new ReplicationModel();
+				replicationModel = new ConnectionModel();
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -171,7 +171,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 							clearFormFields(formFields);
 							
 							// Cria nova entidade model
-							replicationModel = new ReplicationModel();
+							replicationModel = new ConnectionModel();
 							
 							// Desativa botão salvar
 							btnSave.setEnabled(false);
@@ -204,7 +204,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				replicationModel.setName(txfDescription.getText());
 
 				try {
-					replicationModel.setDoor(Integer.parseInt(txfPort.getText()));
+					replicationModel.setPort(Integer.parseInt(txfPort.getText()));
 				} catch (Exception error) {
 					bubbleError("A porta digitada é inválida!");
 					return;
@@ -212,10 +212,10 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				
 				if(cbxModelDB.getSelectedItem().toString().equals("MySQL")) {
 					replicationModel.setUrl("mysql://" + replicationModel.getAddress() + ":"
-							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+							+ replicationModel.getPort() + "/" + replicationModel.getDatabase());
 				} else if (cbxModelDB.getSelectedItem().toString().equals("PostgreSQL")) {					
 					replicationModel.setUrl("postgresql://" + replicationModel.getAddress() + ":"
-							+ replicationModel.getDoor() + "/" + replicationModel.getDatabase());
+							+ replicationModel.getPort() + "/" + replicationModel.getDatabase());
 				}
 												
 				try {
@@ -230,7 +230,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 					// NOVO CADASTRO
 					else {
 						// Insere a conexão no banco de dados
-						ReplicationModel insertedModel = replicationDAO.insert(replicationModel);
+						ConnectionModel insertedModel = replicationDAO.insert(replicationModel);
 						
 						if(insertedModel != null) {
 							// Atribui o model recém criado ao model

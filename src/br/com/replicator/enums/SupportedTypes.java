@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SupportedTypes {
-	POSTGRESQL("postgresql", "PostgreSQL");
+	POSTGRESQL("postgresql", "PostgreSQL"),
+	MYSQL("mysql", "MySQL");
 
 	private final String code;
 	private final String description;

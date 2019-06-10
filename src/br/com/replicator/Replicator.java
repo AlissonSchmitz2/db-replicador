@@ -29,7 +29,8 @@ public class Replicator implements IReplicator {
 	}
 	
 	public List<IQuery> getQueriesForReplication(
-			String tableName,
+			String originTableName,
+			String destinationTableName,
 			String tableUniqueKey,
 			String replicationColumnControl,
 			Object replicationControlValue
@@ -40,7 +41,7 @@ public class Replicator implements IReplicator {
 		//Baseado na coluna de controle de replicação,
 		//busca todos os registro com valor maior que "replicationControlValue"
 		IQuery queryFindNewestRecords = originProvider.getQueryBuilder().find(
-				tableName,
+				originTableName,
 				replicationColumnControl,
 				">",
 				replicationControlValue.toString(),
@@ -51,7 +52,7 @@ public class Replicator implements IReplicator {
 		while (rstFindNewestRecords.next()) {
 			//Faz consulta no banco de destino através "replicationControlValue",
 			//para verificar se o registro já existe
-			IQuery queryFindRecord = destinationProvider.getQueryBuilder().find(tableName, tableUniqueKey, "=", rstFindNewestRecords.getString(tableUniqueKey), "*");
+			IQuery queryFindRecord = destinationProvider.getQueryBuilder().find(destinationTableName, tableUniqueKey, "=", rstFindNewestRecords.getString(tableUniqueKey), "*");
 			ResultSet rstFindRecord = destinationProvider.getProcessor().execute(queryFindRecord);
 			
 			//Metadados da consulta de origem
@@ -70,18 +71,18 @@ public class Replicator implements IReplicator {
 			if (rstFindRecord.next()) {
 				//Update
 				queries.add(destinationProvider.getQueryBuilder()
-						.update(tableName, columns, values, tableUniqueKey, rstFindNewestRecords.getString(tableUniqueKey))
+						.update(destinationTableName, columns, values, tableUniqueKey, rstFindNewestRecords.getString(tableUniqueKey))
 				);
 			} else {
 				queries.add(destinationProvider.getQueryBuilder()
-						.insert(tableName, columns, values)
+						.insert(destinationTableName, columns, values)
 				);
 			}
 		}
 		
 		//DELETE QUERIES
 		//Recupera todos "tableUniqueKey" da tabela de origem
-		IQuery querySelectUniqueKeys = originProvider.getQueryBuilder().select(tableName, tableUniqueKey);
+		IQuery querySelectUniqueKeys = originProvider.getQueryBuilder().select(originTableName, tableUniqueKey);
 		ResultSet rstSelectUniqueKeys = originProvider.getProcessor().execute(querySelectUniqueKeys);
 		
 		List<String> originUniqueKeys = new ArrayList<String>();
@@ -91,12 +92,12 @@ public class Replicator implements IReplicator {
 		
 		//Faz uma consulta na tabela de destino procurando por tableUniqueKey removidos
 		IQuery querySelectUnexistentUniqueKeys = destinationProvider.getQueryBuilder()
-				.findNotIn(tableName, tableUniqueKey, originUniqueKeys, tableUniqueKey);
+				.findNotIn(destinationTableName, tableUniqueKey, originUniqueKeys, tableUniqueKey);
 		ResultSet rstSelectUnexistentUniqueKeys = destinationProvider.getProcessor().execute(querySelectUnexistentUniqueKeys);
 		
 		while (rstSelectUnexistentUniqueKeys.next()) {
 			queries.add(destinationProvider.getQueryBuilder()
-					.delete(tableName, tableUniqueKey, rstSelectUnexistentUniqueKeys.getString(tableUniqueKey))
+					.delete(destinationTableName, tableUniqueKey, rstSelectUnexistentUniqueKeys.getString(tableUniqueKey))
 			);
 		}
 		

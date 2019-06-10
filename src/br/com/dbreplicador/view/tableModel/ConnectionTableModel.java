@@ -1,8 +1,8 @@
 package br.com.dbreplicador.view.tableModel;
 
-import br.com.dbreplicador.model.ReplicationModel;
+import br.com.dbreplicador.model.ConnectionModel;
 
-public class ConnectionTableModel extends AbstractTableModel<ReplicationModel> {
+public class ConnectionTableModel extends AbstractTableModel<ConnectionModel> {
 	private static final long serialVersionUID = 3218796435367615745L;
 
 	public ConnectionTableModel() {
@@ -10,7 +10,7 @@ public class ConnectionTableModel extends AbstractTableModel<ReplicationModel> {
 	}
 	
 	@Override
-	protected void setObjectValueAt(int columnIndex, ReplicationModel model, Object aValue) {
+	protected void setObjectValueAt(int columnIndex, ConnectionModel model, Object aValue) {
 		switch (columnIndex) {
 		case 0:
 			model.setDatabase(aValue.toString());
@@ -24,7 +24,7 @@ public class ConnectionTableModel extends AbstractTableModel<ReplicationModel> {
 	}
 
 	@Override
-	protected Object getObjectValueAt(int columnIndex, ReplicationModel model) {
+	protected Object getObjectValueAt(int columnIndex, ConnectionModel model) {
 		String valueObject = null;
 
 		switch (columnIndex) {

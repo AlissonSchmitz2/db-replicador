@@ -2,7 +2,7 @@ package br.com.dbreplicador.model;
 
 import java.sql.Timestamp;
 
-public class ReplicationModel  extends AbstractModel {
+public class ConnectionModel  extends AbstractModel {
 	private Integer codigo_replicacao;
 	private Timestamp data_atual;
 	private String usuario;
@@ -96,17 +96,17 @@ public class ReplicationModel  extends AbstractModel {
 	/**
 	 * porta
 	 */
-	public Integer getDoor() {
+	public Integer getPort() {
 		return porta;
 	}
 	
 	/**
 	 * porta
 	 * 
-	 * @param door
+	 * @param port
 	 */
-	public void setDoor(Integer door) {
-		this.porta = door;
+	public void setPort(Integer port) {
+		this.porta = port;
 	}
 	
 	/**
