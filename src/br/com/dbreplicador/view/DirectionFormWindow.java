@@ -28,21 +28,20 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.dao.DirectionDAO;
-import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
-import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.util.InternalFrameListener;
 
-public class DirectionFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor{
+public class DirectionFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor {
 	private static final long serialVersionUID = 2082839251104219643L;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
 	private List<Component> formFieldsAutomatic = new ArrayList<Component>();
-	
+
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JPanel panelDiretion, panelOrigin, panelDestiny, panelPeriod;
@@ -56,19 +55,18 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 	private ListDirectionFormWindow searchDirectionWindow;
 	private DirectionModel directionModel;
 	private DirectionDAO directionDAO;
-	
+
 	private ListProcessFormWindow searchProcessWindow;
-	private ListConnectionFormWindow searchConnectionWindow;	
-	
+	private ListConnectionFormWindow searchConnectionWindow;
+
 	// TODO: Conexão provisória (Refatorar)
 	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
-	
+
 	public DirectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro da Direção", 555, 510, desktop);
 
-		
 		this.desktop = desktop;
-		
+
 		setFrameIcon(MasterImage.direction_16x16);
 
 		createComponents();
@@ -78,7 +76,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
-		
+
 		// Por padrão campos são desabilitados ao iniciar
 		disableComponents(formFields);
 
@@ -86,7 +84,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		// Key events
 		registerKeyEvent();
 	}
-	
+
 	private void registerKeyEvent() {
 		// Register key event post processor.
 		DirectionFormWindow windowInstance = this;
@@ -100,28 +98,31 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			}
 		});
 	}
-	
+
 	@Override
 	public boolean postProcessKeyEvent(KeyEvent ke) {
 		// Abre tela seleção cidade ao clicar F9
 		if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_F9) {
 			if (btnSave.isEnabled()) {
-				System.out.println(txfProcess.getText());
-				if(txfProcess.getText().equals("Teclar F9")) {
-					openSearchProcess();
-				}else if(txfDBDestiny.getText().equals("Teclar F9")) {
-					openSearchDBDestiny();
-				}else if(txfDBOrigin.getText().equals("Teclar F9")) {
-					openSearchDBOrigin();
-				}
+				openSearchProcess();
 			}
 
+			return true;
+		} else if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_F10) {
+			if (btnSave.isEnabled()) {
+				openSearchDBOrigin();
+			}
+			return true;
+		} else if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_F11) {
+			if (btnSave.isEnabled()) {
+				openSearchDBDestiny();
+			}
 			return true;
 		}
 
 		return false;
 	}
-	
+
 	private void openSearchProcess() {
 		if (searchProcessWindow == null) {
 			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
@@ -142,7 +143,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			});
 		}
 	}
-	
+
 	private void openSearchDBDestiny() {
 		if (searchConnectionWindow == null) {
 			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
@@ -150,7 +151,8 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
+					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
+							.getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model
@@ -163,7 +165,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			});
 		}
 	}
-	
+
 	private void openSearchDBOrigin() {
 		if (searchConnectionWindow == null) {
 			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
@@ -171,7 +173,8 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
 				public void internalFrameClosed(InternalFrameEvent e) {
-					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame()).getSelectedModel();
+					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
+							.getSelectedModel();
 
 					if (selectedModel != null) {
 						// Atribui cidade para o model
@@ -193,7 +196,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 					searchDirectionWindow = new ListDirectionFormWindow(desktop, CONNECTION);
 
 					searchDirectionWindow.addInternalFrameListener(new InternalFrameListener() {
-						
+
 						@Override
 						public void internalFrameClosed(InternalFrameEvent e) {
 							DirectionModel selectedModel = ((ListDirectionFormWindow) e.getInternalFrame())
@@ -205,8 +208,8 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 								// Seta dados do model para os campos
 								txfProcess.setText(directionModel.getProcess());
- 								txfDuration.setText(String.valueOf(directionModel.getMaxDuration()));
- 								txfRetention.setText(String.valueOf(directionModel.getRetention()));
+								txfDuration.setText(String.valueOf(directionModel.getMaxDuration()));
+								txfRetention.setText(String.valueOf(directionModel.getRetention()));
 								cbxAutomatic.setSelected(directionModel.isAutomaticManual());
 								cbxEnable.setSelected(directionModel.isEnabled());
 								txfDBOrigin.setText(directionModel.getOriginDatabase());
@@ -215,8 +218,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 								txfDBDestiny.setText(directionModel.getDestinationDatabase());
 								txfUserDestiny.setText(directionModel.getDestinationUser());
 								txfPasswordDestiny.setText(directionModel.getDestinationPassword());
-								
-								
+
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
 
@@ -244,16 +246,16 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 				// Seta form para modo Cadastro
 				setFormMode(CREATE_MODE);
-				
+
 				// Ativa campos
 				enableComponents(formFields);
-				
+
 				// Limpar dados dos campos
 				clearFormFields(formFields);
-				
+
 				// Cria nova entidade model
 				directionModel = new DirectionModel();
-				
+
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
 			}
@@ -263,10 +265,10 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if(isEditing()) {
-						if(directionDAO.delete(directionModel)) {
+					if (isEditing()) {
+						if (directionDAO.delete(directionModel)) {
 							bubbleSuccess("Processo excluído com sucesso");
-							
+
 							// Seta form para modo Cadastro
 							setFormMode(CREATE_MODE);
 
@@ -275,10 +277,10 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 							// Limpar dados dos campos
 							clearFormFields(formFields);
-							
+
 							// Cria nova entidade model
 							directionModel = new DirectionModel();
-							
+
 							// Desativa botão salvar
 							btnSave.setEnabled(false);
 
@@ -312,15 +314,15 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				directionModel.setOriginPassword(txfPasswordOrigin.getText());
 				directionModel.setOriginUser(txfUserOrigin.getText());
 				directionModel.setEnabled(cbxEnable.isSelected());
-				
-				//TODO:Verificar esses campos
+
+				// TODO:Verificar esses campos
 				directionModel.setExecuteDayOf(Integer.parseInt(txfDay.getText()));
 				directionModel.setExecuteDayTo(Integer.parseInt(txfDay.getText()));
 				directionModel.setExecuteHourOf(Integer.parseInt(txfHour.getText()));
 				directionModel.setExecuteHourTo(Integer.parseInt(txfHour.getText()));
 				directionModel.setExecuteLast(new Date());
 				///////////////////////
-				
+
 				directionModel.setHourPeriod(Integer.parseInt(txfHour.getText()));
 				directionModel.setMaxDuration(Integer.parseInt(txfDuration.getText()));
 				directionModel.setMinutePeriod(Integer.parseInt(txfMinute.getText()));
@@ -330,22 +332,22 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				directionModel.setSecondPeriod(Integer.parseInt(txfSecond.getText()));
 				directionModel.setUser("admin");
 				directionModel.setYearPeriod(Integer.parseInt(txfYear.getText()));
-				
+
 				try {
 					// EDIÇÃO CADASTRO
-					if(isEditing()) {						
-						if(directionDAO.update(directionModel)) {
+					if (isEditing()) {
+						if (directionDAO.update(directionModel)) {
 							bubbleSuccess("Processo editado com sucesso");
 						} else {
 							bubbleError("Houve um erro ao editar o processo");
 						}
-					} 
+					}
 					// NOVO CADASTRO
 					else {
 						// Insere o processo no banco de dados
 						DirectionModel insertedModel = directionDAO.insert(directionModel);
-						
-						if(insertedModel != null) {
+
+						if (insertedModel != null) {
 							// Atribui o model recém criado ao model
 							directionModel = insertedModel;
 
@@ -354,7 +356,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 							// Ativa botão Remover
 							btnRemove.setEnabled(true);
-							
+
 							bubbleSuccess("Direções cadastradas com sucesso");
 						} else {
 							bubbleError("Houve um erro ao cadastrar as direções!");
@@ -366,19 +368,19 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				}
 			}
 		});
-		
-		//Se for replicação automática
+
+		// Se for replicação automática
 		cbxAutomatic.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				if(txfDay.isEnabled()) {
+
+				if (txfDay.isEnabled()) {
 					disableComponents(formFieldsAutomatic);
-				}else {
+				} else {
 					enableComponents(formFieldsAutomatic);
 				}
-				
+
 			}
 		});
 	}
@@ -388,7 +390,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		Timestamp ts = new Timestamp(dataTime);
 		return ts;
 	}
-	
+
 	private void createComponents() {
 
 		// Toolbar
@@ -455,7 +457,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		lblDBOrigin = new JLabel("Database:");
 		lblUserOrigin = new JLabel("Usu\u00E1rio:");
 		lblPasswordOrigin = new JLabel("Senha:");
-		txfDBOrigin = new JTextField("Teclar F9");
+		txfDBOrigin = new JTextField("Teclar F10");
 		txfDBOrigin.setColumns(10);
 		txfDBOrigin.setBackground(Color.yellow);
 		txfDBOrigin.setEnabled(false);
@@ -473,7 +475,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		lblDBDestiny = new JLabel("Database:");
 		lblPasswordDestiny = new JLabel("Senha:");
 		lblUserDestiny = new JLabel("Usu\u00E1rio:");
-		txfDBDestiny = new JTextField("Teclar F9");
+		txfDBDestiny = new JTextField("Teclar F11");
 		txfDBDestiny.setColumns(10);
 		txfDBDestiny.setBackground(Color.yellow);
 		txfDBDestiny.setEnabled(false);
@@ -554,7 +556,6 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		txfHour.setColumns(10);
 		txfHour.setEnabled(false);
 		formFieldsAutomatic.add(txfHour);
-		
 
 		GroupLayout gl_panelPeriod = new GroupLayout(panelPeriod);
 		gl_panelPeriod.setHorizontalGroup(gl_panelPeriod.createParallelGroup(Alignment.TRAILING)
@@ -706,23 +707,23 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			return false;
 		} else if (txfDBOrigin.getText().equals("Teclar F9")) {
 			bubbleWarning("Selecione o banco origem!");
-			//return false;
+			// return false;
 		} else if (txfUserOrigin.getText().isEmpty() || txfUserOrigin.getText() == null) {
 			bubbleWarning("Informe o usuário do banco origem!");
 			return false;
 		} else if (txfPasswordOrigin.getText().isEmpty() || txfPasswordOrigin.getText() == null) {
 			bubbleWarning("Informe a senha do usuário do banco origem!");
 			return false;
-		}  else if (txfDBDestiny.getText().equals("Teclar F9")) {
+		} else if (txfDBDestiny.getText().equals("Teclar F9")) {
 			bubbleWarning("Selecione o banco destino!");
-			//return false;
+			// return false;
 		} else if (txfUserDestiny.getText().isEmpty() || txfUserDestiny.getText() == null) {
 			bubbleWarning("Informe o usuário do banco destino!");
 			return false;
 		} else if (txfPasswordDestiny.getText().isEmpty() || txfPasswordDestiny.getText() == null) {
 			bubbleWarning("Informe a senha do usuário do banco destino!");
 			return false;
-		} 
+		}
 
 		return true;
 	}
