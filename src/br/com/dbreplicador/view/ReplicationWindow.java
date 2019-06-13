@@ -16,9 +16,12 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import br.com.dbreplicador.enums.ReplicationEvents;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.observers.contracts.IReplicationObserver;
+import br.com.dbreplicador.observers.contracts.IReplicationSubject;
 import br.com.dbreplicador.view.contracts.IReplicationExecutor;
-import br.com.dbreplicador.view.contracts.IReplicationInfoControl;
+import br.com.dbreplicador.view.contracts.IReplicationProcessingInfo;
 
 import javax.swing.JProgressBar;
 import javax.swing.JPanel;
@@ -26,7 +29,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import java.awt.Color;
 
-public class ReplicationWindow extends AbstractWindowFrame implements IReplicationInfoControl {
+public class ReplicationWindow extends AbstractWindowFrame implements IReplicationObserver {
 	private static final long serialVersionUID = -4888464460307835343L;
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
@@ -53,7 +56,10 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 		disableComponents(formFields);
 		
 		//Executor da replicação
-		replicationExecutor = new ReplicationExecutor(ReplicationWindow.this);
+		replicationExecutor = new ReplicationExecutor();
+		
+		//Adiciona esta classe para ser notificada pelo executor
+		((IReplicationSubject) replicationExecutor).addObserver(this);
 		
 		setButtonsActions();
 	}
@@ -63,11 +69,9 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!replicationExecutor.isRunning()) {
-					btnReplicate.setText("PAUSAR");
-					
 					if (replicationExecutor.isClosed()) {
 						Timestamp fromDate = new Timestamp(System.currentTimeMillis());
-						
+
 						replicationExecutor.start(fromDate);
 					} else {
 						replicationExecutor.resume();
@@ -236,39 +240,75 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 		getContentPane().setLayout(groupLayout);
 	}
 
-	@Override
-	public void setCurrentDirections(String directionOrigin, String directionDestiny) {
-		txfOrigin.setText(directionOrigin);
-		txfDestiny.setText(directionDestiny);
-	}
+	private void setStatistics(IReplicationProcessingInfo replicationExecutor) {
+		//Current directions
+		txfOrigin.setText(replicationExecutor.getCurrentOriginDirection());
+		txfDestiny.setText(replicationExecutor.getCurrentDestinationDirection());
 
-	@Override
-	public void setCurrentTable(String table) {
-		txfTable.setText(table);
+		//Current table
+		txfTable.setText(replicationExecutor.getCurrentTable());
+		
+		//Total of tables
+		txfTables.setText(String.valueOf(replicationExecutor.getTotalOfTables()));
+		
+		//Total of errors
+		txfError.setText(String.valueOf(replicationExecutor.getTotalOfErrors()));
+		
+		//Current process
+		txfProcess.setText(replicationExecutor.getCurrentProcess());
+		
+		//Progress bar value
+		progressBarValue.setValue(replicationExecutor.getProcessingProgress());
 	}
-
-	@Override
-	public void setTotalOfTables(int count) {
-		txfTables.setText(String.valueOf(count));
-	}
-
-	@Override
-	public void setTotalOfErrors(int count) {
-		txfError.setText(String.valueOf(count));
-	}
-
-	@Override
-	public void setCurrentProcess(String process) {
-		txfProcess.setText(process);
-	}
-
-	@Override
-	public void setProgressBarValue(int value) {
-		progressBarValue.setValue(value);
-	}
-
-	@Override
-	public void setProgressIndeterminate(boolean start) {
+	
+	private void activateIndeterminateBar(boolean start) {
 		progressBarIndeterminate.setIndeterminate(start);
+	}
+	
+	@Override
+	public void update(IReplicationSubject subject, ReplicationEvents event) {
+		switch (event) {
+		case PREPARING:
+			btnReplicate.setText("PREPARANDO...");
+			btnReplicate.setEnabled(false);
+			
+			setStatistics((IReplicationProcessingInfo) replicationExecutor);
+			activateIndeterminateBar(true);
+			break;
+		case READY:
+			//
+			break;
+		case EXECUTING:
+			btnReplicate.setText("PAUSAR");
+			btnReplicate.setEnabled(true);
+			break;
+		case PAUSED:
+			btnReplicate.setText("RETOMAR");
+			
+			activateIndeterminateBar(false);
+			break;
+		case RESUMED:
+			btnReplicate.setText("PAUSAR");
+			
+			activateIndeterminateBar(true);
+			break;
+		case STOPPED:
+			btnReplicate.setText("REPLICAR");
+			
+			activateIndeterminateBar(false);
+			break;
+		case FINISHED:
+			btnReplicate.setText("REPETIR");
+			
+			setStatistics((IReplicationProcessingInfo) replicationExecutor);
+			activateIndeterminateBar(false);
+			break;
+		case ON_PROCESS:
+		case ON_ERROR:
+			setStatistics((IReplicationProcessingInfo) replicationExecutor);
+			break;
+		default:
+			break;
+		}
 	}
 }
