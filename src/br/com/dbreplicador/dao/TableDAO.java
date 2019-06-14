@@ -120,9 +120,10 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 10, model.getMaximumLines());
 		setParam(pst, 11, model.isErrorIgnore());
 		setParam(pst, 12, model.isEnable());
-
+		setParam(pst, 13, model.getControlColumn());
+		
 		// Identificador WHERE
-		setParam(pst, 13, model.getReplicationCode());
+		setParam(pst, 14, model.getReplicationCode());
 
 		int result = pst.executeUpdate();
 		if (result > 0) {
@@ -216,6 +217,7 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		model.setMaximumLines(rst.getInt("linhas_maximo"));
 		model.setErrorIgnore(rst.getBoolean("erro_ignorar"));
 		model.setEnable(rst.getBoolean("habilitado"));
+		model.setControlColumn(rst.getString("coluna_controle"));
 
 		return model;
 	}
