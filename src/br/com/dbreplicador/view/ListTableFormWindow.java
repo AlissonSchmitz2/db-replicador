@@ -19,7 +19,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.dao.TableDAO;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.TableModel;
@@ -166,10 +165,10 @@ public class ListTableFormWindow extends AbstractGridWindow {
 	}
 
 	private void loadGrid(String word) {
-		if (word.length() < 1) {
+		/*if (word.length() < 1) {
 			bubbleWarning("Você precisa inserir ao menos 1 caracter para iniciar a busca");
 		  return;
-		}
+		}*/
 
 		tablesTableModel.clear();
 

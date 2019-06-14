@@ -164,10 +164,10 @@ public class ListConnectionFormWindow extends AbstractGridWindow {
 	}
 	
 	private void loadGrid(String word) {
-		if (word.length() < 1) {
+		/*if (word.length() < 1) {
 			bubbleWarning("Você precisa inserir ao menos 1 caracter para iniciar a busca");
 		  return;
-		}
+		}*/
 
 		connectionTableModel.clear();
 

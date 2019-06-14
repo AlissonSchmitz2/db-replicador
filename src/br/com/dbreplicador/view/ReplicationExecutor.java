@@ -56,8 +56,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	}
 
 	public void start(Timestamp fromDate) {
-		//Se a thread for nula, um novo processo é inicializado
-		//Ou seja, o processo de replicação é iniciado do zero
+		//Inicializa processo
 		initializeProcessing(fromDate);
 		
 		//O processo é retirado da suspensão
