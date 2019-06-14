@@ -50,7 +50,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey, cbxColumnType;
+	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey, cbxColumnType, txfControlColumn;
 	private JLabel lblTableOrigin, lblOperation, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnType;
 	private JCheckBox cbxEnable, cbxIgnoreError;
 	private JDesktopPane desktop;
@@ -140,7 +140,8 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-  								cbxColumnType.setText(tableModel.getTypeColumn());;
+  								cbxColumnType.setText(tableModel.getTypeColumn());
+  								txfControlColumn.setText(tableModel.getControlColumn());
 								
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
@@ -234,8 +235,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				tableModel.setEnable(cbxEnable.isSelected());
 				tableModel.setErrorIgnore(cbxIgnoreError.isSelected());
 				tableModel.setKeyColumn(txfColumnKey.getText());
+				tableModel.setControlColumn(txfControlColumn.getText());
 				tableModel.setMaximumLines(Integer.parseInt(txfSaveAfter.getText()));
-				tableModel.setOperation(true);//TODO:Verificar esse campo
+				tableModel.setIncrementalBackup(true);//TODO:Verificar esse campo
 				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
 				tableModel.setOriginTable(txfTableOrigin.getText());
 				tableModel.setProcess(txfProcess.getText());
@@ -359,6 +361,13 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		formFields.add(txfColumnKey);
 		cbxColumnType = new JTextField();
 		formFields.add(cbxColumnType);
+		txfControlColumn = new JTextField();
+		formFields.add(txfControlColumn);
+		
+		//TODO: Implementar o campo no formulário corretamente
+		txfControlColumn.setBounds(112, 330, 200, 20);
+		getContentPane().add(txfControlColumn);
+		//TODO: Até aqui
 
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
@@ -483,10 +492,13 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 			bubbleWarning("Informe após quantos registro devem ser salvos!");
 			return false;
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
-			bubbleWarning("Informe a chave da coluna!");
+			bubbleWarning("Informe a coluna chave!");
 			return false;
 		} else if (cbxColumnType.getText().isEmpty() || cbxColumnType.getText() == null) {
-			bubbleWarning("Selecione o tipo da coluna!");
+			bubbleWarning("Selecione o tipo da coluna chave!");
+			return false;
+		} else if (txfControlColumn.getText().isEmpty() || txfControlColumn.getText() == null) {
+			bubbleWarning("Informe a coluna de controle!");
 			return false;
 		}
 

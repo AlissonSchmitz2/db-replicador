@@ -12,7 +12,8 @@ public class TableModel extends AbstractModel {
 	private String tabela_destino;
 	private String coluna_tipo;
 	private String coluna_chave;
-	private boolean operacao;
+	private String coluna_controle;
+	private boolean backup_incremental;
 	private Integer linhas_maximo;
 	private boolean erro_ignorar;
 	private boolean habilitado;
@@ -162,19 +163,35 @@ public class TableModel extends AbstractModel {
 	}
 	
 	/**
-	 * operacao
+	 * coluna_controle
 	 */
-	public boolean isOperation() {
-		return operacao;
+	public String getControlColumn() {
+		return coluna_controle;
 	}
 	
 	/**
-	 * operacao
+	 * coluna_controle
 	 * 
-	 * @param operation
+	 * @param keyColumn
 	 */
-	public void setOperation(boolean operation) {
-		this.operacao = operation;
+	public void setControlColumn(String controlColumn) {
+		this.coluna_controle = controlColumn;
+	}
+	
+	/**
+	 * backup_incremental
+	 */
+	public boolean isIncrementalBackup() {
+		return backup_incremental;
+	}
+	
+	/**
+	 * backup_incremental
+	 * 
+	 * @param backupIncremental
+	 */
+	public void setIncrementalBackup(boolean incremental) {
+		this.backup_incremental = incremental;
 	}
 	
 	/**

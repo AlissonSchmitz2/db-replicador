@@ -1,14 +1,14 @@
 ----------------------------------------------
 -- TB_REPLICACAO
 --
--- Tabela que armazenará os dados de cada conexão.
+-- Tabela que armazenar� os dados de cada conexão.
 --
--- nome		:	Nome da Conexão
--- endereço	:	Endereço IP de conexão com o banco de dados
--- porta	:	Porta de conexão com o banco de dados
--- databse	:	SID de conexão com o banco de dados
--- tipo_banco	:	Banco que será trabalhado: Postgres, Oracle, Firebird
--- url		:	url já montada de acordo com o tipo_banco
+-- nome		 :	Nome da Conex�o
+-- endere�o  :	Endere�o IP de conexão com o banco de dados
+-- porta	 :	Porta de conexão com o banco de dados
+-- databse   :	SID de conexão com o banco de dados
+-- tipo_banco:	Banco que ser� trabalhado: Postgres, Oracle, Firebird
+-- url		 :	url j� montada de acordo com o tipo_banco
 ----------------------------------------------
 
 CREATE TABLE IF NOT EXISTS	tb_replicacao

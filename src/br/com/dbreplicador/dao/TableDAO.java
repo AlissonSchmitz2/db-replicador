@@ -32,10 +32,11 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 			"tabela_destino",
 			"coluna_tipo",
 			"coluna_chave",
-			"operacao",
+			"backup_incremental",
 			"linhas_maximo",
 			"erro_ignorar",
-			"habilitado"
+			"habilitado",
+			"coluna_controle"
 	};
 	
 	private String[] columnsToUpdate = new String[] {
@@ -47,10 +48,11 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 			"tabela_destino",
 			"coluna_tipo",
 			"coluna_chave",
-			"operacao",
+			"backup_incremental",
 			"linhas_maximo",
 			"erro_ignorar",
-			"habilitado"
+			"habilitado",
+			"coluna_controle"
 	};
 
 	Connection connection;
@@ -76,10 +78,11 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 6, model.getDestinationTable());
 		setParam(pst, 7, model.getTypeColumn());
 		setParam(pst, 8, model.getKeyColumn());
-		setParam(pst, 9, model.isOperation());
+		setParam(pst, 9, model.isIncrementalBackup());
 		setParam(pst, 10, model.getMaximumLines());
 		setParam(pst, 11, model.isErrorIgnore());
 		setParam(pst, 12, model.isEnable());
+		setParam(pst, 13, model.getControlColumn());
 
 		int result = pst.executeUpdate();
 		if (result > 0) {
@@ -113,7 +116,7 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 6, model.getDestinationTable());
 		setParam(pst, 7, model.getTypeColumn());
 		setParam(pst, 8, model.getKeyColumn());
-		setParam(pst, 9, model.isOperation());
+		setParam(pst, 9, model.isIncrementalBackup());
 		setParam(pst, 10, model.getMaximumLines());
 		setParam(pst, 11, model.isErrorIgnore());
 		setParam(pst, 12, model.isEnable());
@@ -208,7 +211,8 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		model.setDestinationTable(rst.getString("tabela_destino"));
 		model.setTypeColumn(rst.getString("coluna_tipo"));
 		model.setKeyColumn(rst.getString("coluna_chave"));
-		model.setOperation(rst.getBoolean("operacao"));
+		model.setControlColumn(rst.getString("coluna_chave"));
+		model.setIncrementalBackup(rst.getBoolean("backup_incremental"));
 		model.setMaximumLines(rst.getInt("linhas_maximo"));
 		model.setErrorIgnore(rst.getBoolean("erro_ignorar"));
 		model.setEnable(rst.getBoolean("habilitado"));
