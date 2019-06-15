@@ -20,7 +20,6 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -28,11 +27,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.event.InternalFrameEvent;
 
-import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.dao.TableDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.model.TableModel;
 import br.com.dbreplicador.util.InternalFrameListener;
@@ -56,7 +53,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 	private JDesktopPane desktop;
 	
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
 	
 	private TableModel tableModel;
 	private TableDAO tableDAO;
@@ -175,11 +172,15 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				enableComponents(formFields);
 				
 				// Limpar dados dos campos
-				//clearFormFields(formFields);
+				txfProcess.setText("Teclar F9");
+				clearFormFields(formFields);
 				
 				// Cria nova entidade model
 				tableModel = new TableModel();
 
+				// Seta valor padrão para o CheckBox "Habilitado"
+				cbxEnable.setSelected(true);
+				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
 			}
