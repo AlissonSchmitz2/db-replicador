@@ -60,7 +60,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 	private ListConnectionFormWindow searchConnectionWindow;
 
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
 
 	public DirectionFormWindow(JDesktopPane desktop) {
 		super("Cadastro da Direção", 555, 510, desktop);
@@ -133,7 +133,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 					ProcessModel selectedModel = ((ListProcessFormWindow) e.getInternalFrame()).getSelectedModel();
 
 					if (selectedModel != null) {
-						// Atribui cidade para o model
+						// Atribui processo para o campo
 						txfProcess.setText(selectedModel.getProcess());
 					}
 
@@ -155,7 +155,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 							.getSelectedModel();
 
 					if (selectedModel != null) {
-						// Atribui cidade para o model
+						// Atribui database destino para o campo
 						txfDBDestiny.setText(selectedModel.getDatabase());
 					}
 
@@ -177,7 +177,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 							.getSelectedModel();
 
 					if (selectedModel != null) {
-						// Atribui cidade para o model
+						// Atribui database origem para o campo
 						txfDBOrigin.setText(selectedModel.getDatabase());
 					}
 
@@ -267,7 +267,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				try {
 					if (isEditing()) {
 						if (directionDAO.delete(directionModel)) {
-							bubbleSuccess("Processo excluído com sucesso");
+							bubbleSuccess("Direção excluída com sucesso");
 
 							// Seta form para modo Cadastro
 							setFormMode(CREATE_MODE);
@@ -337,9 +337,9 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 					// EDIÇÃO CADASTRO
 					if (isEditing()) {
 						if (directionDAO.update(directionModel)) {
-							bubbleSuccess("Processo editado com sucesso");
+							bubbleSuccess("Direção editada com sucesso");
 						} else {
-							bubbleError("Houve um erro ao editar o processo");
+							bubbleError("Houve um erro ao editar a direção!");
 						}
 					}
 					// NOVO CADASTRO
