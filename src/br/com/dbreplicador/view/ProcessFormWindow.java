@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "xadrezgrande");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
 
 	public ProcessFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Processos", 455, 270, desktop);
@@ -131,6 +132,9 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				// Cria nova entidade model
 				processModel = new ProcessModel();
 				
+				// Seta valor padrão para o CheckBox "Habilitado"
+				cbxEnable.setSelected(true);
+				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
 			}
@@ -177,8 +181,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 			public void actionPerformed(ActionEvent e) {
 				if(!validateFields()) {
 					return;
-				}
-				
+				}	
+					
 				processModel.setCurrentDate(getDateTime(new Date()));
 				processModel.setUser("admin");
 				processModel.setProcess(txfProcess.getText());
@@ -198,6 +202,17 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 					} 
 					// NOVO CADASTRO
 					else {
+						// Validação Primary Key
+						try {
+							if(!processDAO.search(processModel.getProcess()).isEmpty()) {
+								bubbleWarning("O Processo '" + processModel.getProcess() + "' já existe!");
+								return;
+							}
+						} catch (SQLException error) {
+							error.printStackTrace();
+							bubbleError(error.getMessage());
+						}
+						
 						// Insere o processo no banco de dados
 						ProcessModel insertedModel = processDAO.insert(processModel);
 						
@@ -320,8 +335,8 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		} else if(txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
 			bubbleWarning("Informe uma descrição para o processo!");
 			return false;
-		} 		
-		
+		}		
+				
 		return true;
 	}
 	
