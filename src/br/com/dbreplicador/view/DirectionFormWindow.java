@@ -303,7 +303,16 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				if (!validateFields()) {
 					return;
 				}
-
+				
+				if(!cbxAutomatic.isSelected()) {
+					txfDay.setText("0");
+					txfMonth.setText("0");
+					txfYear.setText("0");
+					txfHour.setText("0");
+					txfSecond.setText("0");
+					txfMinute.setText("0");
+				}
+				
 				directionModel.setAutomaticManual(cbxAutomatic.isSelected());
 				directionModel.setCurrentDate(getDateTime(new Date()));
 				directionModel.setDayPeriod(Integer.parseInt(txfDay.getText()));
@@ -705,23 +714,26 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 		} else if (txfRetention.getText().isEmpty() || txfRetention.getText() == null) {
 			bubbleWarning("Informe a retenção!");
 			return false;
-		} else if (txfDBOrigin.getText().equals("Teclar F9")) {
+		} else if (txfDBOrigin.getText().equals("Teclar F10")) {
 			bubbleWarning("Selecione o banco origem!");
-			// return false;
+			return false;
 		} else if (txfUserOrigin.getText().isEmpty() || txfUserOrigin.getText() == null) {
 			bubbleWarning("Informe o usuário do banco origem!");
 			return false;
 		} else if (txfPasswordOrigin.getText().isEmpty() || txfPasswordOrigin.getText() == null) {
 			bubbleWarning("Informe a senha do usuário do banco origem!");
 			return false;
-		} else if (txfDBDestiny.getText().equals("Teclar F9")) {
+		} else if (txfDBDestiny.getText().equals("Teclar F11")) {
 			bubbleWarning("Selecione o banco destino!");
-			// return false;
+			return false;
 		} else if (txfUserDestiny.getText().isEmpty() || txfUserDestiny.getText() == null) {
 			bubbleWarning("Informe o usuário do banco destino!");
 			return false;
 		} else if (txfPasswordDestiny.getText().isEmpty() || txfPasswordDestiny.getText() == null) {
 			bubbleWarning("Informe a senha do usuário do banco destino!");
+			return false;
+		} else if (Integer.parseInt(txfRetention.getText()) < 6 ) {
+			bubbleWarning("Retenção não pode ser inferior a 6!");
 			return false;
 		}
 
