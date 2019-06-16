@@ -31,6 +31,7 @@ import br.com.dbreplicador.dao.TableDAO;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.model.TableModel;
+import br.com.dbreplicador.util.DateTimePicker;
 import br.com.dbreplicador.util.InternalFrameListener;
 
 public class TableFormWindow extends AbstractWindowFrame implements KeyEventPostProcessor{
@@ -46,9 +47,10 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfTableDestiny, txfSaveAfter, txfColumnKey, txfColumnControl, txfControlColumn;
-	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl;
+	private JTextField txfOrder, txfTableOrigin, txfTableDestiny, txfSaveAfter, txfColumnKey, txfColumnControl;
+	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl, lblLastReplication;
 	private JCheckBox cbxEnable, cbxIgnoreError, cbxBackupIncre;
+	private DateTimePicker dateTimePicker;
 	private JDesktopPane desktop;
 	private Connection connection;
 	
@@ -133,11 +135,13 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 //								txfOperation.setText(tableModel.isOperation()) ;REFATORAR
 								txfTableDestiny.setText(tableModel.getDestinationTable());
 								txfSaveAfter.setText(tableModel.getMaximumLines().toString());
+								dateTimePicker.setDate(tableModel.getCurrentDateOf());
+								cbxBackupIncre.setSelected(tableModel.isIncrementalBackup());
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-  								txfColumnControl.setText(tableModel.getTypeColumn());
-  								txfControlColumn.setText(tableModel.getControlColumn());
+								txfColumnType.setText(tableModel.getTypeColumn());
+								txfColumnControl.setText(tableModel.getControlColumn());
 								
 								// Seta form para modo Edição
 								setFormMode(UPDATE_MODE);
@@ -236,14 +240,15 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				tableModel.setEnable(cbxEnable.isSelected());
 				tableModel.setErrorIgnore(cbxIgnoreError.isSelected());
 				tableModel.setKeyColumn(txfColumnKey.getText());
-				tableModel.setControlColumn(txfControlColumn.getText());
+				tableModel.setControlColumn(txfColumnControl.getText());
 				tableModel.setMaximumLines(Integer.parseInt(txfSaveAfter.getText()));
-				tableModel.setIncrementalBackup(true);//TODO:Verificar esse campo
+				tableModel.setIncrementalBackup(cbxBackupIncre.isSelected());
 				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
 				tableModel.setOriginTable(txfTableOrigin.getText());
 				tableModel.setProcess(txfProcess.getText());
-				tableModel.setTypeColumn(txfColumnControl.getText());
+				tableModel.setTypeColumn(txfColumnType.getText());
 				tableModel.setUser("admin");
+				if(dateTimePicker.getDate() != null) tableModel.setCurrentDateOf(getDateTime(dateTimePicker.getDate()));
 				
 				try {
 					// EDIÇÃO CADASTRO
@@ -332,7 +337,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		lblColumnKey = new JLabel("Coluna Chave:");
 		lblColumnControl = new JLabel("Coluna Controle:");
 		lblColumnType = new JLabel("Coluna Tipo:");
-		lblColumnType.setVisible(false);
+		lblLastReplication = new JLabel("\u00DAltima Replica\u00E7\u00E3o:");
 
 		// TextFields
 		txfProcess = new JTextField("Teclar F9");
@@ -360,13 +365,15 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		formFields.add(txfColumnKey);
 		txfColumnControl = new JTextField();
 		formFields.add(txfColumnControl);
-		txfControlColumn = new JTextField();
-		formFields.add(txfControlColumn);
 		txfColumnType = new JTextField();
-		txfColumnType.setVisible(false);
-//		formFields.add(txfColumnType);
+//		txfColumnType.setVisible(false);
+		formFields.add(txfColumnType);
 		cbxBackupIncre = new JCheckBox("Backup Incremental");
 		formFields.add(cbxBackupIncre);
+		
+		dateTimePicker = new DateTimePicker();
+		dateTimePicker.setFormats("dd/MM/yyyy HH:mm:ss");
+		formFields.add(dateTimePicker);
 		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -393,20 +400,24 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								.addComponent(lblColumnControl))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(txfColumnType, GroupLayout.PREFERRED_SIZE, 317, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(txfColumnType, GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addComponent(txfColumnKey, GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
-									.addComponent(txfColumnControl, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(txfTableOrigin)
-									.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-									.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-									.addComponent(cbxBackupIncre, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
-									.addComponent(txfTableDestiny)
-									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-										.addComponent(txfProcess, Alignment.LEADING)
-										.addComponent(txfOrder, Alignment.LEADING))))))
-					.addContainerGap(29, Short.MAX_VALUE))
+									.addGap(18)
+									.addComponent(lblLastReplication)
+									.addPreferredGap(ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+									.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE))
+								.addComponent(txfColumnKey, GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+								.addComponent(txfColumnControl, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(txfTableOrigin)
+								.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+								.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+								.addComponent(cbxBackupIncre, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txfTableDestiny)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+									.addComponent(txfProcess, Alignment.LEADING)
+									.addComponent(txfOrder, Alignment.LEADING)))))
+					.addGap(29))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -436,7 +447,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblSaveAfter))
+						.addComponent(lblSaveAfter)
+						.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblLastReplication))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cbxBackupIncre)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -490,10 +503,10 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
 			bubbleWarning("Informe a coluna chave!");
 			return false;
+//		} else if (txfColumnControl.getText().isEmpty() || txfColumnControl.getText() == null) {
+//			bubbleWarning("Selecione o tipo da coluna chave!");
+//			return false;
 		} else if (txfColumnControl.getText().isEmpty() || txfColumnControl.getText() == null) {
-			bubbleWarning("Selecione o tipo da coluna chave!");
-			return false;
-		} else if (txfControlColumn.getText().isEmpty() || txfControlColumn.getText() == null) {
 			bubbleWarning("Informe a coluna de controle!");
 			return false;
 		}
