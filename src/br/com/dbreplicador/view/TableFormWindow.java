@@ -47,9 +47,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfOperation, txfTableDestiny, txfSaveAfter, txfColumnKey, cbxColumnType, txfControlColumn;
-	private JLabel lblTableOrigin, lblOperation, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnType;
-	private JCheckBox cbxEnable, cbxIgnoreError;
+	private JTextField txfOrder, txfTableOrigin, txfTableDestiny, txfSaveAfter, txfColumnKey, txfColumnControl, txfControlColumn;
+	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl;
+	private JCheckBox cbxEnable, cbxIgnoreError, cbxBackupIncre;
 	private JDesktopPane desktop;
 	
 	// TODO: Conexão provisória (Refatorar)
@@ -57,9 +57,11 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 	
 	private TableModel tableModel;
 	private TableDAO tableDAO;
+	private JLabel lblColumnType;
+	private JTextField txfColumnType;
 
 	public TableFormWindow(JDesktopPane desktop) {
-		super("Cadastro de Tabelas", 470, 420, desktop);
+		super("Cadastro de Tabelas", 470, 400, desktop);
 
 		setFrameIcon(MasterImage.details_16x16);
 
@@ -137,7 +139,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-  								cbxColumnType.setText(tableModel.getTypeColumn());
+  								txfColumnControl.setText(tableModel.getTypeColumn());
   								txfControlColumn.setText(tableModel.getControlColumn());
 								
 								// Seta form para modo Edição
@@ -178,8 +180,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				// Cria nova entidade model
 				tableModel = new TableModel();
 
-				// Seta valor padrão para o CheckBox "Habilitado"
+				// Seta valor padrão para o CheckBox "Habilitado" e "Backup Incremental"
 				cbxEnable.setSelected(true);
+				cbxBackupIncre.setSelected(true);
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
@@ -242,7 +245,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
 				tableModel.setOriginTable(txfTableOrigin.getText());
 				tableModel.setProcess(txfProcess.getText());
-				tableModel.setTypeColumn(cbxColumnType.getText());
+				tableModel.setTypeColumn(txfColumnControl.getText());
 				tableModel.setUser("admin");
 				
 				try {
@@ -327,10 +330,10 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		lblProcess = new JLabel("Processo:");
 		lblOrder = new JLabel("Ordem:");
 		lblTableOrigin = new JLabel("Tabela Origem:");
-		lblOperation = new JLabel("Opera\u00E7\u00E3o:");
 		lblTableDestiny = new JLabel("Tabela Destino:");
 		lblSaveAfter = new JLabel("Salvar Ap\u00F3s:");
 		lblColumnKey = new JLabel("Coluna Chave:");
+		lblColumnControl = new JLabel("Coluna Controle:");
 		lblColumnType = new JLabel("Coluna Tipo:");
 
 		// TextFields
@@ -345,9 +348,6 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		txfTableOrigin.setHorizontalAlignment(SwingConstants.LEFT);
 		txfTableOrigin.setColumns(10);
 		formFields.add(txfTableOrigin);
-		txfOperation = new JTextField();
-		txfOperation.setColumns(10);
-		formFields.add(txfOperation);
 		txfTableDestiny = new JTextField();
 		txfTableDestiny.setColumns(10);
 		formFields.add(txfTableDestiny);
@@ -360,105 +360,104 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		formFields.add(cbxIgnoreError);
 		txfColumnKey = new JTextField();
 		formFields.add(txfColumnKey);
-		cbxColumnType = new JTextField();
-		formFields.add(cbxColumnType);
+		txfColumnControl = new JTextField();
+		formFields.add(txfColumnControl);
 		txfControlColumn = new JTextField();
 		formFields.add(txfControlColumn);
+		txfColumnType = new JTextField();
+		formFields.add(txfColumnType);
+		cbxBackupIncre = new JCheckBox("Backup Incremental");
+		formFields.add(cbxBackupIncre);
 		
-		//TODO: Implementar o campo no formulário corretamente
-		txfControlColumn.setBounds(112, 330, 200, 20);
-		getContentPane().add(txfControlColumn);
-		//TODO: Até aqui
-
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(15).addGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(15)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+							.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblTableDestiny).addComponent(lblOperation).addComponent(lblOrder)
-										.addComponent(lblProcess).addComponent(lblTableOrigin)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(lblColumnKey)
+								.addComponent(lblColumnType)
+								.addComponent(lblOrder)
+								.addComponent(lblProcess)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblTableOrigin)
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 										.addComponent(lblSaveAfter)
-										.addComponent(lblColumnKey, GroupLayout.PREFERRED_SIZE, 75,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblColumnType, GroupLayout.PREFERRED_SIZE, 75,
-												GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addComponent(lblTableDestiny)))
+								.addComponent(lblColumnControl))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(txfColumnType, GroupLayout.PREFERRED_SIZE, 317, GroupLayout.PREFERRED_SIZE)
 								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(txfColumnKey, GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
-										.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(txfOperation, GroupLayout.PREFERRED_SIZE, 120,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94,
-												GroupLayout.PREFERRED_SIZE)
-										.addComponent(cbxColumnType, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(txfTableOrigin)
-										.addComponent(txfTableDestiny, GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-												.addComponent(txfProcess, Alignment.LEADING).addComponent(txfOrder,
-														Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 118,
-														Short.MAX_VALUE)))))
-						.addContainerGap(29, Short.MAX_VALUE)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-						.addGap(18)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(lblProcess)
-								.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-								.createSequentialGroup().addGap(193)
-								.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblColumnKey)
-										.addComponent(
-												txfColumnKey, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)))
-								.addGroup(
-										groupLayout.createSequentialGroup().addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txfOrder, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblOrder))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txfTableOrigin, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblTableOrigin, GroupLayout.PREFERRED_SIZE, 14,
-																GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txfOperation, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblOperation))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-														.addComponent(txfTableDestiny, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblTableDestiny))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-														.addComponent(lblSaveAfter)
-														.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(ComponentPlacement.UNRELATED)
-												.addComponent(cbxIgnoreError)
-												.addPreferredGap(ComponentPlacement.RELATED).addComponent(cbxEnable)))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(lblColumnType)
-								.addComponent(cbxColumnType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(113)));
+									.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addComponent(txfColumnKey, GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
+									.addComponent(txfColumnControl, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(txfTableOrigin)
+									.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+									.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+									.addComponent(cbxBackupIncre, GroupLayout.PREFERRED_SIZE, 132, GroupLayout.PREFERRED_SIZE)
+									.addComponent(txfTableDestiny)
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+										.addComponent(txfProcess, Alignment.LEADING)
+										.addComponent(txfOrder, Alignment.LEADING))))))
+					.addContainerGap(29, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblProcess)
+						.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfOrder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblOrder))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfTableOrigin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblTableOrigin, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfTableDestiny, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblTableDestiny))
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblSaveAfter))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(cbxBackupIncre)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cbxIgnoreError)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cbxEnable)
+					.addGap(7)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfColumnKey, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblColumnKey))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfColumnControl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblColumnControl))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfColumnType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblColumnType))
+					.addGap(88))
+		);
 		getContentPane().setLayout(groupLayout);
 		
 		txfProcess.addFocusListener(new FocusListener() {
@@ -483,9 +482,6 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		} else if (txfTableOrigin.getText().isEmpty() || txfTableOrigin.getText() == null) {
 			bubbleWarning("Informe a tabela origem!");
 			return false;
-		} else if (txfOperation.getText().isEmpty() || txfOperation.getText() == null) {
-			bubbleWarning("Informe a operação!");
-			return false;
 		} else if (txfTableDestiny.getText().isEmpty() || txfTableDestiny.getText() == null) {
 			bubbleWarning("Informe a tabela destino!");
 			return false;
@@ -495,7 +491,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
 			bubbleWarning("Informe a coluna chave!");
 			return false;
-		} else if (cbxColumnType.getText().isEmpty() || cbxColumnType.getText() == null) {
+		} else if (txfColumnControl.getText().isEmpty() || txfColumnControl.getText() == null) {
 			bubbleWarning("Selecione o tipo da coluna chave!");
 			return false;
 		} else if (txfControlColumn.getText().isEmpty() || txfControlColumn.getText() == null) {
