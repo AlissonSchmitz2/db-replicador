@@ -5,11 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import br.com.dbreplicador.dao.contracts.ISearchable;
+import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
+import br.com.nocaute.model.RegistrationModalityModel;
 
 public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearchable<ProcessModel> {
 	private static final String TABLE_NAME = "tb_replicacao_processo";
@@ -170,6 +174,45 @@ public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearch
 		}
 
 		return processList;
+	}
+	
+	public AbstractMap<Integer, DirectionModel> getProcessesToReplication() throws SQLException {
+		String query = "SELECT\n" + 
+				"       p.*," + 
+				"       d.database_origem AS d_database_origem," + 
+				"       d.usuario_origem AS d_usuario_origem," + 
+				"       d.senha_origem AS d_senha_origem," + 
+				"       d.database_destino AS d_database_destino," + 
+				"       d.usuario_destino AS d_usuario_destino," + 
+				"       d.senha_destino AS d_senha_destino," + 
+				"\n" + 
+				"FROM tb_replicacao_processo AS p" + 
+				"    INNER JOIN tb_replicacao_direcao AS d ON d.processo=p.processo" + 
+				"WHERE p.habilitado=true;";
+		
+		PreparedStatement pst = connection.prepareStatement(query);
+		
+		AbstractMap<Integer, ProcessModel> processes = new HashMap<Integer, ProcessModel>();
+
+		/*List<RegistrationModalityModel> modalitiesList = new ArrayList<RegistrationModalityModel>();*/
+
+		ResultSet processRst = pst.executeQuery();
+
+		while (processRst.next()) {
+			// Atributos do model
+			ProcessModel model = new ProcessModel();
+
+			model.setProcessCode(processRst.getInt("codigo_processo"));
+			model.setCurrentDate(processRst.getTimestamp("data_atual"));
+			model.setUser(processRst.getString("usuario"));
+			model.setProcess(processRst.getString("processo"));
+			model.setDescription(processRst.getString("descricao"));
+			model.setCurrentDateOf(processRst.getTimestamp("data_atual_de"));
+			model.setErrorIgnore(processRst.getBoolean("erro_ignorar"));
+			model.setEnable(processRst.getBoolean("habilitado"));
+		}
+		
+		return null;
 	}
 	
 	/**

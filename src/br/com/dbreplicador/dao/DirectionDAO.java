@@ -295,5 +295,4 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 
 		return directionList;
 	}
-	
 }

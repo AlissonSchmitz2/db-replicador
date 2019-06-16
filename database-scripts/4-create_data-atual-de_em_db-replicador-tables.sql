@@ -1,0 +1,1 @@
+alter table tb_replicacao_tabela add data_atual_de timestamp;
