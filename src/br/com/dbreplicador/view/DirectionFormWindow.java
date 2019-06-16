@@ -249,6 +249,11 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 				// Limpar dados dos campos
 				clearFormFields(formFields);
+				
+				// Limpa dados dos campos que são desabilitados
+				txfProcess.setText("Teclar F9");
+				txfDBOrigin.setText("Teclar F10");
+				txfDBDestiny.setText("Teclar F11");
 
 				// Cria nova entidade model
 				directionModel = new DirectionModel();
