@@ -1,9 +1,11 @@
 package br.com.dbreplicador.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
@@ -17,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -36,7 +39,7 @@ public class Window extends JFrame {
 	private TableFormWindow frameTableForm;
 	private DirectionFormWindow frameDirectionForm;
 	private ReplicationWindow frameReplicatorWindow;
-	
+
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
 	private JMenu menuProcessos;
@@ -45,6 +48,8 @@ public class Window extends JFrame {
 	private JSeparator separador;
 
 	private JDesktopPane desktop;
+	
+	private JLabel wallpaper;
 
 	public Window() {
 		super();
@@ -55,7 +60,15 @@ public class Window extends JFrame {
 		setContentPane(desktop);
 
 		startingWindow();
-		
+
+		setIconImage(MasterImage.replicator_16x16.getImage());
+
+
+		wallpaper = new JLabel(MasterImage.Wallpaper);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		wallpaper.setBounds(0, 0, screenSize.width, screenSize.height - 100);
+		getContentPane().add(wallpaper);
+
 		// Full screen
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 	}
@@ -68,7 +81,8 @@ public class Window extends JFrame {
 
 	private void startingWindow() {
 		String dataLogin = getDateTime();
-		this.setTitle("Replicador Banco de dados v1.0.0-betha      " + "Usuário Logado: " + " - Último Login: " + dataLogin);
+		this.setTitle(
+				"Replicador Banco de dados v1.0.0-betha      " + "Usuário Logado: " + " - Último Login: " + dataLogin);
 		this.setJMenuBar(getWindowMenuBar());
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.setBounds(new Rectangle(0, 0, 796, 713));
@@ -86,12 +100,12 @@ public class Window extends JFrame {
 		menuBar.add(getMenuProcessos());
 		menuBar.add(getMenuAjuda());
 
-		//Remove o atalho "F10" padrão no JMenuBar (Vem padrão nos SO)
+		// Remove o atalho "F10" padrão no JMenuBar (Vem padrão nos SO)
 		InputMap iMap = menuBar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		Object action = iMap.get(KeyStroke.getKeyStroke("F10")); 
-		ActionMap actionMap = menuBar.getActionMap(); 
+		Object action = iMap.get(KeyStroke.getKeyStroke("F10"));
+		ActionMap actionMap = menuBar.getActionMap();
 		actionMap.getParent().remove(action);
-		
+
 		return menuBar;
 	}
 
@@ -114,7 +128,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: Configurações
+				// TODO: Configurações
 			}
 		});
 
@@ -143,10 +157,9 @@ public class Window extends JFrame {
 		menuCadastros.add(getMenuItemProcessos());
 		menuCadastros.add(getMenuItemTabelas());
 		menuCadastros.add(getMenuItemDirecao());
-	
+
 		return menuCadastros;
 	}
-	
 
 	private JMenuItem getMenuItemConexao() {
 		JMenuItem menuItem = new JMenuItem("Conex\u00E3o", MasterImage.aplication_16x16);
@@ -161,7 +174,7 @@ public class Window extends JFrame {
 
 		return menuItem;
 	}
-	
+
 	private JMenuItem getMenuItemProcessos() {
 		JMenuItem menuItem = new JMenuItem("Processos", MasterImage.process_16x16);
 		menuItem.setFont(getDefaultFont());
@@ -175,7 +188,7 @@ public class Window extends JFrame {
 
 		return menuItem;
 	}
-	
+
 	private JMenuItem getMenuItemTabelas() {
 		JMenuItem menuItem = new JMenuItem("Tabelas", MasterImage.details_16x16);
 		menuItem.setFont(getDefaultFont());
@@ -189,7 +202,7 @@ public class Window extends JFrame {
 
 		return menuItem;
 	}
-	
+
 	private JMenuItem getMenuItemDirecao() {
 		JMenuItem menuItem = new JMenuItem("Dire\u00E7\u00E3o", MasterImage.direction_16x16);
 		menuItem.setFont(getDefaultFont());
@@ -227,7 +240,7 @@ public class Window extends JFrame {
 
 		return menuItem;
 	}
-	
+
 	// MENU AJUDA
 	private JMenu getMenuAjuda() {
 		menuAjuda = new JMenu("Ajuda");
@@ -245,7 +258,8 @@ public class Window extends JFrame {
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "Desenvolvimento:\n\nAlisson Schmitz\n"
-						+ "Edvaldo da Rosa\nGiovane Santiago\n" + "Wilian Hendler", "Informação", JOptionPane.INFORMATION_MESSAGE);
+						+ "Edvaldo da Rosa\nGiovane Santiago\n" + "Wilian Hendler", "Informação",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 

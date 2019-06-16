@@ -20,12 +20,11 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.InternalFrameEvent;
 
-import com.toedter.calendar.JDateChooser;
-
 import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ProcessModel;
+import br.com.dbreplicador.util.DateTimePicker;
 import br.com.dbreplicador.util.InternalFrameListener;
 
 public class ProcessFormWindow extends AbstractWindowFrame{
@@ -33,9 +32,9 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JLabel lblProcess, lblDescription, lblDateOf;
+	private JLabel lblProcess, lblDescription, lblLastReplication;
 	private JTextField txfProcess, txfDescription;
-	private JDateChooser jDateFor;
+	private DateTimePicker dateTimePicker;
 	private JCheckBox cbxIgnoreError, cbxEnable;
 	private JDesktopPane desktop;
 
@@ -48,7 +47,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
 	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "123");
 
 	public ProcessFormWindow(JDesktopPane desktop) {
 		super("Cadastro de Processos", 455, 270, desktop);
@@ -92,7 +91,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 								// Seta dados do model para os campos
 								txfProcess.setText(processModel.getProcess());
 								txfDescription.setText(processModel.getDescription());
-								jDateFor.setDate(processModel.getCurrentDateOf());
+								dateTimePicker.setDate(processModel.getCurrentDateOf());
 								cbxEnable.setSelected(processModel.isEnable());
 								cbxIgnoreError.setSelected(processModel.isErrorIgnore());
 								
@@ -137,6 +136,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);
+				
 			}
 		});
 
@@ -187,7 +187,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				processModel.setUser("admin");
 				processModel.setProcess(txfProcess.getText());
 				processModel.setDescription(txfDescription.getText());
-				processModel.setCurrentDateOf(getDateTime(jDateFor.getDate()));
+				processModel.setCurrentDateOf(getDateTime(dateTimePicker.getDate()));
 				processModel.setEnable(cbxEnable.isSelected());
 				processModel.setErrorIgnore(cbxIgnoreError.isSelected());
 				
@@ -256,7 +256,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		// Labels
 		lblProcess = new JLabel("Processo:");
 		lblDescription = new JLabel("Descri\u00E7\u00E3o:");
-		lblDateOf = new JLabel("Data De:");
+		lblLastReplication = new JLabel("\u00DAltima Replica\u00E7\u00E3o:");
 
 		// TextFields
 		txfProcess = new JTextField();
@@ -265,13 +265,14 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 		txfDescription = new JTextField();
 		txfDescription.setColumns(10);
 		formFields.add(txfDescription);
-		jDateFor = new JDateChooser();
-		jDateFor.setDateFormatString("dd/MM/yyyy");
-		formFields.add(jDateFor);
 		cbxIgnoreError = new JCheckBox("Ignorar Erro");
 		formFields.add(cbxIgnoreError);
 		cbxEnable = new JCheckBox("Habilitado");
 		formFields.add(cbxEnable);
+		
+		dateTimePicker = new DateTimePicker();
+		dateTimePicker.setFormats("dd/MM/yyyy HH:mm:ss");
+		formFields.add(dateTimePicker);
 		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -286,16 +287,17 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 							.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblDateOf)
 								.addComponent(lblProcess)
-								.addComponent(lblDescription))
+								.addComponent(lblDescription)
+								.addComponent(lblLastReplication))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(txfDescription, GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-								.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
-								.addComponent(jDateFor, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-								.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-								.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE))))
+								.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, 158, GroupLayout.PREFERRED_SIZE)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(txfDescription, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+									.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
+									.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+									.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)))))
 					.addGap(14))
 		);
 		groupLayout.setVerticalGroup(
@@ -316,9 +318,9 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 						.addComponent(lblDescription)
 						.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblDateOf)
-						.addComponent(jDateFor, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblLastReplication))
 					.addGap(18)
 					.addComponent(cbxIgnoreError)
 					.addPreferredGap(ComponentPlacement.UNRELATED)

@@ -81,6 +81,9 @@ public final class MasterImage extends ImageIcon{
 	public static final MasterImage
 	information_32x32 = LoadImage("32x32/informacao.png");
 	
+	public static final MasterImage
+	Wallpaper = LoadImage("wallpaper.png");
+	
 	private MasterImage(final String titulo) {
 		super(MasterImage.class.getResource(titulo));
 	}

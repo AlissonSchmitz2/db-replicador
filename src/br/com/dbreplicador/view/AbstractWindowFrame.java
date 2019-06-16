@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
-import com.toedter.calendar.JDateChooser;
+import br.com.dbreplicador.util.DateTimePicker;
 
 public abstract class AbstractWindowFrame extends JInternalFrame {
 	private static final long serialVersionUID = -9124809980962961247L;
@@ -39,7 +39,7 @@ public abstract class AbstractWindowFrame extends JInternalFrame {
 		setIconifiable(true);
 		
 		// Abrir janela centralizada
-		setLocation((desktop.getWidth() - this.getSize().width) / 2, (desktop.getHeight() - this.getSize().height) / 2);
+//		setLocation((desktop.getWidth() - this.getSize().width) / 2, (desktop.getHeight() - this.getSize().height) / 2);
 
 		// Bloquear movimento da janela
 		// windowWasMove();
@@ -104,8 +104,8 @@ public abstract class AbstractWindowFrame extends JInternalFrame {
 				((JTextArea) component).setText("");
 			} else if (component instanceof JComboBox) {
 				((JComboBox<?>) component).setSelectedIndex(0);
-			} else if (component instanceof JDateChooser) {
-				((JDateChooser) component).setDate(new Date());
+			} else if (component instanceof DateTimePicker) {
+				((DateTimePicker) component).setDate(new Date());
 			} else if(component instanceof JCheckBox) {
 				((JCheckBox) component).setSelected(false);
 			}
