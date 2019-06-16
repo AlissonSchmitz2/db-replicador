@@ -11,6 +11,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -19,6 +22,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import br.com.dbreplicador.image.MasterImage;
@@ -82,6 +86,12 @@ public class Window extends JFrame {
 		menuBar.add(getMenuProcessos());
 		menuBar.add(getMenuAjuda());
 
+		//Remove o atalho "F10" padrão no JMenuBar (Vem padrão nos SO)
+		InputMap iMap = menuBar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		Object action = iMap.get(KeyStroke.getKeyStroke("F10")); 
+		ActionMap actionMap = menuBar.getActionMap(); 
+		actionMap.getParent().remove(action);
+		
 		return menuBar;
 	}
 
