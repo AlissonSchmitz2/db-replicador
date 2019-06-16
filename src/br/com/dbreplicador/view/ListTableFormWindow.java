@@ -36,7 +36,7 @@ public class ListTableFormWindow extends AbstractGridWindow {
 	private TablesTableModel tablesTableModel;
 	private JTable jTableModels;
 
-	public ListTableFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ListTableFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Tabelas", 445, 310, desktop, true);
 
 		setFrameIcon(MasterImage.details_16x16);
@@ -44,7 +44,7 @@ public class ListTableFormWindow extends AbstractGridWindow {
 		createComponents();
 
 		try {
-			tableDAO = new TableDAO(CONNECTION);
+			tableDAO = new TableDAO(connection);
 		} catch (SQLException error) {
 			error.printStackTrace();
 		}

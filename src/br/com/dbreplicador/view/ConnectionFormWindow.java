@@ -56,17 +56,17 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	// Banco de dados
 	private ConnectionModel replicationModel;
 	private ReplicationDAO replicationDAO;
-	private Connection CONNECTION;
+	private Connection connection;
 	
-	public ConnectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ConnectionFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Cadastro de Conexões", 455, 330, desktop);
 		this.desktop = desktop;
-		this.CONNECTION = CONNECTION;
+		this.connection = connection;
 		
 		setFrameIcon(MasterImage.aplication_16x16);
 		
 		try {
-			replicationDAO = new ReplicationDAO(CONNECTION);
+			replicationDAO = new ReplicationDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -84,7 +84,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchConnectionWindow == null) {
-					searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
+					searchConnectionWindow = new ListConnectionFormWindow(desktop, connection);
 
 					searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 						

@@ -50,24 +50,24 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl;
 	private JCheckBox cbxEnable, cbxIgnoreError, cbxBackupIncre;
 	private JDesktopPane desktop;
-	private Connection CONNECTION;
+	private Connection connection;
 	
 	private TableModel tableModel;
 	private TableDAO tableDAO;
 	private JLabel lblColumnType;
 	private JTextField txfColumnType;
 
-	public TableFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public TableFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Cadastro de Tabelas", 470, 430, desktop);
 		this.desktop = desktop;
-		this.CONNECTION = CONNECTION;
+		this.connection = connection;
 		
 		setFrameIcon(MasterImage.details_16x16);
 		
 		createComponents();
 		
 		try {
-			tableDAO = new TableDAO(CONNECTION);
+			tableDAO = new TableDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -113,7 +113,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchListTableWindow == null) {
-					searchListTableWindow = new ListTableFormWindow(desktop, CONNECTION);
+					searchListTableWindow = new ListTableFormWindow(desktop, connection);
 
 					searchListTableWindow.addInternalFrameListener(new InternalFrameListener() {
 						
@@ -290,7 +290,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 	
 	private void openSearchProcess() {
 		if (searchProcessWindow == null) {
-			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+			searchProcessWindow = new ListProcessFormWindow(desktop, connection);
 
 			searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override

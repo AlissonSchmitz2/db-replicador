@@ -57,19 +57,19 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 	private ListProcessFormWindow searchProcessWindow;
 	private ListConnectionFormWindow searchConnectionWindow;
-	private Connection CONNECTION;
+	private Connection connection;
 
-	public DirectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public DirectionFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Cadastro da Direção", 555, 510, desktop);
 		this.desktop = desktop;
-		this.CONNECTION = CONNECTION;
+		this.connection = connection;
 
 		setFrameIcon(MasterImage.direction_16x16);
 
 		createComponents();
 
 		try {
-			directionDAO = new DirectionDAO(CONNECTION);
+			directionDAO = new DirectionDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -122,7 +122,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 	private void openSearchProcess() {
 		if (searchProcessWindow == null) {
-			searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+			searchProcessWindow = new ListProcessFormWindow(desktop, connection);
 
 			searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
@@ -143,7 +143,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 	private void openSearchDBDestiny() {
 		if (searchConnectionWindow == null) {
-			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
+			searchConnectionWindow = new ListConnectionFormWindow(desktop, connection);
 
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
@@ -165,7 +165,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 	private void openSearchDBOrigin() {
 		if (searchConnectionWindow == null) {
-			searchConnectionWindow = new ListConnectionFormWindow(desktop, CONNECTION);
+			searchConnectionWindow = new ListConnectionFormWindow(desktop, connection);
 
 			searchConnectionWindow.addInternalFrameListener(new InternalFrameListener() {
 				@Override
@@ -190,7 +190,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchDirectionWindow == null) {
-					searchDirectionWindow = new ListDirectionFormWindow(desktop, CONNECTION);
+					searchDirectionWindow = new ListDirectionFormWindow(desktop, connection);
 
 					searchDirectionWindow.addInternalFrameListener(new InternalFrameListener() {
 

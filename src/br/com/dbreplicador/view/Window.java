@@ -55,7 +55,7 @@ public class Window extends JFrame {
 	
 	private JLabel wallpaper;
 
-	private Connection CONNECTION;
+	private Connection connection;
 	
 	private ManipulateFile man = new ManipulateFile();
 	
@@ -221,7 +221,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameDirectionForm = new DirectionFormWindow(desktop, CONNECTION);
+				frameDirectionForm = new DirectionFormWindow(desktop, connection);
 				abrirFrame(frameDirectionForm);
 			}
 		});
@@ -315,9 +315,9 @@ public class Window extends JFrame {
 			settingDBReplicator.getUser();
 			settingDBReplicator.getPassword();
 			
-			CONNECTION = ConnectionFactory.getConnection(settingDBReplicator.getUser(), settingDBReplicator.getPassword());
+			connection = ConnectionFactory.getConnection(settingDBReplicator.getUser(), settingDBReplicator.getPassword());
 			
-			return CONNECTION;
+			return connection;
 	}
 	
 	private Font getDefaultFont() {

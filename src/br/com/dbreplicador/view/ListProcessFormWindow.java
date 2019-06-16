@@ -36,7 +36,7 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 	private ProcessTableModel processTableModel;
 	private JTable jTableModels;
 
-	public ListProcessFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ListProcessFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Processos", 445, 310, desktop, true);
 
 		setFrameIcon(MasterImage.process_16x16);
@@ -44,7 +44,7 @@ public class ListProcessFormWindow extends AbstractGridWindow {
 		createComponents();
 		
 		try {
-			processDAO = new ProcessDAO(CONNECTION);
+			processDAO = new ProcessDAO(connection);
 		} catch (SQLException error) {
 			error.printStackTrace();
 		}

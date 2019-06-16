@@ -45,19 +45,19 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	// Banco de dados
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
-	private Connection CONNECTION;
+	private Connection connection;
 
-	public ProcessFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ProcessFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Cadastro de Processos", 455, 270, desktop);
 		this.desktop = desktop;
-		this.CONNECTION = CONNECTION;
+		this.connection = connection;
 		
 		createComponents();
 		
 		setFrameIcon(MasterImage.process_16x16);
 		
 		try {
-			processDAO = new ProcessDAO(CONNECTION);
+			processDAO = new ProcessDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -73,7 +73,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (searchProcessWindow == null) {
-					searchProcessWindow = new ListProcessFormWindow(desktop, CONNECTION);
+					searchProcessWindow = new ListProcessFormWindow(desktop, connection);
 
 					searchProcessWindow.addInternalFrameListener(new InternalFrameListener() {
 						

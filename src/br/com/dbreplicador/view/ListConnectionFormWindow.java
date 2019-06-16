@@ -36,7 +36,7 @@ public class ListConnectionFormWindow extends AbstractGridWindow {
 	private ConnectionTableModel connectionTableModel;
 	private JTable jTableModels;
 
-	public ListConnectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ListConnectionFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Conexões", 445, 310, desktop, true);
 
 		setFrameIcon(MasterImage.process_16x16);
@@ -44,7 +44,7 @@ public class ListConnectionFormWindow extends AbstractGridWindow {
 		createComponents();
 		
 		try {
-			replicationDAO = new ReplicationDAO(CONNECTION);
+			replicationDAO = new ReplicationDAO(connection);
 		} catch (SQLException error) {
 			error.printStackTrace();
 		}

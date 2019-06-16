@@ -36,7 +36,7 @@ public class ListDirectionFormWindow extends AbstractGridWindow {
 	private DirectionTableModel directionTableModel;
 	private JTable jTableModels;
 
-	public ListDirectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+	public ListDirectionFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Direção", 445, 310, desktop, true);
 
 		setFrameIcon(MasterImage.direction_16x16);
@@ -44,7 +44,7 @@ public class ListDirectionFormWindow extends AbstractGridWindow {
 		createComponents();
 		
 		try {
-			directionDAO = new DirectionDAO(CONNECTION);
+			directionDAO = new DirectionDAO(connection);
 		} catch (SQLException error) {
 			error.printStackTrace();
 		}
