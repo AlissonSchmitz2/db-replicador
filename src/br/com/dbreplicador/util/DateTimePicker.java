@@ -80,8 +80,8 @@ public class DateTimePicker extends JXDatePicker {
 
             GregorianCalendar calendar = new GregorianCalendar();
             calendar.setTime(date);
-            calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get( Calendar.HOUR_OF_DAY ) );
-            calendar.set(Calendar.MINUTE, timeCalendar.get( Calendar.MINUTE ) );
+            calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, timeCalendar.get( Calendar.MINUTE));
             calendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
             calendar.set(Calendar.MILLISECOND, 0);
 

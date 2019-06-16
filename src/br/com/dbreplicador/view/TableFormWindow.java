@@ -28,7 +28,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.dao.TableDAO;
-import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.model.TableModel;
@@ -51,21 +50,19 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl;
 	private JCheckBox cbxEnable, cbxIgnoreError, cbxBackupIncre;
 	private JDesktopPane desktop;
-	
-	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	private Connection CONNECTION;
 	
 	private TableModel tableModel;
 	private TableDAO tableDAO;
 	private JLabel lblColumnType;
 	private JTextField txfColumnType;
 
-	public TableFormWindow(JDesktopPane desktop) {
-		super("Cadastro de Tabelas", 470, 400, desktop);
-
-		setFrameIcon(MasterImage.details_16x16);
-
+	public TableFormWindow(JDesktopPane desktop, Connection CONNECTION) {
+		super("Cadastro de Tabelas", 470, 430, desktop);
 		this.desktop = desktop;
+		this.CONNECTION = CONNECTION;
+		
+		setFrameIcon(MasterImage.details_16x16);
 		
 		createComponents();
 		

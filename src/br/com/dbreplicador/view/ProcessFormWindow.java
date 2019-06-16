@@ -21,7 +21,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.dao.ProcessDAO;
-import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.util.DateTimePicker;
@@ -46,13 +45,12 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 	// Banco de dados
 	private ProcessModel processModel;
 	private ProcessDAO processDAO;
-	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "123");
+	private Connection CONNECTION;
 
-	public ProcessFormWindow(JDesktopPane desktop) {
+	public ProcessFormWindow(JDesktopPane desktop, Connection CONNECTION) {
 		super("Cadastro de Processos", 455, 270, desktop);
-
 		this.desktop = desktop;
+		this.CONNECTION = CONNECTION;
 		
 		createComponents();
 		
@@ -187,7 +185,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 				processModel.setUser("admin");
 				processModel.setProcess(txfProcess.getText());
 				processModel.setDescription(txfDescription.getText());
-				processModel.setCurrentDateOf(getDateTime(dateTimePicker.getDate()));
+				if(dateTimePicker.getDate() != null) processModel.setCurrentDateOf(getDateTime(dateTimePicker.getDate()));
 				processModel.setEnable(cbxEnable.isSelected());
 				processModel.setErrorIgnore(cbxIgnoreError.isSelected());
 				
@@ -292,7 +290,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 								.addComponent(lblLastReplication))
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, 158, GroupLayout.PREFERRED_SIZE)
+								.addComponent(dateTimePicker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 									.addComponent(txfDescription, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
 									.addComponent(txfProcess, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
@@ -325,7 +323,7 @@ public class ProcessFormWindow extends AbstractWindowFrame{
 					.addComponent(cbxIgnoreError)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cbxEnable)
-					.addContainerGap(38, Short.MAX_VALUE))
+					.addContainerGap(36, Short.MAX_VALUE))
 		);
 		getContentPane().setLayout(groupLayout);
 	}

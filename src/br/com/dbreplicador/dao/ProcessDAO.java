@@ -13,7 +13,6 @@ import java.util.List;
 import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
-import br.com.nocaute.model.RegistrationModalityModel;
 
 public class ProcessDAO extends AbstractCrudDAO<ProcessModel> implements ISearchable<ProcessModel> {
 	private static final String TABLE_NAME = "tb_replicacao_processo";

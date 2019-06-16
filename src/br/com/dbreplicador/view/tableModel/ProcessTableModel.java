@@ -39,7 +39,11 @@ public class ProcessTableModel extends AbstractTableModel<ProcessModel> {
 			valueObject = model.getDescription();
 			break;
 		case 2:
-			valueObject = dateFormat.format(model.getCurrentDateOf());
+			if (model.getCurrentDateOf() != null) {
+				valueObject = dateFormat.format(model.getCurrentDateOf());
+			} else{
+				valueObject = null;
+			}
 			break;	
 		default:
 			System.err.println("Índice da coluna inválido");
