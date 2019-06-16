@@ -1,5 +1,6 @@
 package br.com.dbreplicador.view;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -9,8 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import br.com.dbreplicador.dao.DirectionDAO;
 import br.com.dbreplicador.enums.ReplicationEvents;
-import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.TableModel;
 import br.com.dbreplicador.observers.contracts.IReplicationObserver;
@@ -49,10 +50,14 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	private Integer totalOfErrors = 0;
 	private Integer processingProgress = 0;
 	
-	public ReplicationExecutor() {
-		// Guardo a conexão.
-
-		// Instancia os DAO de controle.
+	private DirectionDAO directionDao;
+	
+	public ReplicationExecutor(Connection connection) {
+		try {
+			directionDao = new DirectionDAO(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void start(Timestamp fromDate) {
@@ -120,7 +125,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 			public void run() {
 				try {
 					//Pega as direções do DAO para replicação
-					Map<Integer, DirectionModel> directions = getDirectionsToReplicate();
+					Map<Integer, DirectionModel> directions = directionDao.getProcessesToReplication();
 					
 					//Apartir das conexões retornadas do banco de dados, gera a fila de queries para processamento
 					generateQueue(directions);
@@ -134,73 +139,6 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 				}
 			}
 		}).start();
-	}
-	
-	private Map<Integer, DirectionModel> getDirectionsToReplicate() {
-		//---------------- Para ser refatorado ----------------------//
-		
-		//TODO: Recuperar conexões para processamento através do DAO
-		//Nota: Ao criar o DAO, levar em consideração somente os ativos
-		ConnectionModel originConnection = new ConnectionModel();
-		originConnection.setDatebaseType("PostgreSQL");
-		originConnection.setAddress("localhost");
-		originConnection.setDatabase("master");
-		originConnection.setPort(5432);
-		
-		ConnectionModel destinationConnection = new ConnectionModel();
-		destinationConnection.setDatebaseType("PostgreSQL");
-		destinationConnection.setAddress("localhost");
-		destinationConnection.setDatabase("nocaute2");
-		destinationConnection.setPort(5432);
-
-		DirectionModel direction1 = new DirectionModel();
-		direction1.setOriginConnectionModel(originConnection);
-		direction1.setOriginUser("admin");
-		direction1.setOriginPassword("admin");
-		
-		direction1.setDestinationConnectionModel(destinationConnection);
-		direction1.setDestinationUser("admin");
-		direction1.setDestinationPassword("admin");
-		
-		//Tables
-		TableModel cityTable = new TableModel();
-		cityTable.setOrder(1);
-		cityTable.setOriginTable("cidades");
-		cityTable.setDestinationTable("cidades");
-		cityTable.setCurrentDate(new Timestamp(0));//TODO: deve vir do banco de dados
-		//TODO: setColumnControl,
-		//TODO: setUniqueKey
-		cityTable.setKeyColumn("id_cidade");
-		cityTable.setMaximumLines(50);
-		cityTable.setErrorIgnore(true);
-		cityTable.setEnable(true);
-		
-		TableModel studentTable = new TableModel();
-		studentTable.setOrder(1);
-		studentTable.setOriginTable("alunos");
-		studentTable.setDestinationTable("alunos");
-		studentTable.setCurrentDate(new Timestamp(0));//TODO: deve vir do banco de dados
-		//TODO: setColumnControl,
-		//TODO: setUniqueKey
-		studentTable.setKeyColumn("codigo_aluno"); //TODO
-		studentTable.setMaximumLines(50);
-		studentTable.setErrorIgnore(true);
-		studentTable.setEnable(true);
-		
-		Map<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
-		tables.put(1, cityTable);
-		tables.put(2, studentTable);
-		direction1.setTables(tables);
-		//End Tables
-		
-		Map<Integer, DirectionModel> daoReturn = new HashMap<Integer, DirectionModel>();
-		
-		//Adiciona a conexão a fila para processamento
-		daoReturn.put(1, direction1);
-		
-		//---------------- final - refatoração ----------------------//
-		
-		return daoReturn;
 	}
 	
 	private void generateQueue(Map<Integer, DirectionModel> directions) {
@@ -232,10 +170,12 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 					List<IQuery> queries = replicator.getQueriesForReplication(
 						table.getOriginTable(),
 						table.getDestinationTable(),
-						table.getKeyColumn(),//TODO
-						"ultima_atualizacao",//TODO
+						table.getKeyColumn(),
+						table.getControlColumn(),
 						table.getCurrentDate()
 					);
+					
+					System.out.println(queries.size());
 					
 					//Adiciona as queries a fila
 					queries.forEach(query -> {
@@ -243,6 +183,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 					});
 				}
 			} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

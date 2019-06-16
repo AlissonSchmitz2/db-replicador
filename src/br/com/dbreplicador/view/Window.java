@@ -221,7 +221,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameDirectionForm = new DirectionFormWindow(desktop, connection);
+				frameDirectionForm = new DirectionFormWindow(desktop, getConnection());
 				abrirFrame(frameDirectionForm);
 			}
 		});
@@ -245,7 +245,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameReplicatorWindow = new ReplicationWindow(desktop);
+				frameReplicatorWindow = new ReplicationWindow(desktop, getConnection());
 				abrirFrame(frameReplicatorWindow);
 			}
 		});
