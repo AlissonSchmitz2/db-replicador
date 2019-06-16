@@ -31,6 +31,8 @@ import javax.swing.WindowConstants;
 
 import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.SettingDBReplicator;
+import br.com.dbreplicador.util.ManipulateFile;
 
 public class Window extends JFrame {
 	private static final long serialVersionUID = 3283754083146407662L;
@@ -53,7 +55,9 @@ public class Window extends JFrame {
 	
 	private JLabel wallpaper;
 
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "123");
+	private Connection CONNECTION;
+	
+	private ManipulateFile man = new ManipulateFile();
 	
 	public Window() {
 		super();
@@ -86,7 +90,7 @@ public class Window extends JFrame {
 	private void startingWindow() {
 		String dataLogin = getDateTime();
 		this.setTitle(
-				"Replicador Banco de dados v1.0.0-betha      " + "Usuário Logado: " + " - Último Login: " + dataLogin);
+				"Replicador Banco de dados v1.0.0-betha\t\t" + "Usuário Logado: " + " - Último Login: " + dataLogin);
 		this.setJMenuBar(getWindowMenuBar());
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		this.setBounds(new Rectangle(0, 0, 796, 713));
@@ -133,6 +137,10 @@ public class Window extends JFrame {
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Configurações
+				
+				SettingFormWindow config = new SettingFormWindow(desktop);
+				abrirFrame(config);
+				
 			}
 		});
 
@@ -171,7 +179,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameConnectionsForm = new ConnectionFormWindow(desktop, CONNECTION);
+				frameConnectionsForm = new ConnectionFormWindow(desktop, getConnection());
 				abrirFrame(frameConnectionsForm);
 			}
 		});
@@ -185,7 +193,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameProcessForm = new ProcessFormWindow(desktop, CONNECTION);
+				frameProcessForm = new ProcessFormWindow(desktop, getConnection());
 				abrirFrame(frameProcessForm);
 			}
 		});
@@ -199,7 +207,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameTableForm = new TableFormWindow(desktop, CONNECTION);
+				frameTableForm = new TableFormWindow(desktop, getConnection());
 				abrirFrame(frameTableForm);
 			}
 		});
@@ -298,7 +306,20 @@ public class Window extends JFrame {
 					null);
 		}
 	}
+	
+	private Connection getConnection() {
+			SettingDBReplicator settingDBReplicator = new SettingDBReplicator();
 
+			settingDBReplicator = man.RecoverData();
+
+			settingDBReplicator.getUser();
+			settingDBReplicator.getPassword();
+			
+			CONNECTION = ConnectionFactory.getConnection(settingDBReplicator.getUser(), settingDBReplicator.getPassword());
+			
+			return CONNECTION;
+	}
+	
 	private Font getDefaultFont() {
 		return new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12);
 	}
