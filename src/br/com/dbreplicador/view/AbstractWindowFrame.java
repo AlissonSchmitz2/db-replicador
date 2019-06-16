@@ -105,7 +105,7 @@ public abstract class AbstractWindowFrame extends JInternalFrame {
 			} else if (component instanceof JComboBox) {
 				((JComboBox<?>) component).setSelectedIndex(0);
 			} else if (component instanceof DateTimePicker) {
-				((DateTimePicker) component).setDate(new Date());
+				((DateTimePicker) component).setDate(null);
 			} else if(component instanceof JCheckBox) {
 				((JCheckBox) component).setSelected(false);
 			}

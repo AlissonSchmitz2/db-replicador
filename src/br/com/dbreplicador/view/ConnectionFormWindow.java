@@ -1,19 +1,5 @@
 package br.com.dbreplicador.view;
 
-import javax.swing.JButton;
-import javax.swing.JDesktopPane;
-import javax.swing.JFormattedTextField;
-
-import br.com.dbreplicador.dao.ReplicationDAO;
-import br.com.dbreplicador.database.ConnectionFactory;
-import br.com.dbreplicador.enums.Databases;
-import br.com.dbreplicador.image.MasterImage;
-import br.com.dbreplicador.model.ConnectionModel;
-import br.com.dbreplicador.pojos.Database;
-import br.com.dbreplicador.util.InternalFrameListener;
-import br.com.dbreplicador.util.RegexFormatter;
-import br.com.dbreplicador.view.combomodel.GenericComboModel;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,12 +12,24 @@ import java.util.regex.Pattern;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDesktopPane;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
+
+import br.com.dbreplicador.dao.ReplicationDAO;
+import br.com.dbreplicador.enums.Databases;
+import br.com.dbreplicador.image.MasterImage;
+import br.com.dbreplicador.model.ConnectionModel;
+import br.com.dbreplicador.pojos.Database;
+import br.com.dbreplicador.util.InternalFrameListener;
+import br.com.dbreplicador.util.RegexFormatter;
+import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
 public class ConnectionFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 3721635335554059099L;
@@ -58,13 +56,12 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	// Banco de dados
 	private ConnectionModel replicationModel;
 	private ReplicationDAO replicationDAO;
-	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
+	private Connection CONNECTION;
 	
-
-	public ConnectionFormWindow(JDesktopPane desktop) {
+	public ConnectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
 		super("Cadastro de Conexões", 455, 330, desktop);
 		this.desktop = desktop;
+		this.CONNECTION = CONNECTION;
 		
 		setFrameIcon(MasterImage.aplication_16x16);
 		

@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,7 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
+import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 
 public class Window extends JFrame {
@@ -51,6 +53,8 @@ public class Window extends JFrame {
 	
 	private JLabel wallpaper;
 
+	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "123");
+	
 	public Window() {
 		super();
 
@@ -167,7 +171,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameConnectionsForm = new ConnectionFormWindow(desktop);
+				frameConnectionsForm = new ConnectionFormWindow(desktop, CONNECTION);
 				abrirFrame(frameConnectionsForm);
 			}
 		});
@@ -181,7 +185,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameProcessForm = new ProcessFormWindow(desktop);
+				frameProcessForm = new ProcessFormWindow(desktop, CONNECTION);
 				abrirFrame(frameProcessForm);
 			}
 		});
@@ -195,7 +199,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameTableForm = new TableFormWindow(desktop);
+				frameTableForm = new TableFormWindow(desktop, CONNECTION);
 				abrirFrame(frameTableForm);
 			}
 		});
@@ -209,7 +213,7 @@ public class Window extends JFrame {
 
 		menuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameDirectionForm = new DirectionFormWindow(desktop);
+				frameDirectionForm = new DirectionFormWindow(desktop, CONNECTION);
 				abrirFrame(frameDirectionForm);
 			}
 		});

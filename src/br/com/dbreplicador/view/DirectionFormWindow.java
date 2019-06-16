@@ -28,7 +28,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.dao.DirectionDAO;
-import br.com.dbreplicador.database.ConnectionFactory;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
@@ -58,14 +57,12 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 	private ListProcessFormWindow searchProcessWindow;
 	private ListConnectionFormWindow searchConnectionWindow;
+	private Connection CONNECTION;
 
-	// TODO: Conexão provisória (Refatorar)
-	private Connection CONNECTION = ConnectionFactory.getConnection("postgres", "ssda7321");
-
-	public DirectionFormWindow(JDesktopPane desktop) {
+	public DirectionFormWindow(JDesktopPane desktop, Connection CONNECTION) {
 		super("Cadastro da Direção", 555, 510, desktop);
-
 		this.desktop = desktop;
+		this.CONNECTION = CONNECTION;
 
 		setFrameIcon(MasterImage.direction_16x16);
 
