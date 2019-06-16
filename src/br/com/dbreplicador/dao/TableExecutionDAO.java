@@ -209,9 +209,9 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 		model.setTableCode(rst.getInt("codigo_tabela"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setProcess(rst.getString("processo"));
-		model.setOriginDatabase(rst.getString("database_origem"));
+		model.setOriginDatabase(rst.getInt("database_origem"));
 		model.setOriginUser(rst.getString("usuario_origem"));
-		model.setDestinationDatabase(rst.getString("database_destino"));
+		model.setDestinationDatabase(rst.getInt("database_destino"));
 		model.setDestinationUser(rst.getString("usuario_destino"));
 		model.setExecutionStartDateTime(rst.getTimestamp("execucao_inicio_data_hora"));
 		model.setOrder(rst.getInt("ordem"));

@@ -6,9 +6,9 @@ public class TableExecutionModel extends AbstractModel {
 	private Integer codigo_tabela;
 	private Timestamp data_atual;
 	private String processo;
-	private String database_origem;
+	private int database_origem;
 	private String usuario_origem;
-	private String database_destino;
+	private int database_destino;
 	private String usuario_destino;
 	private Timestamp execucao_inicio_data_hora;
 	private Integer ordem;
@@ -70,7 +70,7 @@ public class TableExecutionModel extends AbstractModel {
 	/**
 	 * database_origem
 	 */
-	public String getOriginDatabase() {
+	public int getOriginDatabase() {
 		return database_origem;
 	}
 	
@@ -79,7 +79,7 @@ public class TableExecutionModel extends AbstractModel {
 	 * 
 	 * @param originDatabase
 	 */
-	public void setOriginDatabase(String originDatabase) {
+	public void setOriginDatabase(int originDatabase) {
 		this.database_origem = originDatabase;
 	}
 	
@@ -102,7 +102,7 @@ public class TableExecutionModel extends AbstractModel {
 	/**
 	 * database_destino
 	 */
-	public String getDestinationDatabase() {
+	public int getDestinationDatabase() {
 		return database_destino;
 	}
 	
@@ -111,7 +111,7 @@ public class TableExecutionModel extends AbstractModel {
 	 * 
 	 * @param destinationDatabase
 	 */
-	public void setDestinationDatabase(String destinationDatabase) {
+	public void setDestinationDatabase(int destinationDatabase) {
 		this.database_destino = destinationDatabase;
 	}
 	

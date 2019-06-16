@@ -153,7 +153,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 					if (selectedModel != null) {
 						// Atribui database destino para o campo
-						txfDBDestiny.setText(selectedModel.getDatabase());
+						txfDBDestiny.setText(selectedModel.getReplicationCode().toString());
 					}
 
 					// Reseta janela
@@ -175,7 +175,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 					if (selectedModel != null) {
 						// Atribui database origem para o campo
-						txfDBOrigin.setText(selectedModel.getDatabase());
+						txfDBOrigin.setText(selectedModel.getReplicationCode().toString());
 					}
 
 					// Reseta janela
@@ -209,10 +209,10 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 								txfRetention.setText(String.valueOf(directionModel.getRetention()));
 								cbxAutomatic.setSelected(directionModel.isAutomaticManual());
 								cbxEnable.setSelected(directionModel.isEnabled());
-								txfDBOrigin.setText(directionModel.getOriginDatabase());
+								txfDBOrigin.setText(((Integer)directionModel.getOriginDatabase()).toString());
 								txfUserOrigin.setText(directionModel.getOriginUser());
 								txfPasswordOrigin.setText(directionModel.getOriginPassword());
-								txfDBDestiny.setText(directionModel.getDestinationDatabase());
+								txfDBDestiny.setText(((Integer)directionModel.getDestinationDatabase()).toString());
 								txfUserDestiny.setText(directionModel.getDestinationUser());
 								txfPasswordDestiny.setText(directionModel.getDestinationPassword());
 
@@ -321,10 +321,10 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				directionModel.setAutomaticManual(cbxAutomatic.isSelected());
 				directionModel.setCurrentDate(getDateTime(new Date()));
 				directionModel.setDayPeriod(Integer.parseInt(txfDay.getText()));
-				directionModel.setDestinationDatabase(txfDBDestiny.getText());
+				directionModel.setDestinationDatabase(Integer.parseInt(txfDBDestiny.getText()));
 				directionModel.setDestinationPassword(txfPasswordDestiny.getText());
 				directionModel.setDestinationUser(txfUserDestiny.getText());
-				directionModel.setOriginDatabase(txfDBOrigin.getText());
+				directionModel.setOriginDatabase(Integer.parseInt(txfDBOrigin.getText()));
 				directionModel.setOriginPassword(txfPasswordOrigin.getText());
 				directionModel.setOriginUser(txfUserOrigin.getText());
 				directionModel.setEnabled(cbxEnable.isSelected());

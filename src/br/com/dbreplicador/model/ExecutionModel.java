@@ -6,9 +6,9 @@ public class ExecutionModel extends AbstractModel{
 	private int codigo_execucao;
 	private Timestamp data_atual;
 	private String usuario;
-	private String database_origem;
+	private int database_origem;
 	private String usuario_origem;
-	private String database_destino;
+	private int database_destino;
 	private String usuario_destino;
 	private Timestamp inicio_data_hora;
 	private Timestamp fim_data_hora;
@@ -65,14 +65,14 @@ public class ExecutionModel extends AbstractModel{
 	/**
 	 * @return database_origem
 	 */
-	public String getOriginDatabase() {
+	public int getOriginDatabase() {
 		return database_origem;
 	}
 
 	/**
 	 * @param originDatabase
 	 */
-	public void setOriginDatabase(String originDatabase) {
+	public void setOriginDatabase(int originDatabase) {
 		this.database_origem = originDatabase;
 	}
 
@@ -93,14 +93,14 @@ public class ExecutionModel extends AbstractModel{
 	/**
 	 * @return the database_destino
 	 */
-	public String getDestinatioDatabase() {
+	public int getDestinatioDatabase() {
 		return database_destino;
 	}
 
 	/**
 	 * @param destinatioDatabase
 	 */
-	public void setDestinatioDatabase(String destinatioDatabase) {
+	public void setDestinatioDatabase(int destinatioDatabase) {
 		this.database_destino = destinatioDatabase;
 	}
 

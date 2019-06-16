@@ -2,12 +2,12 @@ package br.com.dbreplicador.view;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import br.com.dbreplicador.enums.ReplicationEvents;
 import br.com.dbreplicador.model.ConnectionModel;
@@ -37,8 +37,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	
 	private Collection<IReplicationObserver> observers = new HashSet<IReplicationObserver>();
 	
-	private AbstractMap<Integer, ReplicationQueueItem> queue = new HashMap<Integer, ReplicationQueueItem>();
-	private AbstractMap<String, TableModel> processedTables = new HashMap<String, TableModel>();
+	private Map<Integer, ReplicationQueueItem> queue = new HashMap<Integer, ReplicationQueueItem>();
+	private Map<String, TableModel> processedTables = new HashMap<String, TableModel>();
 	private Integer currentQueueIndex = 0;
 	
 	private String currentOriginDirection = "";
@@ -120,7 +120,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 			public void run() {
 				try {
 					//Pega as direções do DAO para replicação
-					AbstractMap<Integer, DirectionModel> directions = getDirectionsToReplicate();
+					Map<Integer, DirectionModel> directions = getDirectionsToReplicate();
 					
 					//Apartir das conexões retornadas do banco de dados, gera a fila de queries para processamento
 					generateQueue(directions);
@@ -136,7 +136,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		}).start();
 	}
 	
-	private AbstractMap<Integer, DirectionModel> getDirectionsToReplicate() {
+	private Map<Integer, DirectionModel> getDirectionsToReplicate() {
 		//---------------- Para ser refatorado ----------------------//
 		
 		//TODO: Recuperar conexões para processamento através do DAO
@@ -187,13 +187,13 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		studentTable.setErrorIgnore(true);
 		studentTable.setEnable(true);
 		
-		AbstractMap<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
+		Map<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
 		tables.put(1, cityTable);
 		tables.put(2, studentTable);
 		direction1.setTables(tables);
 		//End Tables
 		
-		AbstractMap<Integer, DirectionModel> daoReturn = new HashMap<Integer, DirectionModel>();
+		Map<Integer, DirectionModel> daoReturn = new HashMap<Integer, DirectionModel>();
 		
 		//Adiciona a conexão a fila para processamento
 		daoReturn.put(1, direction1);
@@ -203,7 +203,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		return daoReturn;
 	}
 	
-	private void generateQueue(AbstractMap<Integer, DirectionModel> directions) {
+	private void generateQueue(Map<Integer, DirectionModel> directions) {
 		for (DirectionModel direction : directions.values()) {
 			ConnectionInfo originConnInfo = new ConnectionInfo(
 				getDatabaseType(direction.getOriginConnectionModel().getDatebaseType()),

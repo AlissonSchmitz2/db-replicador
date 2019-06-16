@@ -1,6 +1,8 @@
 package br.com.dbreplicador.model;
 
 import java.sql.Timestamp;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ProcessModel extends AbstractModel {
 	private Integer codigo_processo;
@@ -11,6 +13,19 @@ public class ProcessModel extends AbstractModel {
 	private Timestamp data_atual_de;
 	private boolean erro_ignorar;
 	private boolean habilitado;
+	
+	/*
+	 * Relacionamentos
+	 */
+	private Set<DirectionModel> directions = new TreeSet<DirectionModel>();
+	
+	public Set<DirectionModel> getDirections() {
+		return directions;
+	}
+	
+	public void setDirections(Set<DirectionModel> directions) {
+		this.directions = directions;
+	}
 	
 	/**
 	 * codigo_processo

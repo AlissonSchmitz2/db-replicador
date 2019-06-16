@@ -5,11 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import br.com.dbreplicador.dao.contracts.ISearchable;
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.model.ProcessModel;
+import br.com.dbreplicador.model.TableModel;
 
 public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISearchable<DirectionModel>{
 	private static final String TABLE_NAME = "tb_replicacao_direcao";
@@ -237,6 +245,113 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		return model;
 	}
 	
+	public Map<Integer, DirectionModel> getProcessesToReplication() throws SQLException {
+		String query = "SELECT" + 
+				"       d.*," + 
+				"       p.descricao AS p_descricao," + 
+				"       p.data_atual_de AS p_data_atual_de," + 
+				"       p.erro_ignorar AS p_error_ignorar" + 
+				"FROM tb_replicacao_direcao AS d" + 
+				"    INNER JOIN tb_replicacao_processo AS p ON p.processo=d.processo" + 
+				"WHERE p.habilitado=true AND d.habilitado=true;";
+		
+		PreparedStatement pst = connection.prepareStatement(query);
+		
+		Set<DirectionModel> directions = new TreeSet<DirectionModel>();
+	
+		ResultSet directionsRst = pst.executeQuery();
+	
+		while (directionsRst.next()) {
+			//DIREÇÕES
+			DirectionModel direction = createModelFromResultSet(directionsRst);
+			
+			//PROCESSO
+			ProcessModel process = new ProcessModel();
+			process.setDescription(directionsRst.getString("p_descricao"));
+			process.setCurrentDateOf(directionsRst.getTimestamp("p_data_atual_de"));
+			process.setErrorIgnore(directionsRst.getBoolean("p_error_ignorar"));
+			
+			//Relaciona o processo com a direção
+			direction.setProcessModel(process);
+			
+			//CONEXÕES
+			/*ConnectionModel originConnection = new ConnectionModel();
+			originConnection.setDatebaseType("PostgreSQL");
+			originConnection.setAddress("localhost");
+			originConnection.setDatabase("master");
+			originConnection.setPort(5432);*/
+			
+			//Adiciona a lista
+			directions.add(direction);
+		}
+		/*
+		//---------------- Para ser refatorado ----------------------//
+		
+		//TODO: Recuperar conexões para processamento através do DAO
+		//Nota: Ao criar o DAO, levar em consideração somente os ativos
+		ConnectionModel originConnection = new ConnectionModel();
+		originConnection.setDatebaseType("PostgreSQL");
+		originConnection.setAddress("localhost");
+		originConnection.setDatabase("master");
+		originConnection.setPort(5432);
+		
+		ConnectionModel destinationConnection = new ConnectionModel();
+		destinationConnection.setDatebaseType("PostgreSQL");
+		destinationConnection.setAddress("localhost");
+		destinationConnection.setDatabase("nocaute2");
+		destinationConnection.setPort(5432);
+
+		DirectionModel direction1 = new DirectionModel();
+		direction1.setOriginConnectionModel(originConnection);
+		direction1.setOriginUser("admin");
+		direction1.setOriginPassword("admin");
+		
+		direction1.setDestinationConnectionModel(destinationConnection);
+		direction1.setDestinationUser("admin");
+		direction1.setDestinationPassword("admin");
+		
+		//Tables
+		TableModel cityTable = new TableModel();
+		cityTable.setOrder(1);
+		cityTable.setOriginTable("cidades");
+		cityTable.setDestinationTable("cidades");
+		cityTable.setCurrentDate(new Timestamp(0));//TODO: deve vir do banco de dados
+		//TODO: setColumnControl,
+		//TODO: setUniqueKey
+		cityTable.setKeyColumn("id_cidade");
+		cityTable.setMaximumLines(50);
+		cityTable.setErrorIgnore(true);
+		cityTable.setEnable(true);
+		
+		TableModel studentTable = new TableModel();
+		studentTable.setOrder(1);
+		studentTable.setOriginTable("alunos");
+		studentTable.setDestinationTable("alunos");
+		studentTable.setCurrentDate(new Timestamp(0));//TODO: deve vir do banco de dados
+		//TODO: setColumnControl,
+		//TODO: setUniqueKey
+		studentTable.setKeyColumn("codigo_aluno"); //TODO
+		studentTable.setMaximumLines(50);
+		studentTable.setErrorIgnore(true);
+		studentTable.setEnable(true);
+		
+		Map<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
+		tables.put(1, cityTable);
+		tables.put(2, studentTable);
+		direction1.setTables(tables);
+		//End Tables
+		
+		Map<Integer, DirectionModel> daoReturn = new HashMap<Integer, DirectionModel>();
+		
+		//Adiciona a conexão a fila para processamento
+		daoReturn.put(1, direction1);
+		
+		//---------------- final - refatoração ----------------------//
+		 */
+		
+		return null;
+	}
+	
 	/**
 	 * Cria um objeto Model a partir do resultado obtido no banco de dados
 	 * 
@@ -251,10 +366,10 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setUser(rst.getString("usuario"));
 		model.setProcess(rst.getString("processo"));
-		model.setOriginDatabase(rst.getString("database_origem"));
+		model.setOriginDatabase(rst.getInt("database_origem"));
 		model.setOriginUser(rst.getString("usuario_origem"));
 		model.setOriginPassword(rst.getString("senha_origem"));
-		model.setDestinationDatabase(rst.getString("database_destino"));
+		model.setDestinationDatabase(rst.getInt("database_destino"));
 		model.setDestinationUser(rst.getString("usuario_destino"));
 		model.setDestinationPassword(rst.getString("senha_destino"));
 		model.setAutomaticManual(rst.getBoolean("automatico_manual"));

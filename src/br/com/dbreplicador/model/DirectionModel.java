@@ -1,8 +1,8 @@
 package br.com.dbreplicador.model;
 
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.sql.Timestamp;
 
 public class DirectionModel extends AbstractModel{
@@ -11,10 +11,10 @@ public class DirectionModel extends AbstractModel{
 	private Timestamp data_atual;
 	private String usuario;
 	private String processo;
-	private String database_origem;
+	private int database_origem;
 	private String usuario_origem;
 	private String senha_origem;
-	private String database_destino;
+	private int database_destino;
 	private String usuario_destino;
 	private String senha_destino;
 	private boolean automatico_manual;
@@ -38,7 +38,8 @@ public class DirectionModel extends AbstractModel{
 	 */
 	private ConnectionModel originConnectionModel;
 	private ConnectionModel destinationConnectionModel;
-	private AbstractMap<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
+	private ProcessModel processModel;
+	private Map<Integer, TableModel> tables = new HashMap<Integer, TableModel>();
 	
 	/**
 	 * @return codigo_direcao
@@ -99,14 +100,14 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @return the database_origem
 	 */
-	public String getOriginDatabase() {
+	public int getOriginDatabase() {
 		return database_origem;
 	}
 	
 	/**
 	 * @param originDatabase
 	 */
-	public void setOriginDatabase(String originDatabase) {
+	public void setOriginDatabase(int originDatabase) {
 		this.database_origem = originDatabase;
 	}
 	
@@ -155,14 +156,14 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @return the database_destino
 	 */
-	public String getDestinationDatabase() {
+	public int getDestinationDatabase() {
 		return database_destino;
 	}
 	
 	/**
 	 * @param destinationDatabase
 	 */
-	public void setDestinationDatabase(String destinationDatabase) {
+	public void setDestinationDatabase(int destinationDatabase) {
 		this.database_destino = destinationDatabase;
 	}
 	
@@ -178,6 +179,20 @@ public class DirectionModel extends AbstractModel{
 	 */
 	public void setDestinationConnectionModel(ConnectionModel connectionModel) {
 		this.destinationConnectionModel = connectionModel;
+	}
+	
+	/**
+	 * @return processModel
+	 */
+	public ProcessModel getProcessModel() {
+		return processModel;
+	}
+	
+	/**
+	 * @param processModel
+	 */
+	public void setProcessModel(ProcessModel processModel) {
+		this.processModel = processModel;
 	}
 	
 	/**
@@ -421,14 +436,14 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @return tables
 	 */
-	public AbstractMap<Integer, TableModel> getTables() {
+	public Map<Integer, TableModel> getTables() {
 		return tables;
 	}
 	
 	/**
 	 * @param tables 
 	 */
-	public void setTables(AbstractMap<Integer, TableModel> tables) {
+	public void setTables(Map<Integer, TableModel> tables) {
 		this.tables = tables;
 	}
 }

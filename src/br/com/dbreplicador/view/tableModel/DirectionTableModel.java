@@ -15,9 +15,9 @@ public class DirectionTableModel extends AbstractTableModel<DirectionModel> {
 		case 0:
 			model.setProcess(aValue.toString());
 		case 1:
-			model.setOriginDatabase(aValue.toString());
+			model.setOriginDatabase((Integer)aValue);
 		case 2:
-			model.setDestinationDatabase(aValue.toString());	
+			model.setDestinationDatabase((Integer)aValue);
 		default:
 			System.err.println("Índice da coluna inválido");
 		}
@@ -32,10 +32,10 @@ public class DirectionTableModel extends AbstractTableModel<DirectionModel> {
 			valueObject = model.getProcess();
 			break;
 		case 1:
-			valueObject = model.getOriginDatabase();
+			valueObject = ((Integer)model.getOriginDatabase()).toString();
 			break;
 		case 2:
-			valueObject = model.getDestinationDatabase();
+			valueObject = ((Integer)model.getDestinationDatabase()).toString();
 			break;	
 		default:
 			System.err.println("Índice da coluna inválido");
