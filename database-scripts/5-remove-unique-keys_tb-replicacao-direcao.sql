@@ -1,2 +1,0 @@
-alter table tb_replicacao_direcao drop constraint tb_replicacao_direcao_database_origem_key cascade;
-alter table tb_replicacao_direcao drop constraint tb_replicacao_direcao_database_destino_key cascade;
