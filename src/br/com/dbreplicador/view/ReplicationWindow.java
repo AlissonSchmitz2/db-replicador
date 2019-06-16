@@ -4,6 +4,7 @@ package br.com.dbreplicador.view;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 	//Referência da janela
 	private IReplicationExecutor replicationExecutor = null;
 
-	public ReplicationWindow(JDesktopPane desktop) {
+	public ReplicationWindow(JDesktopPane desktop, Connection connection) {
 		super("Replicar", 625, 345, desktop);
 
 		setFrameIcon(MasterImage.replicator_16x16);
@@ -56,7 +57,7 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 		disableComponents(formFields);
 		
 		//Executor da replicação
-		replicationExecutor = new ReplicationExecutor();
+		replicationExecutor = new ReplicationExecutor(connection);
 		
 		//Adiciona esta classe para ser notificada pelo executor
 		((IReplicationSubject) replicationExecutor).addObserver(this);

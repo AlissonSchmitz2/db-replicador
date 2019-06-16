@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import br.com.dbreplicador.dao.contracts.ISearchable;
 import br.com.dbreplicador.model.TableModel;
@@ -195,6 +197,23 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		}
 
 		return model;
+	}
+	
+	public Map<Integer, TableModel> getTablesToReplication(String process) throws SQLException {
+		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo=? AND habilitado=true ORDER BY ordem ASC";
+		PreparedStatement pst = connection.prepareStatement(query);
+
+		setParam(pst, 1, process);
+		
+		ResultSet rst = pst.executeQuery();
+
+		Map<Integer, TableModel> models = new HashMap<Integer, TableModel>();
+		
+		while (rst.next()) {
+			models.put(models.size() + 1, createModelFromResultSet(rst));
+		}
+
+		return models;
 	}
 
 	/**
