@@ -207,36 +207,39 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 
 		//Layout
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-				.createSequentialGroup()
-				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-						.createSequentialGroup().addGap(20)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(progressBarValue, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(20)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(progressBarValue, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(panelConnections, GroupLayout.PREFERRED_SIZE, 263, Short.MAX_VALUE))
-						.addGap(37)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(progressBarIndeterminate, GroupLayout.DEFAULT_SIZE,
-										GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGap(37)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(progressBarIndeterminate, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(paneLog, GroupLayout.PREFERRED_SIZE, 263, Short.MAX_VALUE)))
-						.addGroup(groupLayout.createSequentialGroup().addGap(255).addComponent(btnReplicate,
-								GroupLayout.PREFERRED_SIZE, 90, GroupLayout.PREFERRED_SIZE)))
-				.addContainerGap(26, Short.MAX_VALUE)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-				.createSequentialGroup().addGap(20)
-				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(233)
+							.addComponent(btnReplicate, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(26, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(20)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(panelConnections, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE)
 						.addComponent(paneLog, GroupLayout.PREFERRED_SIZE, 127, GroupLayout.PREFERRED_SIZE))
-				.addGap(36)
-				.addGroup(
-						groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(progressBarValue, GroupLayout.PREFERRED_SIZE, 26,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(progressBarIndeterminate, GroupLayout.PREFERRED_SIZE, 26,
-										GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-				.addComponent(btnReplicate, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE).addGap(31)));
+					.addGap(36)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(progressBarValue, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+						.addComponent(progressBarIndeterminate, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+					.addGap(38)
+					.addComponent(btnReplicate, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(31, Short.MAX_VALUE))
+		);
 		getContentPane().setLayout(groupLayout);
 	}
 

@@ -255,6 +255,9 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 				// Cria nova entidade model
 				directionModel = new DirectionModel();
+				
+				// Opção "Habilitado" selecionado por padrão
+				cbxEnable.setSelected(true);
 
 				btnRemove.setEnabled(false);
 				btnSave.setEnabled(true);

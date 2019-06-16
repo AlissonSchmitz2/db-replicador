@@ -335,6 +335,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		lblColumnKey = new JLabel("Coluna Chave:");
 		lblColumnControl = new JLabel("Coluna Controle:");
 		lblColumnType = new JLabel("Coluna Tipo:");
+		lblColumnType.setVisible(false);
 
 		// TextFields
 		txfProcess = new JTextField("Teclar F9");
@@ -365,7 +366,8 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		txfControlColumn = new JTextField();
 		formFields.add(txfControlColumn);
 		txfColumnType = new JTextField();
-		formFields.add(txfColumnType);
+		txfColumnType.setVisible(false);
+//		formFields.add(txfColumnType);
 		cbxBackupIncre = new JCheckBox("Backup Incremental");
 		formFields.add(cbxBackupIncre);
 		
