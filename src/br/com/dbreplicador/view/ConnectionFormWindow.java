@@ -262,6 +262,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				
 				// TODO Testar conexao com bd
 				
+				
 			}
 		});
 	}
@@ -331,15 +332,13 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 									.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										//.addComponent(lblCompany)
+										.addComponent(lblPort)
 										.addComponent(lblDescription)
 										.addComponent(lblAddressIP)
-										.addComponent(lblPort)
 										.addComponent(lblNameDB)
 										.addComponent(lblModelDB))
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										//.addComponent(txfCompany, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
 										.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)
 										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 											.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
@@ -370,9 +369,9 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 						.addComponent(lblAddressIP)
 						.addComponent(txfAddressIP, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblPort)
-						.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblPort))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -382,12 +381,8 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 						.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblModelDB))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					/*.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txfCompany, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblCompany))*/
-					.addGap(21)
 					.addComponent(btnTestarConexo, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(26, Short.MAX_VALUE))
+					.addContainerGap(52, Short.MAX_VALUE))
 		);
 		getContentPane().setLayout(groupLayout);
 	}

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public class TableModel extends AbstractModel {
 	private Integer codigo_replicacao;
 	private Timestamp data_atual;
+	private Timestamp data_atual_de;
 	private String usuario;
 	private String processo;
 	private Integer ordem;
@@ -241,5 +242,21 @@ public class TableModel extends AbstractModel {
 	public void setEnable(boolean enable) {
 		this.habilitado = enable;
 	}	
+	
+	/**
+	 * data_atual_de
+	 */
+	public Timestamp getCurrentDateOf() {
+		return data_atual_de;
+	}
+	
+	/**
+	 * data_atual_de
+	 * 
+	 * @param currentDateOf
+	 */
+	public void setCurrentDateOf(Timestamp currentDateOf) {
+		this.data_atual_de = currentDateOf;
+	}
 
 }

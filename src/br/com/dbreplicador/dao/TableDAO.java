@@ -38,7 +38,8 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 			"linhas_maximo",
 			"erro_ignorar",
 			"habilitado",
-			"coluna_controle"
+			"coluna_controle",
+			"data_atual_de"
 	};
 	
 	private String[] columnsToUpdate = new String[] {
@@ -54,7 +55,8 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 			"linhas_maximo",
 			"erro_ignorar",
 			"habilitado",
-			"coluna_controle"
+			"coluna_controle",
+			"data_atual_de"
 	};
 
 	Connection connection;
@@ -85,6 +87,7 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 11, model.isErrorIgnore());
 		setParam(pst, 12, model.isEnable());
 		setParam(pst, 13, model.getControlColumn());
+		setParam(pst, 14, model.getCurrentDateOf());
 
 		int result = 0;
 		
@@ -132,9 +135,10 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 11, model.isErrorIgnore());
 		setParam(pst, 12, model.isEnable());
 		setParam(pst, 13, model.getControlColumn());
+		setParam(pst, 14, model.getCurrentDateOf());
 		
 		// Identificador WHERE
-		setParam(pst, 14, model.getReplicationCode());
+		setParam(pst, 15, model.getReplicationCode());
 
 		int result = pst.executeUpdate();
 		if (result > 0) {
@@ -246,6 +250,7 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		model.setErrorIgnore(rst.getBoolean("erro_ignorar"));
 		model.setEnable(rst.getBoolean("habilitado"));
 		model.setControlColumn(rst.getString("coluna_controle"));
+		model.setCurrentDateOf(rst.getTimestamp("data_atual_de"));
 
 		return model;
 	}
