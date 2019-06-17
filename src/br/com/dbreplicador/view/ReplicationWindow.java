@@ -302,26 +302,26 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 			break;
 		case FINISHED:
 			activateIndeterminateBar(false);
+
+			btnReplicate.setText("REPETIR");
+			
+			setStatistics((IReplicationProcessingInfo) replicationExecutor);
 			
 			if (((IReplicationProcessingInfo) replicationExecutor).getTotalOfTables() == 0) {
 				bubbleWarning("Não existem novos registros para serem replicados");
 			} else {
 				bubbleSuccess("Replicação executada com sucesso");
 			}
-			
-			btnReplicate.setText("REPETIR");
-			
-			setStatistics((IReplicationProcessingInfo) replicationExecutor);
 			break;
 		case FINISHED_BY_ERROR:
 		case FATAL_ERROR:
 			activateIndeterminateBar(false);
 			
-			bubbleError("Houve um erro ao replicar o banco de dados");
-			
 			btnReplicate.setText("REPETIR");
 			
 			setStatistics((IReplicationProcessingInfo) replicationExecutor);
+			
+			bubbleError("Houve um erro ao replicar o banco de dados");
 			break;
 			
 		case ON_PROCESS:

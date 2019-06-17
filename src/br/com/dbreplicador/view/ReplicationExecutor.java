@@ -13,6 +13,7 @@ import java.util.Map;
 
 import br.com.dbreplicador.dao.DirectionDAO;
 import br.com.dbreplicador.dao.ProcessDAO;
+import br.com.dbreplicador.dao.TableDAO;
 import br.com.dbreplicador.enums.ReplicationEvents;
 import br.com.dbreplicador.model.DirectionModel;
 import br.com.dbreplicador.model.ProcessModel;
@@ -55,11 +56,13 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	
 	private DirectionDAO directionDao;
 	private ProcessDAO processDao;
+	private TableDAO tableDao;
 	
 	public ReplicationExecutor(Connection connection) {
 		try {
 			directionDao = new DirectionDAO(connection);
 			processDao = new ProcessDAO(connection);
+			tableDao = new TableDAO(connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -176,12 +179,14 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 				replicator.getDestinationProvider().getConn().setAutoCommit(false);
 					
 				for (TableModel table : direction.getTables().values()) {
+					Timestamp tableToDate = table.isIncrementalBackup() && table.getCurrentDateOf() != null ? table.getCurrentDateOf() : new Timestamp(0);
+					
 					List<IQuery> queries = replicator.getQueriesForReplication(
 						table.getOriginTable(),
 						table.getDestinationTable(),
 						table.getKeyColumn(),
 						table.getControlColumn(),
-						table.isIncrementalBackup() ? direction.getProcessModel().getCurrentDateOf() : new Timestamp(0)
+						tableToDate
 					);
 					
 					//Adiciona as queries a fila
@@ -356,16 +361,6 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		}
 	}
 	
-	private void persistTableProcessingInfo(TableModel table) {
-		System.out.println("TODO: salva log do processamento da tabela - " + table.getDestinationTable());
-		
-		//Salva log do processamento da tabela
-		//TODO
-		
-		//Salva data da última replicação da tabela
-		//TODO
-	}
-	
 	private void finishQueueProcessing(Integer index) throws SQLException {
 		//Recupera o último item da fila
 		ReplicationQueueItem lastItem = queue.get(index);
@@ -383,22 +378,50 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		//Encerra a thread
 		stopThread();
 		
-		//Salva a última data de replicação no processo
-		ProcessModel process = processDao.findById(lastItem.getDirectionModel().getProcessModel().getProcessCode());
-		if (process != null) {
-			process.setCurrentDateOf(toDate);
-			processDao.update(process);	
-		}
-		
 		//Persiste logs do processamento da tabela
 		persistTableProcessingInfo(lastItem.getTableModel());
 		
-		//Salva o log do processo concluído
-		//TODO
-		System.out.println("Salva log do processamento geral");
+		//Persiste logs do processamento do processo
+		persistProcessProcessingInfo(lastItem.getDirectionModel());
 		
 		//Notifica evento
 		notifyObservers(ReplicationEvents.FINISHED);
+	}
+	
+	private void persistTableProcessingInfo(TableModel table) {
+		try {
+			//Salva data da última replicação da tabela
+			TableModel tableModel = tableDao.findById(table.getReplicationCode());
+			if (tableModel != null) {
+				tableModel.setCurrentDateOf(toDate);
+				tableDao.update(tableModel);	
+			}
+					
+			//Salva log do processamento da tabela
+			//TODO
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void persistProcessProcessingInfo(DirectionModel direction) {
+		try {
+			//Salva a última data de replicação no processo
+			ProcessModel processModel;
+			
+			processModel = processDao.findById(direction.getProcessModel().getProcessCode());
+			
+			if (processModel != null) {
+				processModel.setCurrentDateOf(toDate);
+				processDao.update(processModel);	
+			}
+			
+			//Salva o log do processo concluído
+			//TODO
+			System.out.println("Salva log do processamento geral");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private SupportedTypes getDatabaseType(String databaseType) {
