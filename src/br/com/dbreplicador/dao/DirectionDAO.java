@@ -117,7 +117,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		setParam(pst, 19, model.getExecuteHourOf());
 		setParam(pst, 20, model.getExecuteHourTo());
 		setParam(pst, 21, model.getMaxDuration());
-		setParam(pst, 22, model.getExecuteLast());
+		setParam(pst, 22, model.getLastExecution());
 		setParam(pst, 23, model.getRetention());
 		setParam(pst, 24, model.isEnabled());
 		
@@ -167,7 +167,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		setParam(pst, 19, model.getExecuteHourOf());
 		setParam(pst, 20, model.getExecuteHourTo());
 		setParam(pst, 21, model.getMaxDuration());
-		setParam(pst, 22, model.getExecuteLast());
+		setParam(pst, 22, model.getLastExecution());
 		setParam(pst, 23, model.getRetention());
 		setParam(pst, 24, model.isEnabled());
 		
@@ -245,6 +245,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		TableDAO tableDao = new TableDAO(connection);
 		
 		String query = "SELECT d.*,\n" + 
+				"       p.codigo_processo AS p_codigo_processo,\n" + 
 				"       p.descricao AS p_descricao,\n" + 
 				"       p.data_atual_de AS p_data_atual_de,\n" + 
 				"       p.erro_ignorar AS p_error_ignorar,\n" + 
@@ -277,6 +278,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 			
 			//PROCESSO
 			ProcessModel process = new ProcessModel();
+			process.setProcessCode(directionsRst.getInt("p_codigo_processo"));
 			process.setDescription(directionsRst.getString("p_descricao"));
 			process.setCurrentDateOf(directionsRst.getTimestamp("p_data_atual_de"));
 			process.setErrorIgnore(directionsRst.getBoolean("p_error_ignorar"));
@@ -342,7 +344,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		model.setExecuteHourOf(rst.getInt("executar_hora_de"));
 		model.setExecuteHourTo(rst.getInt("executar_hora_ate"));
 		model.setMaxDuration(rst.getInt("duracao_maximo"));
-		model.setExecuteLast(rst.getDate("execucao_ultima"));
+		model.setLastExecution(rst.getDate("execucao_ultima"));
 		model.setRetention(rst.getInt("retencao"));
 		model.setEnabled(rst.getBoolean("habilitado"));
 		

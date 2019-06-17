@@ -12,6 +12,8 @@ public enum ReplicationEvents {
 	RESUMED("RESUMED", "Retomado"),
 	STOPPED("STOPPED", "Parado"),
 	FINISHED("FINISHED", "Finalizado"),
+	FINISHED_BY_ERROR("FINISHED_BY_ERROR", "Finalizado por um Erro"),
+	FATAL_ERROR("FATAL_ERROR", "Erro Fatal"),
 	
 	ON_PROCESS("ON_PROCESS", "On process"), //Disparado a cada intervalo de processamento da fila
 	ON_ERROR("ON_ERROR", "On error"); //Disparado a cada error durante o processamento da fila

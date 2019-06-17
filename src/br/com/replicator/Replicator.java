@@ -58,7 +58,7 @@ public class Replicator implements IReplicator {
 			//Metadados da consulta de origem
 			ResultSetMetaData rstmdFindNewestRecords = rstFindNewestRecords.getMetaData();
 			
-			//Crias as litas com colunas e valores que serão usados para gerar as queries de resposta
+			//Crias as listas com colunas e valores que serão usados para gerar as queries de resposta
 			String[] columns = new String[rstmdFindNewestRecords.getColumnCount()];
 			String[] values = new String[rstmdFindNewestRecords.getColumnCount()];
 			
@@ -100,6 +100,10 @@ public class Replicator implements IReplicator {
 					.delete(destinationTableName, tableUniqueKey, rstSelectUnexistentUniqueKeys.getString(tableUniqueKey))
 			);
 		}
+		
+		//Fecha conexões ativas, as mesmas serão reativadas no processamento das queries
+		originProvider.getConn().close();
+		destinationProvider.getConn().close();
 		
 		return queries;
 	}

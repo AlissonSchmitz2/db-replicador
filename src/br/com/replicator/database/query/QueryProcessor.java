@@ -16,12 +16,14 @@ public class QueryProcessor implements IQueryProcessor {
 	
 	public QueryProcessor(Connection connection) throws SQLException {
 		this.connection = connection;
-
-		this.connection.setAutoCommit(true);
 	}
 
 	public ResultSet executeQuery(IQuery query) throws SQLException {
 		PreparedStatement pst = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+		
+		if (!connection.getAutoCommit()) {
+			connection.commit();
+		}
 
 		return pst.executeQuery();
 	}
@@ -30,6 +32,11 @@ public class QueryProcessor implements IQueryProcessor {
 		PreparedStatement pst = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 
 		int result = pst.executeUpdate();
+		
+		if (!connection.getAutoCommit() && result > 0) {
+			connection.commit();
+		}
+		
 		if(result > 0) {
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
@@ -45,6 +52,11 @@ public class QueryProcessor implements IQueryProcessor {
 		PreparedStatement pst = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 
 		int result = pst.executeUpdate();
+		
+		if (!connection.getAutoCommit() && result > 0) {
+			connection.commit();
+		}
+		
 		if(result > 0) {
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
@@ -59,6 +71,10 @@ public class QueryProcessor implements IQueryProcessor {
 		PreparedStatement pst = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 		
 		pst.execute();
+		
+		if (!connection.getAutoCommit()) {
+			connection.commit();
+		}
 		
 		return pst.getResultSet();
 	}

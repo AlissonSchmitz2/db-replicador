@@ -46,7 +46,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
-	private JTextField txfOrder, txfTableOrigin, txfTableDestiny, txfSaveAfter, txfColumnKey, txfColumnControl, txfControlColumn;
+	private JTextField txfOrder, txfTableOrigin, txfTableDestiny, txfSaveAfter, txfColumnKey, txfTypeColumn, txfControlColumn;
 	private JLabel lblTableOrigin, lblTableDestiny, lblSaveAfter, lblColumnKey, lblColumnControl;
 	private JCheckBox cbxEnable, cbxIgnoreError, cbxBackupIncre;
 	private JDesktopPane desktop;
@@ -136,7 +136,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								cbxIgnoreError.setSelected(tableModel.isErrorIgnore());
 								cbxEnable.setSelected(tableModel.isEnable());
 								txfColumnKey.setText(tableModel.getKeyColumn());
-  								txfColumnControl.setText(tableModel.getTypeColumn());
+  								txfTypeColumn.setText(tableModel.getTypeColumn());
   								txfControlColumn.setText(tableModel.getControlColumn());
 								
 								// Seta form para modo Edição
@@ -242,7 +242,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 				tableModel.setOrder(Integer.parseInt(txfOrder.getText()));
 				tableModel.setOriginTable(txfTableOrigin.getText());
 				tableModel.setProcess(txfProcess.getText());
-				tableModel.setTypeColumn(txfColumnControl.getText());
+				tableModel.setTypeColumn(txfTypeColumn.getText());
 				tableModel.setUser("admin");
 				
 				try {
@@ -358,8 +358,8 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		formFields.add(cbxIgnoreError);
 		txfColumnKey = new JTextField();
 		formFields.add(txfColumnKey);
-		txfColumnControl = new JTextField();
-		formFields.add(txfColumnControl);
+		txfTypeColumn = new JTextField();
+		formFields.add(txfTypeColumn);
 		txfControlColumn = new JTextField();
 		formFields.add(txfControlColumn);
 		txfColumnType = new JTextField();
@@ -397,7 +397,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 									.addComponent(txfSaveAfter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 									.addComponent(txfColumnKey, GroupLayout.DEFAULT_SIZE, 317, Short.MAX_VALUE)
-									.addComponent(txfColumnControl, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+									.addComponent(txfControlColumn, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(txfTableOrigin)
 									.addComponent(cbxIgnoreError, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
 									.addComponent(cbxEnable, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
@@ -449,7 +449,7 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 						.addComponent(lblColumnKey))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txfColumnControl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txfControlColumn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblColumnControl))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
@@ -490,9 +490,9 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 		} else if (txfColumnKey.getText().isEmpty() || txfColumnKey.getText() == null) {
 			bubbleWarning("Informe a coluna chave!");
 			return false;
-		} else if (txfColumnControl.getText().isEmpty() || txfColumnControl.getText() == null) {
-			bubbleWarning("Selecione o tipo da coluna chave!");
-			return false;
+		//} else if (txfTypeColumn.getText().isEmpty() || txfTypeColumn.getText() == null) {
+		//	bubbleWarning("Selecione o tipo da coluna chave!");
+		//	return false;
 		} else if (txfControlColumn.getText().isEmpty() || txfControlColumn.getText() == null) {
 			bubbleWarning("Informe a coluna de controle!");
 			return false;

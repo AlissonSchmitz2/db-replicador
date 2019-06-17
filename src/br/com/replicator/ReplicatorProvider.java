@@ -15,17 +15,22 @@ import br.com.replicator.exceptions.InvalidDatabaseTypeException;
 public class ReplicatorProvider implements IReplicatorProvider {
 	private Connection conn;
 	
+	private ConnectionInfo connInfo;
+	
 	private IQueryBuilder queryBuilder;
 	
-	private IQueryProcessor processor;
-	
 	public ReplicatorProvider(ConnectionInfo connInfo) throws SQLException, InvalidDatabaseTypeException {
+		this.connInfo = connInfo;
 		conn = ConnectionFactory.getConnection(connInfo);
 		queryBuilder = QueryBuilderFactory.getQueryBuilder(connInfo.getDbType());
-		processor = new QueryProcessor(conn);
 	}
 
-	public Connection getConn() {
+	public Connection getConn() throws SQLException {
+		//Garante que sempre exista uma conexão ativa apartir do provider
+		if (conn.isClosed()) {
+			conn = ConnectionFactory.getConnection(connInfo, true);
+		}
+		
 		return conn;
 	}
 
@@ -33,7 +38,7 @@ public class ReplicatorProvider implements IReplicatorProvider {
 		return queryBuilder;
 	}
 
-	public IQueryProcessor getProcessor() {
-		return processor;
+	public IQueryProcessor getProcessor() throws SQLException {
+		return new QueryProcessor(getConn());
 	}
 }

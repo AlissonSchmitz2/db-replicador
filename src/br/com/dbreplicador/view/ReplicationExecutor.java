@@ -3,6 +3,7 @@ package br.com.dbreplicador.view;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.dbreplicador.dao.DirectionDAO;
+import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.enums.ReplicationEvents;
 import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.model.ProcessModel;
 import br.com.dbreplicador.model.TableModel;
 import br.com.dbreplicador.observers.contracts.IReplicationObserver;
 import br.com.dbreplicador.observers.contracts.IReplicationSubject;
@@ -51,10 +54,12 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	private Integer processingProgress = 0;
 	
 	private DirectionDAO directionDao;
+	private ProcessDAO processDao;
 	
 	public ReplicationExecutor(Connection connection) {
 		try {
 			directionDao = new DirectionDAO(connection);
+			processDao = new ProcessDAO(connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -90,8 +95,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	
 	public void stop() {
 		//Ao parar, a thread se torna nula
-		threadSuspended = true;
-		executionThread = null;
+		stopThread();
 		
 		//Reseta estatísticas anteriores
 		resetStatistics();
@@ -110,6 +114,11 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	
 	public boolean isClosed() {
 		return executionThread == null;
+	}
+	
+	private void stopThread() {
+		threadSuspended = true;
+		executionThread = null;
 	}
 	
 	private void initializeProcessing(Timestamp toDate) {
@@ -172,14 +181,19 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 						table.getDestinationTable(),
 						table.getKeyColumn(),
 						table.getControlColumn(),
-						table.getCurrentDate()
+						table.isIncrementalBackup() ? direction.getProcessModel().getCurrentDateOf() : new Timestamp(0)
 					);
-					
-					System.out.println(queries.size());
 					
 					//Adiciona as queries a fila
 					queries.forEach(query -> {
-						queue.put((queue.size() + 1), new ReplicationQueueItem(query, replicator.getDestinationProvider(), direction, table));
+						queue.put(
+								(queue.size() + 1), 
+								new ReplicationQueueItem(
+										query, 
+										replicator.getDestinationProvider(), 
+										direction, 
+										table
+								));
 					});
 				}
 			} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
@@ -197,6 +211,14 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		executionThread = new Thread(new Runnable() {
 			public void run() {
 				notifyObservers(ReplicationEvents.EXECUTING);
+				
+				//Se não existir itens, não inicia o processamento
+				if (queue.size() == 0) {
+					//Notifica evento
+					notifyObservers(ReplicationEvents.FINISHED);
+					
+					stopThread();
+				}
 				
 				try {
 					Thread thisThread = Thread.currentThread();
@@ -216,7 +238,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 							}
 							
 							//Usa o primeiro elemento da sequência para descobrir a quantidade de itens a serem salvos
-							Integer indexLimit = currentQueueIndex + queue.get(currentQueueIndex).getTableModel().getMaximumLines();
+							Integer indexLimit = currentQueueIndex + (queue.get(currentQueueIndex).getTableModel().getMaximumLines() - 1);
 							indexLimit = indexLimit > queue.size() ? queue.size() : indexLimit;
 							
 							//Processa as queues no intevalo entre o index atual e o limite
@@ -238,52 +260,110 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		executionThread.start();
 	}
 	
-	private void processingQueueInterval(Integer indexLimit) throws SQLException {
+	private void processingQueueInterval(Integer indexLimit) {
 		IReplicatorProvider provider = null;
 		
 		for (int i = currentQueueIndex; i <= indexLimit; i++) {
 			ReplicationQueueItem currentItem = queue.get(currentQueueIndex);
 			
 			//Armazena a tabela atual para processados
-			processedTables.put(currentItem.getTableModel().getOriginTable(), currentItem.getTableModel());
+			if (!processedTables.containsKey(currentItem.getTableModel().getOriginTable())) {
+				if (processedTables.size() > 0) {
+					//Persiste logs do processamento da tabela
+					persistTableProcessingInfo(queue.get(i - 1).getTableModel());
+				}
+				
+				processedTables.put(currentItem.getTableModel().getOriginTable(), currentItem.getTableModel());
+			}
 			
 			//Seta estatísticas
 			currentOriginDirection = currentItem.getDirectionModel().getOriginConnectionModel().getDatabase();
 			currentDestinationDirection = currentItem.getDirectionModel().getDestinationConnectionModel().getDatabase();
-			currentProcess = "anything"; //TODO: Pegar do retornado do DAO
+			currentProcess = currentItem.getDirectionModel().getProcessModel().getDescription();
 			currentTable = currentItem.getTableModel().getOriginTable();
 			
-			if (provider != null && currentItem.getProvider() != provider) {
-				//Antes da troca do provider, comita valores não salvos
-				provider.getConn().commit();
-			}
-			
-			provider = queue.get(currentQueueIndex).getProvider();
-			
-			Integer result = provider.getProcessor()
-					.executeUpdate(queue.get(i).getQuery(), queue.get(i).getTableModel().getKeyColumn());
+			try {
 
-			if (result > 0) {
-				processingProgress = (currentQueueIndex * 100) / queue.size();
-			} else {
+				if (provider != null && currentItem.getProvider() != provider) {
+					//Antes da troca do provider, comita valores não salvos
+					provider.getConn().commit();
+				}
+				
+				provider = queue.get(currentQueueIndex).getProvider();
+				
+				//Força auto commit para falso
+				if (provider.getConn().getAutoCommit()) {
+					provider.getConn().setAutoCommit(false);
+				}
+				
+				Integer result = provider.getProcessor()
+						.executeUpdate(queue.get(i).getQuery(), queue.get(i).getTableModel().getKeyColumn());
+	
+				if (result > 0) {
+					processingProgress = (currentQueueIndex * 100) / queue.size();
+				} else {
+					totalOfErrors++;
+					
+					notifyObservers(ReplicationEvents.ON_ERROR);
+					
+					//Se for diferente de ignorar erro, para o processamento
+					if (!currentItem.getDirectionModel().getProcessModel().isErrorIgnore() || !currentItem.getTableModel().isErrorIgnore()
+					) {
+						stopThread();
+						
+						provider.getConn().commit();
+						
+						notifyObservers(ReplicationEvents.FINISHED_BY_ERROR);
+						
+						break;
+					}
+				}
+				
+				totalOfTables = processedTables.size();
+
+				//Caso seja o último item da sequência, faz o commit
+				if (i == indexLimit) {
+					provider.getConn().commit();
+					
+					//Notifica evento
+					notifyObservers(ReplicationEvents.ON_PROCESS);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				
 				totalOfErrors++;
 				
-				//Notifica evento
 				notifyObservers(ReplicationEvents.ON_ERROR);
 				
-				//TODO: Criar a lógica para parar processamento ao ocorrer um erro
-				//Caso a configuração esteja setada para isso
+				//Se for diferente de ignorar erro, para o processamento
+				if (!currentItem.getDirectionModel().getProcessModel().isErrorIgnore() || !currentItem.getTableModel().isErrorIgnore()
+				) {
+					stopThread();
+					
+					try {
+						provider.getConn().commit();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					
+					notifyObservers(ReplicationEvents.FINISHED_BY_ERROR);
+					
+					break;
+				}
 			}
 			
 			currentQueueIndex++;
 		}
+	}
+	
+	private void persistTableProcessingInfo(TableModel table) {
+		System.out.println("TODO: salva log do processamento da tabela - " + table.getDestinationTable());
 		
-		totalOfTables = processedTables.size();
-
-		provider.getConn().commit();
+		//Salva log do processamento da tabela
+		//TODO
 		
-		//Notifica evento
-		notifyObservers(ReplicationEvents.ON_PROCESS);
+		//Salva data da última replicação da tabela
+		//TODO
 	}
 	
 	private void finishQueueProcessing(Integer index) throws SQLException {
@@ -291,19 +371,31 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		ReplicationQueueItem lastItem = queue.get(index);
 		
 		//Comita dados pendentes
-		if (lastItem != null) {
-			lastItem.getProvider().getConn().commit();
+		if (lastItem == null) {
+			//Notifica evento
+			notifyObservers(ReplicationEvents.FATAL_ERROR);
+			
+			return;
 		}
+		
+		lastItem.getProvider().getConn().commit();
 
 		//Encerra a thread
-		threadSuspended = true;
-		executionThread = null;
+		stopThread();
+		
+		//Salva a última data de replicação no processo
+		ProcessModel process = processDao.findById(lastItem.getDirectionModel().getProcessModel().getProcessCode());
+		if (process != null) {
+			process.setCurrentDateOf(toDate);
+			processDao.update(process);	
+		}
+		
+		//Persiste logs do processamento da tabela
+		persistTableProcessingInfo(lastItem.getTableModel());
 		
 		//Salva o log do processo concluído
-		//TODO: deve-se levar em consideração toDate
-		
-		//Informa subscribers que o processo acabou
 		//TODO
+		System.out.println("Salva log do processamento geral");
 		
 		//Notifica evento
 		notifyObservers(ReplicationEvents.FINISHED);
@@ -367,6 +459,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	}
 
 	public void notifyObservers(ReplicationEvents event) {
+		System.out.println("Event: " + event.getCode() + " - " + LocalDateTime.now());
+		
 		Iterator<IReplicationObserver> it = observers.iterator();
 		
 		while (it.hasNext()) {

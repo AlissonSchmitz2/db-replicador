@@ -22,12 +22,6 @@ public class ReplicatorTest {
 			//Primeira sincronização de uma tabela deve-se passar 0 como timestamp
 			Timestamp timestamp = new Timestamp(0);
 			
-			//Salva System.currentTimeMillis() no banco de dados como última data de atualização
-			//TODO
-			
-			//Sincroniza as alterações feitas apartir da última data salva no banco de dados
-			//TODO
-			
 			//Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 			IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);

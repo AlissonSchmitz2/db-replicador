@@ -86,7 +86,16 @@ public class TableDAO extends AbstractCrudDAO<TableModel> implements ISearchable
 		setParam(pst, 12, model.isEnable());
 		setParam(pst, 13, model.getControlColumn());
 
-		int result = pst.executeUpdate();
+		int result = 0;
+		
+		try {
+			result = pst.executeUpdate();
+		} catch (SQLException e) {
+			connection.rollback();
+			
+			throw e;
+		}
+
 		if (result > 0) {
 			connection.commit();
 

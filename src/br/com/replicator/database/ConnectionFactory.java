@@ -20,4 +20,13 @@ public class ConnectionFactory {
 
 		return conn.get(url);
 	}
+	
+	public static Connection getConnection(ConnectionInfo connInfo, boolean force) throws SQLException {
+		String url = "jdbc:" + connInfo.getDbType().getCode() + "://" + connInfo.getDbHost() + ":" + connInfo.getDbPort() + "/" + connInfo.getDbName();
+		
+		//Remove old connection, to force recreate a new
+		conn.remove(url);
+
+		return getConnection(connInfo);
+	}
 }

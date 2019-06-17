@@ -334,7 +334,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				directionModel.setExecuteDayTo(Integer.parseInt(txfDay.getText()));
 				directionModel.setExecuteHourOf(Integer.parseInt(txfHour.getText()));
 				directionModel.setExecuteHourTo(Integer.parseInt(txfHour.getText()));
-				directionModel.setExecuteLast(new Date());
+				directionModel.setLastExecution(new Date());
 				///////////////////////
 
 				directionModel.setHourPeriod(Integer.parseInt(txfHour.getText()));

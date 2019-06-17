@@ -43,7 +43,6 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 	private JButton btnReplicate;
 	private JPanel panelConnections, paneLog;
 	
-	//Referência da janela
 	private IReplicationExecutor replicationExecutor = null;
 
 	public ReplicationWindow(JDesktopPane desktop, Connection connection) {
@@ -302,11 +301,29 @@ public class ReplicationWindow extends AbstractWindowFrame implements IReplicati
 			activateIndeterminateBar(false);
 			break;
 		case FINISHED:
+			activateIndeterminateBar(false);
+			
+			if (((IReplicationProcessingInfo) replicationExecutor).getTotalOfTables() == 0) {
+				bubbleWarning("Não existem novos registros para serem replicados");
+			} else {
+				bubbleSuccess("Replicação executada com sucesso");
+			}
+			
 			btnReplicate.setText("REPETIR");
 			
 			setStatistics((IReplicationProcessingInfo) replicationExecutor);
-			activateIndeterminateBar(false);
 			break;
+		case FINISHED_BY_ERROR:
+		case FATAL_ERROR:
+			activateIndeterminateBar(false);
+			
+			bubbleError("Houve um erro ao replicar o banco de dados");
+			
+			btnReplicate.setText("REPETIR");
+			
+			setStatistics((IReplicationProcessingInfo) replicationExecutor);
+			break;
+			
 		case ON_PROCESS:
 		case ON_ERROR:
 			setStatistics((IReplicationProcessingInfo) replicationExecutor);

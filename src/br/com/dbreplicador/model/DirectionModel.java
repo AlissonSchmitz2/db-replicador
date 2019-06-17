@@ -394,15 +394,15 @@ public class DirectionModel extends AbstractModel{
 	/**
 	 * @return the execucao_ultima
 	 */
-	public Date getExecuteLast() {
+	public Date getLastExecution() {
 		return execucao_ultima;
 	}
 	
 	/**
-	 * @param executeLast 
+	 * @param lastExecution 
 	 */
-	public void setExecuteLast(Date executeLast) {
-		this.execucao_ultima = executeLast;
+	public void setLastExecution(Date lastExecution) {
+		this.execucao_ultima = lastExecution;
 	}
 	
 	/**
