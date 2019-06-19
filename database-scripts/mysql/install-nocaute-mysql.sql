@@ -63,7 +63,7 @@ CREATE TABLE matriculas (
 
 CREATE TABLE matriculas_modalidades (
     codigo_matricula int(11) NOT NULL,
-    data_inicio date DEFAULT CURRENT_DATE,
+    data_inicio date,
     data_fim date,
     id_graduacao int(11),
     id_modalidade int(11),
