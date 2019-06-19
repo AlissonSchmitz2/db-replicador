@@ -34,7 +34,7 @@ import br.com.dbreplicador.view.combomodel.GenericComboModel;
 public class ConnectionFormWindow extends AbstractWindowFrame {
 	private static final long serialVersionUID = 3721635335554059099L;
 
-	//Componentes
+	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB;
 	private JTextField txfDescription, txfPort, txfNameDB;
@@ -42,35 +42,38 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
 	private JDesktopPane desktop;
-	
-	// Expressão regular para verificar se o IP digitado  é valido
+
+	// Dialog Testar Conexão
+	private ConnectionTestModalWindow connectionTestModalWindow;
+
+	// Expressão regular para verificar se o IP digitado é valido
 	private String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 	private Pattern p = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
 	private RegexFormatter ipFormatter = new RegexFormatter(p);
-	
+
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
-	
+
 	private ListConnectionFormWindow searchConnectionWindow;
-	
+
 	// Banco de dados
 	private ConnectionModel replicationModel;
 	private ReplicationDAO replicationDAO;
 	private Connection connection;
-	
+
 	public ConnectionFormWindow(JDesktopPane desktop, Connection connection) {
 		super("Cadastro de Conexões", 455, 330, desktop);
 		this.desktop = desktop;
 		this.connection = connection;
-		
+
 		setFrameIcon(MasterImage.aplication_16x16);
-		
+
 		try {
 			replicationDAO = new ReplicationDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
-		
+
 		createComponents();
 
 		// Por padrão campos são desabilitados ao iniciar
@@ -261,7 +264,16 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 				}
 				
 				// TODO Testar conexao com bd
-				
+				if(connectionTestModalWindow == null) {
+					connectionTestModalWindow = new ConnectionTestModalWindow(
+							cbxModelDB.getSelectedItem().toString(), 
+							txfAddressIP.getText(),
+							Integer.parseInt(txfPort.getText()), 
+							txfNameDB.getText());
+					
+					// Reseta janela
+					connectionTestModalWindow = null;
+				}
 				
 			}
 		});
@@ -287,7 +299,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		lblPort = new JLabel("Porta:");
 		lblNameDB = new JLabel("Nome do Banco:");
 		lblModelDB = new JLabel("Modelo do Banco:");
-		//lblCompany = new JLabel("Estabelecimento:");
+		// lblCompany = new JLabel("Estabelecimento:");
 
 		// TextFields
 		txfDescription = new JTextField();
@@ -303,114 +315,115 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		txfNameDB = new JTextField();
 		txfNameDB.setColumns(10);
 		formFields.add(txfNameDB);
-		
+
 		List<Database> databaseList = new ArrayList<>();
 		databaseList.add(new Database("", "-- Selecione --"));
 		Databases.getDatabases().forEach((code, description) -> databaseList.add(new Database(code, description)));
-		
+
 		cbxModelDB = new JComboBox<Database>();
 		cbxModelDB.setModel(new GenericComboModel<Database>(databaseList));
 		cbxModelDB.setSelectedIndex(0);
 		formFields.add(cbxModelDB);
-		//txfCompany = new JTextField();
-		//txfCompany.setColumns(10);
-		//formFields.add(txfCompany);
+		// txfCompany = new JTextField();
+		// txfCompany.setColumns(10);
+		// formFields.add(txfCompany);
 
 		btnTestarConexo = new JButton("Testar Conex\u00E3o");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(15)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup()
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup().addGap(15).addGroup(groupLayout
+								.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-									.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+										.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 95,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 110,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 110,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 95,
+												GroupLayout.PREFERRED_SIZE))
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-										.addComponent(lblPort)
-										.addComponent(lblDescription)
-										.addComponent(lblAddressIP)
-										.addComponent(lblNameDB)
-										.addComponent(lblModelDB))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE)
+										.addGroup(groupLayout
+												.createParallelGroup(Alignment.TRAILING).addComponent(lblPort)
+												.addComponent(lblDescription).addComponent(lblAddressIP)
+												.addComponent(lblNameDB).addComponent(lblModelDB))
+										.addPreferredGap(ComponentPlacement.UNRELATED)
 										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-											.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
-											.addComponent(txfDescription))
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-											.addComponent(cbxModelDB, Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addComponent(txfNameDB, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(165)
-							.addComponent(btnTestarConexo)))
-					.addContainerGap(14, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(5)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblDescription)
-						.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblAddressIP)
-						.addComponent(txfAddressIP, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblPort))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNameDB))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblModelDB))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnTestarConexo, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(52, Short.MAX_VALUE))
-		);
+												.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, 111,
+														GroupLayout.PREFERRED_SIZE)
+												.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+														.addComponent(txfAddressIP, GroupLayout.DEFAULT_SIZE, 315,
+																Short.MAX_VALUE)
+														.addComponent(txfDescription))
+												.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+														.addComponent(cbxModelDB, Alignment.LEADING, 0,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+														.addComponent(txfNameDB, Alignment.LEADING,
+																GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))))))
+						.addGroup(groupLayout.createSequentialGroup().addGap(165).addComponent(btnTestarConexo)))
+				.addContainerGap(14, Short.MAX_VALUE)));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addGap(5)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnSearch, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnAdd, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnRemove, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE))
+						.addGap(18)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblDescription)
+								.addComponent(txfDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(lblAddressIP)
+								.addComponent(txfAddressIP, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txfPort, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblPort))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txfNameDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNameDB))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(cbxModelDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblModelDB))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnTestarConexo, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(52, Short.MAX_VALUE)));
 		getContentPane().setLayout(groupLayout);
 	}
-	
+
 	private boolean validateFields() {
-		if(txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
+		if (txfDescription.getText().isEmpty() || txfDescription.getText() == null) {
 			bubbleWarning("Informe uma descrição para a conexão!");
 			return false;
-		} else if(txfAddressIP.getText().isEmpty() || txfAddressIP.getText() == null) {
+		} else if (txfAddressIP.getText().isEmpty() || txfAddressIP.getText() == null) {
 			bubbleWarning("Informe o endereço de IP!");
 			return false;
-		}  else if(txfPort.getText().isEmpty() || txfPort.getText() == null) {
+		} else if (txfPort.getText().isEmpty() || txfPort.getText() == null) {
 			bubbleWarning("Informe a porta do endereço da conexão!");
 			return false;
-		}  else if(txfNameDB.getText().isEmpty() || txfNameDB.getText() == null) {
+		} else if (txfNameDB.getText().isEmpty() || txfNameDB.getText() == null) {
 			bubbleWarning("Informe o nome do banco!");
 			return false;
-		}  else if(cbxModelDB.getSelectedItem().equals("-- Selecione --")|| cbxModelDB.getSelectedItem() == null) {
+		} else if (cbxModelDB.getSelectedItem().toString().equals("-- Selecione --") || cbxModelDB.getSelectedItem() == null) {
 			bubbleWarning("Selecione o modelo do banco!");
 			return false;
-		}  /*else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
-			bubbleWarning("Informe o estabelecimento!");
-			return false;
-		} */
-		
+		} /*
+			 * else if(txfCompany.getText().isEmpty() || txfCompany.getText() == null) {
+			 * bubbleWarning("Informe o estabelecimento!"); return false; }
+			 */
+
 		return true;
 	}
-	
+
 	private Timestamp getDateTime(Date date) {
 		long dataTime = date.getTime();
 		Timestamp ts = new Timestamp(dataTime);
