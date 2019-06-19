@@ -8,19 +8,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.text.DefaultFormatterFactory;
 
 import br.com.dbreplicador.dao.ReplicationDAO;
 import br.com.dbreplicador.enums.Databases;
@@ -28,7 +25,6 @@ import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.pojos.Database;
 import br.com.dbreplicador.util.InternalFrameListener;
-import br.com.dbreplicador.util.RegexFormatter;
 import br.com.dbreplicador.view.combomodel.GenericComboModel;
 
 public class ConnectionFormWindow extends AbstractWindowFrame {
@@ -37,19 +33,13 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 	// Componentes
 	private JButton btnSearch, btnAdd, btnRemove, btnSave;
 	private JLabel lblDescription, lblAddressIP, lblPort, lblNameDB, lblModelDB;
-	private JTextField txfDescription, txfPort, txfNameDB;
-	private JFormattedTextField txfAddressIP;
+	private JTextField txfDescription, txfPort, txfNameDB, txfAddressIP;
 	private JComboBox<Database> cbxModelDB;
 	private JButton btnTestarConexo;
 	private JDesktopPane desktop;
 
 	// Dialog Testar Conexão
 	private ConnectionTestModalWindow connectionTestModalWindow;
-
-	// Expressão regular para verificar se o IP digitado é valido
-	private String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-	private Pattern p = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
-	private RegexFormatter ipFormatter = new RegexFormatter(p);
 
 	// Guarda os fields em uma lista para facilitar manipulação em massa
 	private List<Component> formFields = new ArrayList<Component>();
@@ -295,7 +285,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 
 		// Labels
 		lblDescription = new JLabel("Descri\u00E7\u00E3o:");
-		lblAddressIP = new JLabel("Endere\u00E7o (IP):");
+		lblAddressIP = new JLabel("Endere\u00E7o:");
 		lblPort = new JLabel("Porta:");
 		lblNameDB = new JLabel("Nome do Banco:");
 		lblModelDB = new JLabel("Modelo do Banco:");
@@ -305,8 +295,7 @@ public class ConnectionFormWindow extends AbstractWindowFrame {
 		txfDescription = new JTextField();
 		txfDescription.setColumns(10);
 		formFields.add(txfDescription);
-		txfAddressIP = new JFormattedTextField();
-		txfAddressIP.setFormatterFactory(new DefaultFormatterFactory(ipFormatter));
+		txfAddressIP = new JTextField();
 		txfAddressIP.setColumns(10);
 		formFields.add(txfAddressIP);
 		txfPort = new JTextField();
