@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +29,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.InternalFrameEvent;
 
 import br.com.dbreplicador.dao.DirectionDAO;
+import br.com.dbreplicador.dao.ReplicationDAO;
 import br.com.dbreplicador.image.MasterImage;
 import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
@@ -54,6 +56,9 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 	private ListDirectionFormWindow searchDirectionWindow;
 	private DirectionModel directionModel;
 	private DirectionDAO directionDAO;
+	private ReplicationDAO replicationDAO;
+	private ConnectionModel connectionModel_DBOrigin;
+	private ConnectionModel connectionModel_DBDestiny;
 
 	private ListProcessFormWindow searchProcessWindow;
 	private ListConnectionFormWindow searchConnectionWindow;
@@ -70,6 +75,7 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 		try {
 			directionDAO = new DirectionDAO(connection);
+			replicationDAO = new ReplicationDAO(connection);
 		} catch (Exception error) {
 			error.printStackTrace();
 		}
@@ -151,9 +157,17 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 					ConnectionModel selectedModel = ((ListConnectionFormWindow) e.getInternalFrame())
 							.getSelectedModel();
 
-					if (selectedModel != null) {
-						// Atribui database destino para o campo
-						txfDBDestiny.setText(selectedModel.getReplicationCode().toString());
+					if (selectedModel != null) {						
+						try {
+							// Recupera a conexão de destino através do ID.
+							connectionModel_DBDestiny = replicationDAO.findById(selectedModel.getReplicationCode());
+							
+							// Atribui database destino para o campo
+							txfDBDestiny.setText(connectionModel_DBDestiny.getDatabase());
+						} catch (SQLException error) {
+							error.printStackTrace();
+							bubbleError(error.getMessage());
+						}						
 					}
 
 					// Reseta janela
@@ -174,8 +188,16 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 							.getSelectedModel();
 
 					if (selectedModel != null) {
-						// Atribui database origem para o campo
-						txfDBOrigin.setText(selectedModel.getReplicationCode().toString());
+						try {
+							// Recupera a conexão de origem através do ID.
+							connectionModel_DBOrigin = replicationDAO.findById(selectedModel.getReplicationCode());
+							
+							// Atribui database origem para o campo
+							txfDBOrigin.setText(connectionModel_DBOrigin.getDatabase());
+						} catch (Exception error) {
+							error.printStackTrace();
+							bubbleError(error.getMessage());
+						}						
 					}
 
 					// Reseta janela
@@ -199,34 +221,42 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 							DirectionModel selectedModel = ((ListDirectionFormWindow) e.getInternalFrame())
 									.getSelectedModel();
 
-							if (selectedModel != null) {
-								// Atribui o model selecionado
-								directionModel = selectedModel;
+							if (selectedModel != null) {	
+								try {
+									// Atribui o model selecionado
+									directionModel = selectedModel;
+									
+									connectionModel_DBOrigin = replicationDAO.findById(directionModel.getOriginDatabase());
+									connectionModel_DBDestiny = replicationDAO.findById(directionModel.getDestinationDatabase());
+									
+									// Seta dados do model para os campos
+									txfProcess.setText(directionModel.getProcess());
+									txfDuration.setText(String.valueOf(directionModel.getMaxDuration()));
+									txfRetention.setText(String.valueOf(directionModel.getRetention()));
+									cbxAutomatic.setSelected(directionModel.isAutomaticManual());
+									cbxEnable.setSelected(directionModel.isEnabled());
+									txfDBOrigin.setText(connectionModel_DBOrigin.getDatabase());
+									txfUserOrigin.setText(directionModel.getOriginUser());
+									txfPasswordOrigin.setText(directionModel.getOriginPassword());
+									txfDBDestiny.setText(connectionModel_DBDestiny.getDatabase());
+									txfUserDestiny.setText(directionModel.getDestinationUser());
+									txfPasswordDestiny.setText(directionModel.getDestinationPassword());
 
-								// Seta dados do model para os campos
-								txfProcess.setText(directionModel.getProcess());
-								txfDuration.setText(String.valueOf(directionModel.getMaxDuration()));
-								txfRetention.setText(String.valueOf(directionModel.getRetention()));
-								cbxAutomatic.setSelected(directionModel.isAutomaticManual());
-								cbxEnable.setSelected(directionModel.isEnabled());
-								txfDBOrigin.setText(((Integer)directionModel.getOriginDatabase()).toString());
-								txfUserOrigin.setText(directionModel.getOriginUser());
-								txfPasswordOrigin.setText(directionModel.getOriginPassword());
-								txfDBDestiny.setText(((Integer)directionModel.getDestinationDatabase()).toString());
-								txfUserDestiny.setText(directionModel.getDestinationUser());
-								txfPasswordDestiny.setText(directionModel.getDestinationPassword());
+									// Seta form para modo Edição
+									setFormMode(UPDATE_MODE);
 
-								// Seta form para modo Edição
-								setFormMode(UPDATE_MODE);
+									// Ativa campos
+									enableComponents(formFields);
 
-								// Ativa campos
-								enableComponents(formFields);
+									// Ativa botão salvar
+									btnSave.setEnabled(true);
 
-								// Ativa botão salvar
-								btnSave.setEnabled(true);
-
-								// Ativa botão remover
-								btnRemove.setEnabled(true);
+									// Ativa botão remover
+									btnRemove.setEnabled(true);
+								} catch (SQLException error) {
+									error.printStackTrace();
+									bubbleError(error.getMessage());
+								}								
 							}
 
 							// Reseta janela
@@ -257,6 +287,8 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 				// Cria nova entidade model
 				directionModel = new DirectionModel();
+				connectionModel_DBDestiny = new ConnectionModel();
+				connectionModel_DBOrigin = new ConnectionModel();
 				
 				// Opção "Habilitado" selecionado por padrão
 				cbxEnable.setSelected(true);
@@ -285,6 +317,8 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 
 							// Cria nova entidade model
 							directionModel = new DirectionModel();
+							connectionModel_DBDestiny = new ConnectionModel();
+							connectionModel_DBOrigin = new ConnectionModel();
 
 							// Desativa botão salvar
 							btnSave.setEnabled(false);
@@ -321,10 +355,10 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 				directionModel.setAutomaticManual(cbxAutomatic.isSelected());
 				directionModel.setCurrentDate(getDateTime(new Date()));
 				directionModel.setDayPeriod(Integer.parseInt(txfDay.getText()));
-				directionModel.setDestinationDatabase(Integer.parseInt(txfDBDestiny.getText()));
+				directionModel.setDestinationDatabase(connectionModel_DBDestiny.getReplicationCode());
 				directionModel.setDestinationPassword(txfPasswordDestiny.getText());
 				directionModel.setDestinationUser(txfUserDestiny.getText());
-				directionModel.setOriginDatabase(Integer.parseInt(txfDBOrigin.getText()));
+				directionModel.setOriginDatabase(connectionModel_DBOrigin.getReplicationCode());
 				directionModel.setOriginPassword(txfPasswordOrigin.getText());
 				directionModel.setOriginUser(txfUserOrigin.getText());
 				directionModel.setEnabled(cbxEnable.isSelected());
@@ -739,6 +773,9 @@ public class DirectionFormWindow extends AbstractWindowFrame implements KeyEvent
 			return false;
 		} else if (Integer.parseInt(txfRetention.getText()) < 6 ) {
 			bubbleWarning("Retenção não pode ser inferior a 6!");
+			return false;
+		} else if (connectionModel_DBOrigin.getReplicationCode() == connectionModel_DBDestiny.getReplicationCode()) {
+			bubbleWarning("Os bancos de origem e destino não podem ser iguais!");
 			return false;
 		}
 

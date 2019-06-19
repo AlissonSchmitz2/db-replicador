@@ -347,13 +347,17 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 		model.setLastExecution(rst.getDate("execucao_ultima"));
 		model.setRetention(rst.getInt("retencao"));
 		model.setEnabled(rst.getBoolean("habilitado"));
-		
+				
 		return model;
 	}
 	
 	@Override
 	public List<DirectionModel> search(String word) throws SQLException {
-		String query = "SELECT * FROM " + TABLE_NAME + " WHERE processo ILIKE ? ORDER BY " + defaultOrderBy;
+		String query = "SELECT d.*, ro.database AS ro_database_origem, rd.database AS rd_database_destino FROM " + TABLE_NAME + " AS d "
+				+ "LEFT JOIN tb_replicacao AS ro ON d.database_origem = ro.codigo_replicacao "
+				+ "LEFT JOIN tb_replicacao AS rd ON d.database_destino = rd.codigo_replicacao "
+				+ "WHERE d.processo ILIKE ? ORDER BY " + defaultOrderBy;
+		
 		PreparedStatement pst = connection.prepareStatement(query);
 
 		setParam(pst, 1, "%" + word + "%");
@@ -364,6 +368,16 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 
 		while (rst.next()) {
 			DirectionModel model = createModelFromResultSet(rst);
+			
+			// Recupera o nome do database origem. (Por enquanto não há a necessidade de recuperar e montar o objeto completo).
+			ConnectionModel connectionModel_DBOrigin = new ConnectionModel();
+			connectionModel_DBOrigin.setDatabase(rst.getString("ro_database_origem"));
+			model.setOriginConnectionModel(connectionModel_DBOrigin);
+			
+			// Recupera o nome do database destino. (Por enquanto não há a necessidade de recuperar e montar o objeto completo).
+			ConnectionModel connectionModel_DBDestiny = new ConnectionModel();
+			connectionModel_DBDestiny.setDatabase(rst.getString("rd_database_destino"));
+			model.setDestinationConnectionModel(connectionModel_DBDestiny);
 
 			directionList.add(model);
 		}

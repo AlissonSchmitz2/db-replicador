@@ -1,5 +1,6 @@
 package br.com.dbreplicador.view.tableModel;
 
+import br.com.dbreplicador.model.ConnectionModel;
 import br.com.dbreplicador.model.DirectionModel;
 
 public class DirectionTableModel extends AbstractTableModel<DirectionModel> {
@@ -15,9 +16,9 @@ public class DirectionTableModel extends AbstractTableModel<DirectionModel> {
 		case 0:
 			model.setProcess(aValue.toString());
 		case 1:
-			model.setOriginDatabase((Integer)aValue);
+			model.setOriginConnectionModel((ConnectionModel) aValue);
 		case 2:
-			model.setDestinationDatabase((Integer)aValue);
+			model.setDestinationConnectionModel((ConnectionModel) aValue);
 		default:
 			System.err.println("Índice da coluna inválido");
 		}
@@ -32,10 +33,10 @@ public class DirectionTableModel extends AbstractTableModel<DirectionModel> {
 			valueObject = model.getProcess();
 			break;
 		case 1:
-			valueObject = ((Integer)model.getOriginDatabase()).toString();
+			valueObject = (model.getOriginConnectionModel().getDatabase());
 			break;
 		case 2:
-			valueObject = ((Integer)model.getDestinationDatabase()).toString();
+			valueObject = (model.getDestinationConnectionModel().getDatabase());
 			break;	
 		default:
 			System.err.println("Índice da coluna inválido");
