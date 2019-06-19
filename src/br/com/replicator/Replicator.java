@@ -91,16 +91,18 @@ public class Replicator implements IReplicator {
 		}
 		
 		//Faz uma consulta na tabela de destino procurando por tableUniqueKey removidos
-		IQuery querySelectUnexistentUniqueKeys = destinationProvider.getQueryBuilder()
-				.findNotIn(destinationTableName, tableUniqueKey, originUniqueKeys, tableUniqueKey);
-		ResultSet rstSelectUnexistentUniqueKeys = destinationProvider.getProcessor().execute(querySelectUnexistentUniqueKeys);
-		
-		while (rstSelectUnexistentUniqueKeys.next()) {
-			queries.add(destinationProvider.getQueryBuilder()
-					.delete(destinationTableName, tableUniqueKey, rstSelectUnexistentUniqueKeys.getString(tableUniqueKey))
-			);
+		if (originUniqueKeys.size() > 0) {
+			IQuery querySelectUnexistentUniqueKeys = destinationProvider.getQueryBuilder()
+					.findNotIn(destinationTableName, tableUniqueKey, originUniqueKeys, tableUniqueKey);
+			ResultSet rstSelectUnexistentUniqueKeys = destinationProvider.getProcessor().execute(querySelectUnexistentUniqueKeys);
+			
+			while (rstSelectUnexistentUniqueKeys.next()) {
+				queries.add(destinationProvider.getQueryBuilder()
+						.delete(destinationTableName, tableUniqueKey, rstSelectUnexistentUniqueKeys.getString(tableUniqueKey))
+				);
+			}
 		}
-		
+
 		//Fecha conexões ativas, as mesmas serão reativadas no processamento das queries
 		originProvider.getConn().close();
 		destinationProvider.getConn().close();

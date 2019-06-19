@@ -1,0 +1,1 @@
+alter table tb_replicacao_tabela_execucao drop column execucao_inicio_data_hora;

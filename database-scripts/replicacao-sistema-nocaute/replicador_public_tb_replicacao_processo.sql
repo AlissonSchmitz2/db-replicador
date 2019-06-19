@@ -1,0 +1,1 @@
+INSERT INTO tb_replicacao_processo (codigo_processo, data_atual, usuario, processo, descricao, data_atual_de, erro_ignorar, habilitado) VALUES (2, '2019-06-18 00:07:02.632000', 'admin', 'novo', 'Replicação Sistema ', '2019-06-17 23:25:13.509000', true, true);

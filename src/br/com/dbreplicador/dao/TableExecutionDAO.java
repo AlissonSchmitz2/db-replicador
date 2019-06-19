@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,8 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 	private String defaultOrderBy = "codigo_tabela ASC";
 
 	private String[] defaultValuesToInsert = new String[] {
-			"DEFAULT"
+			"DEFAULT",
+			"'" + new Timestamp(System.currentTimeMillis()).toString() + "'"
 	};
 
 	private String[] columnsToInsert = new String[] {
@@ -29,7 +31,6 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 			"usuario_origem",
 			"database_destino",
 			"usuario_destino",
-			"execucao_inicio_data_hora",
 			"ordem",
 			"inicio_data_hora",
 			"fim_data_hora",
@@ -46,7 +47,6 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 			"usuario_origem",
 			"database_destino",
 			"usuario_destino",
-			"execucao_inicio_data_hora",
 			"ordem",
 			"inicio_data_hora",
 			"fim_data_hora",
@@ -71,20 +71,19 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		pst.clearParameters();
 
-		setParam(pst, 1, model.getCurrentDate());
-		setParam(pst, 2, model.getProcess());
-		setParam(pst, 3, model.getOriginDatabase());
-		setParam(pst, 4, model.getOriginUser());
-		setParam(pst, 5, model.getDestinationDatabase());
-		setParam(pst, 6, model.getDestinationUser());
-		setParam(pst, 7, model.getExecutionStartDateTime());
-		setParam(pst, 8, model.getOrder());
-		setParam(pst, 9, model.getStartDateTime());
-		setParam(pst, 10, model.getFinishDateTime());
-		setParam(pst, 11, model.getCurrentDateUntil());
-		setParam(pst, 12, model.getProcessedLines());
-		setParam(pst, 13, model.isSucess());
-		setParam(pst, 14, model.getMessage());
+		//setParam(pst, 1, model.getCurrentDate());
+		setParam(pst, 1, model.getProcess());
+		setParam(pst, 2, model.getOriginDatabase());
+		setParam(pst, 3, model.getOriginUser());
+		setParam(pst, 4, model.getDestinationDatabase());
+		setParam(pst, 5, model.getDestinationUser());
+		setParam(pst, 6, model.getOrder());
+		setParam(pst, 7, model.getStartDateTime());
+		setParam(pst, 8, model.getFinishDateTime());
+		setParam(pst, 9, model.getCurrentDateUntil());
+		setParam(pst, 10, model.getProcessedLines());
+		setParam(pst, 11, model.isSucess());
+		setParam(pst, 12, model.getMessage());
 
 		int result = pst.executeUpdate();
 		if (result > 0) {
@@ -116,14 +115,13 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 		setParam(pst, 4, model.getOriginUser());
 		setParam(pst, 5, model.getDestinationDatabase());
 		setParam(pst, 6, model.getDestinationUser());
-		setParam(pst, 7, model.getExecutionStartDateTime());
-		setParam(pst, 8, model.getOrder());
-		setParam(pst, 9, model.getStartDateTime());
-		setParam(pst, 10, model.getFinishDateTime());
-		setParam(pst, 11, model.getCurrentDateUntil());
-		setParam(pst, 12, model.getProcessedLines());
-		setParam(pst, 13, model.isSucess());
-		setParam(pst, 14, model.getMessage());
+		setParam(pst, 7, model.getOrder());
+		setParam(pst, 8, model.getStartDateTime());
+		setParam(pst, 9, model.getFinishDateTime());
+		setParam(pst, 10, model.getCurrentDateUntil());
+		setParam(pst, 11, model.getProcessedLines());
+		setParam(pst, 12, model.isSucess());
+		setParam(pst, 13, model.getMessage());
 
 		// Identificador WHERE
 		setParam(pst, 15, model.getTableCode());
@@ -209,11 +207,10 @@ public class TableExecutionDAO extends AbstractCrudDAO<TableExecutionModel>{
 		model.setTableCode(rst.getInt("codigo_tabela"));
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setProcess(rst.getString("processo"));
-		model.setOriginDatabase(rst.getInt("database_origem"));
+		model.setOriginDatabase(rst.getString("database_origem"));
 		model.setOriginUser(rst.getString("usuario_origem"));
-		model.setDestinationDatabase(rst.getInt("database_destino"));
+		model.setDestinationDatabase(rst.getString("database_destino"));
 		model.setDestinationUser(rst.getString("usuario_destino"));
-		model.setExecutionStartDateTime(rst.getTimestamp("execucao_inicio_data_hora"));
 		model.setOrder(rst.getInt("ordem"));
 		model.setStartDateTime(rst.getTimestamp("inicio_data_hora"));
 		model.setFinishDateTime(rst.getTimestamp("fim_data_hora"));

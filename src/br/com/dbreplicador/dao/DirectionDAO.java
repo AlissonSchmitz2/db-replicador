@@ -278,6 +278,7 @@ public class DirectionDAO extends AbstractCrudDAO<DirectionModel> implements ISe
 			
 			//PROCESSO
 			ProcessModel process = new ProcessModel();
+			process.setProcess(directionsRst.getString("processo"));
 			process.setProcessCode(directionsRst.getInt("p_codigo_processo"));
 			process.setDescription(directionsRst.getString("p_descricao"));
 			process.setCurrentDateOf(directionsRst.getTimestamp("p_data_atual_de"));
