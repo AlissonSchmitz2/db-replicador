@@ -2,6 +2,7 @@ package br.com.dbreplicador.test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Types;
 
 import br.com.replicator.database.ConnectionFactory;
 import br.com.replicator.database.ConnectionInfo;
@@ -32,6 +33,10 @@ public class ReplicatorCRUDTest {
 					new String[] {
 						"2",
 						"Aluno 2"
+					},
+					new int[] {
+						Types.VARCHAR,
+						Types.VARCHAR
 					});
 			
 			Object resultInsert = processor.executeUpdate(insertQuery);
@@ -44,6 +49,9 @@ public class ReplicatorCRUDTest {
 					},
 					new String[] {
 						"Aluno 2 - Updated"
+					},
+					new int[] {
+						Types.VARCHAR
 					},
 					"codigo_aluno", "2");
 			Object resultUpdate = processor.executeUpdate(updateQuery);

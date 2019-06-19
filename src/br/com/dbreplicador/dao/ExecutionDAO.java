@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,9 @@ public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 	private String defaultOrderBy = "codigo_execucao ASC";
 
 	private String[] defaultValuesToInsert = new String[] {
-			"DEFAULT"
+			"DEFAULT",
+			"'" + new Timestamp(System.currentTimeMillis()).toString() + "'",
+			"'not-applicable'"
 	};
 
 	private String[] columnsToInserts = new String[] {
@@ -66,17 +69,17 @@ public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 		PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		pst.clearParameters();
 		
-		setParam(pst, 1, model.getCurrentDate());
-		setParam(pst, 2, model.getUser());
-		setParam(pst, 3, model.getOriginDatabase());
-		setParam(pst, 4, model.getOriginUser());
-		setParam(pst, 5, model.getDestinatioDatabase());
-		setParam(pst, 6, model.getDestinationUser());
-		setParam(pst, 7, model.getDateHourInitial());
-		setParam(pst, 8, model.getDateHourFinal());
-		setParam(pst, 9, model.getCurrentDate());
-		setParam(pst, 10, model.getOccurrence());
-		setParam(pst, 11, model.getProcess());
+		//setParam(pst, 1, model.getCurrentDate());
+		//setParam(pst, 2, model.getUser());
+		setParam(pst, 1, model.getOriginDatabase());
+		setParam(pst, 2, model.getOriginUser());
+		setParam(pst, 3, model.getDestinatioDatabase());
+		setParam(pst, 4, model.getDestinationUser());
+		setParam(pst, 5, model.getDateHourInitial());
+		setParam(pst, 6, model.getDateHourFinal());
+		setParam(pst, 7, model.getCurrentDate());
+		setParam(pst, 8, model.getOccurrence());
+		setParam(pst, 9, model.getProcess());
 			
 		int result = pst.executeUpdate();
 		if (result > 0) {
@@ -86,7 +89,7 @@ public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 			if (rs.next()) {
 				int lastInsertedCode = rs.getInt(columnId);
 				
-				// Antes de retornar, seta o id ao objeto modalidade
+				// Antes de retornar, seta o id ao objeto
 				model.setExecuteCode(lastInsertedCode);
 				
 				return model;

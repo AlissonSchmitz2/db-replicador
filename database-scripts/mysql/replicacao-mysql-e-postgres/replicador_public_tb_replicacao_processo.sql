@@ -1,0 +1,2 @@
+INSERT INTO public.tb_replicacao_processo (codigo_processo, data_atual, usuario, processo, descricao, data_atual_de, erro_ignorar, habilitado) VALUES (2, '2019-06-19 01:29:14.591000', 'admin', 'novo', 'Replicação Sistema ', '2019-06-19 01:49:39.464000', true, true);
+INSERT INTO public.tb_replicacao_processo (codigo_processo, data_atual, usuario, processo, descricao, data_atual_de, erro_ignorar, habilitado) VALUES (5, '2019-06-19 01:51:53.881000', 'admin', 'teste_mysql', 'Processo MySQL', '2019-06-19 02:39:19.577000', true, true);

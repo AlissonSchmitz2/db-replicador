@@ -12,14 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.dbreplicador.dao.DirectionDAO;
+import br.com.dbreplicador.dao.ExecutionDAO;
 import br.com.dbreplicador.dao.ProcessDAO;
 import br.com.dbreplicador.dao.TableDAO;
+import br.com.dbreplicador.dao.TableExecutionDAO;
 import br.com.dbreplicador.enums.ReplicationEvents;
+import br.com.dbreplicador.enums.ReplicationProcessingStatuses;
 import br.com.dbreplicador.model.DirectionModel;
+import br.com.dbreplicador.model.ExecutionModel;
 import br.com.dbreplicador.model.ProcessModel;
+import br.com.dbreplicador.model.TableExecutionModel;
 import br.com.dbreplicador.model.TableModel;
 import br.com.dbreplicador.observers.contracts.IReplicationObserver;
 import br.com.dbreplicador.observers.contracts.IReplicationSubject;
+import br.com.dbreplicador.pojos.ReplicationProcessedProcess;
+import br.com.dbreplicador.pojos.ReplicationProcessedTable;
 import br.com.dbreplicador.pojos.ReplicationQueueItem;
 import br.com.dbreplicador.view.contracts.IReplicationExecutor;
 import br.com.dbreplicador.view.contracts.IReplicationProcessingInfo;
@@ -43,7 +50,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	private Collection<IReplicationObserver> observers = new HashSet<IReplicationObserver>();
 	
 	private Map<Integer, ReplicationQueueItem> queue = new HashMap<Integer, ReplicationQueueItem>();
-	private Map<String, TableModel> processedTables = new HashMap<String, TableModel>();
+	private Map<String, ReplicationProcessedTable> processedTables = new HashMap<String, ReplicationProcessedTable>();
+	private Map<String, ReplicationProcessedProcess> processedProcesses = new HashMap<String, ReplicationProcessedProcess>();
 	private Integer currentQueueIndex = 0;
 	
 	private String currentOriginDirection = "";
@@ -57,12 +65,16 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	private DirectionDAO directionDao;
 	private ProcessDAO processDao;
 	private TableDAO tableDao;
+	private ExecutionDAO executionDao;
+	private TableExecutionDAO tableExecutionDao;
 	
 	public ReplicationExecutor(Connection connection) {
 		try {
 			directionDao = new DirectionDAO(connection);
 			processDao = new ProcessDAO(connection);
 			tableDao = new TableDAO(connection);
+			executionDao = new ExecutionDAO(connection);
+			tableExecutionDao = new TableExecutionDAO(connection);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -126,6 +138,9 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	
 	private void initializeProcessing(Timestamp toDate) {
 		this.toDate = toDate;
+		
+		//Limpa filas anteriores
+		queue.clear();
 		
 		//Reseta estatísticas anteriores
 		resetStatistics();
@@ -212,6 +227,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 	private void processQueue() {
 		currentQueueIndex = 0;
 		processedTables.clear();
+		processedProcesses.clear();
 		
 		executionThread = new Thread(new Runnable() {
 			public void run() {
@@ -247,7 +263,7 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 							indexLimit = indexLimit > queue.size() ? queue.size() : indexLimit;
 							
 							//Processa as queues no intevalo entre o index atual e o limite
-							processingQueueInterval(indexLimit);
+							processQueueInterval(indexLimit);
 						}
 						
 						try {
@@ -265,30 +281,36 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		executionThread.start();
 	}
 	
-	private void processingQueueInterval(Integer indexLimit) {
+	private void processQueueInterval(Integer indexLimit) {
 		IReplicatorProvider provider = null;
 		
 		for (int i = currentQueueIndex; i <= indexLimit; i++) {
 			ReplicationQueueItem currentItem = queue.get(currentQueueIndex);
+			ProcessModel currentProcessModel = currentItem.getDirectionModel().getProcessModel();
 			
-			//Armazena a tabela atual para processados
-			if (!processedTables.containsKey(currentItem.getTableModel().getOriginTable())) {
-				if (processedTables.size() > 0) {
-					//Persiste logs do processamento da tabela
-					persistTableProcessingInfo(queue.get(i - 1).getTableModel());
+			//Controles de itens já processados
+			if (setProcessToProcessedQueueIfNew(currentProcessModel)) {
+				//Persiste logs do processamento da direção anterior, considerada finalizada
+				if (queue.get(i - 1) != null) {
+					handleDirectionProcessingInfo(queue.get(i - 1).getDirectionModel(), ReplicationProcessingStatuses.SUCCESS);
 				}
-				
-				processedTables.put(currentItem.getTableModel().getOriginTable(), currentItem.getTableModel());
 			}
 			
+			//Caso retornado true, o item foi recém adicionado
+			if (setTableToProcessedQueueIfNew(currentProcessModel, currentItem.getTableModel())) {
+				//Persiste logs do processamento da tabela anterior, considerada finalizada
+				if (queue.get(i - 1) != null) {
+					handleTableProcessingInfo(currentProcessModel, queue.get(i - 1).getTableModel(), ReplicationProcessingStatuses.SUCCESS);
+				}
+			}
+			
+			//Incrementa o total de queries processadas
+			ReplicationProcessedTable currentProcessedTable = processedTables.get(getProcessedTablesKey(currentItem.getDirectionModel().getProcessModel(), currentItem.getTableModel()));
+			
 			//Seta estatísticas
-			currentOriginDirection = currentItem.getDirectionModel().getOriginConnectionModel().getDatabase();
-			currentDestinationDirection = currentItem.getDirectionModel().getDestinationConnectionModel().getDatabase();
-			currentProcess = currentItem.getDirectionModel().getProcessModel().getDescription();
-			currentTable = currentItem.getTableModel().getOriginTable();
+			setStatistics(currentItem);
 			
 			try {
-
 				if (provider != null && currentItem.getProvider() != provider) {
 					//Antes da troca do provider, comita valores não salvos
 					provider.getConn().commit();
@@ -301,9 +323,10 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 					provider.getConn().setAutoCommit(false);
 				}
 				
-				Integer result = provider.getProcessor()
-						.executeUpdate(queue.get(i).getQuery(), queue.get(i).getTableModel().getKeyColumn());
-	
+				currentProcessedTable.updateQueryTotals(queue.get(i).getQuery());
+				
+				int result = provider.getProcessor().executeUpdate(queue.get(i).getQuery());
+				
 				if (result > 0) {
 					processingProgress = (currentQueueIndex * 100) / queue.size();
 				} else {
@@ -311,15 +334,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 					
 					notifyObservers(ReplicationEvents.ON_ERROR);
 					
-					//Se for diferente de ignorar erro, para o processamento
-					if (!currentItem.getDirectionModel().getProcessModel().isErrorIgnore() || !currentItem.getTableModel().isErrorIgnore()
-					) {
-						stopThread();
-						
-						provider.getConn().commit();
-						
-						notifyObservers(ReplicationEvents.FINISHED_BY_ERROR);
-						
+					//Se for retornado true, para o processamento
+					if (handleProcessingError(currentItem, provider)) {
 						break;
 					}
 				}
@@ -340,25 +356,81 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 				
 				notifyObservers(ReplicationEvents.ON_ERROR);
 				
-				//Se for diferente de ignorar erro, para o processamento
-				if (!currentItem.getDirectionModel().getProcessModel().isErrorIgnore() || !currentItem.getTableModel().isErrorIgnore()
-				) {
-					stopThread();
-					
-					try {
-						provider.getConn().commit();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-					
-					notifyObservers(ReplicationEvents.FINISHED_BY_ERROR);
-					
+				//Se for retornado true, para o processamento
+				if (handleProcessingError(currentItem, provider)) {
 					break;
 				}
 			}
 			
 			currentQueueIndex++;
 		}
+	}
+	
+	private String getProcessedTablesKey(ProcessModel processModel, TableModel tableModel) {
+		return processModel.getProcessCode() + "_" + tableModel.getOriginTable();
+	}
+	
+	private boolean handleProcessingError(ReplicationQueueItem item, IReplicatorProvider provider) {
+		if (!item.getDirectionModel().getProcessModel().isErrorIgnore() || !item.getTableModel().isErrorIgnore()) {
+			stopThread();
+			
+			try {
+				provider.getConn().commit();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			
+			handleDirectionProcessingInfo(item.getDirectionModel(), ReplicationProcessingStatuses.ERROR);
+			
+			handleTableProcessingInfo(item.getDirectionModel().getProcessModel(), item.getTableModel(), ReplicationProcessingStatuses.ERROR);
+			
+			notifyObservers(ReplicationEvents.FINISHED_BY_ERROR);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean setProcessToProcessedQueueIfNew(ProcessModel processModel) {
+		//Adiciona o processo a lista de processados
+		if (!processedProcesses.containsKey(processModel.getProcess())) {
+			ReplicationProcessedProcess processed = new ReplicationProcessedProcess(
+					processModel,
+					new Timestamp(System.currentTimeMillis())
+			);
+			
+			processedProcesses.put(processModel.getProcess(), processed);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean setTableToProcessedQueueIfNew(ProcessModel processModel, TableModel tableModel) {
+		String identifierKey = getProcessedTablesKey(processModel, tableModel);
+		
+		//Adiciona o processo a lista de processados
+		if (!processedTables.containsKey(identifierKey)) {
+			ReplicationProcessedTable processed = new ReplicationProcessedTable(
+					tableModel,
+					new Timestamp(System.currentTimeMillis())
+			);
+			
+			processedTables.put(identifierKey, processed);
+		
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private void setStatistics(ReplicationQueueItem item) {
+		currentOriginDirection = item.getDirectionModel().getOriginConnectionModel().getDatabase();
+		currentDestinationDirection = item.getDirectionModel().getDestinationConnectionModel().getDatabase();
+		currentProcess = item.getDirectionModel().getProcessModel().getDescription();
+		currentTable = item.getTableModel().getOriginTable();
 	}
 	
 	private void finishQueueProcessing(Integer index) throws SQLException {
@@ -379,49 +451,89 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		stopThread();
 		
 		//Persiste logs do processamento da tabela
-		persistTableProcessingInfo(lastItem.getTableModel());
+		handleTableProcessingInfo(lastItem.getDirectionModel().getProcessModel(), lastItem.getTableModel(), ReplicationProcessingStatuses.SUCCESS);
 		
-		//Persiste logs do processamento do processo
-		persistProcessProcessingInfo(lastItem.getDirectionModel());
+		//Persiste logs do processamento da direção
+		handleDirectionProcessingInfo(lastItem.getDirectionModel(), ReplicationProcessingStatuses.SUCCESS);
 		
 		//Notifica evento
 		notifyObservers(ReplicationEvents.FINISHED);
 	}
 	
-	private void persistTableProcessingInfo(TableModel table) {
-		try {
-			//Salva data da última replicação da tabela
-			TableModel tableModel = tableDao.findById(table.getReplicationCode());
-			if (tableModel != null) {
-				tableModel.setCurrentDateOf(toDate);
-				tableDao.update(tableModel);	
-			}
+	private void handleTableProcessingInfo(ProcessModel processModel, TableModel tableModel, ReplicationProcessingStatuses status) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					//Em caso de sucesso, salva a última data de replicação na tabela
+					if (status == ReplicationProcessingStatuses.SUCCESS) {
+						TableModel updatedTableModel = tableDao.findById(tableModel.getReplicationCode());
+						if (updatedTableModel != null) {
+							updatedTableModel.setCurrentDateOf(toDate);
+							tableDao.update(updatedTableModel);
+						}
+					}
 					
-			//Salva log do processamento da tabela
-			//TODO
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+					String identifierKey = getProcessedTablesKey(processModel, tableModel);
+
+					//Salva log do processamento da tabela
+					ReplicationProcessedTable processedItem = processedTables.get(identifierKey);
+					
+					TableExecutionModel log = new TableExecutionModel();
+					log.setProcess(tableModel.getProcess());
+					log.setOriginDatabase(tableModel.getOriginTable());
+					log.setOriginUser("---");
+					log.setDestinationDatabase(tableModel.getDestinationTable());
+					log.setDestinationUser("---");
+					log.setOrder(tableModel.getOrder());
+					log.setStartDateTime(processedItem.getStartDate());
+					log.setFinishDateTime(new Timestamp(System.currentTimeMillis()));
+					log.setCurrentDateUntil(toDate);
+					log.setProcessedLines(processedItem.getTotalsOfQueries());
+					log.setSucess(status == ReplicationProcessingStatuses.SUCCESS);
+					log.setMessage("Inserted: " + processedItem.getTotalOfInsertQueries() + ", Updated: " + processedItem.getTotalOfUpdateQueries() + ", Deleted: " + processedItem.getTotalOfDeleteQueries());
+
+					tableExecutionDao.insert(log);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 	
-	private void persistProcessProcessingInfo(DirectionModel direction) {
-		try {
-			//Salva a última data de replicação no processo
-			ProcessModel processModel;
-			
-			processModel = processDao.findById(direction.getProcessModel().getProcessCode());
-			
-			if (processModel != null) {
-				processModel.setCurrentDateOf(toDate);
-				processDao.update(processModel);	
+	private void handleDirectionProcessingInfo(DirectionModel directionModel, ReplicationProcessingStatuses status) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					//Em caso de sucesso, salva a última data de replicação no processo
+					if (status == ReplicationProcessingStatuses.SUCCESS) {
+						ProcessModel updatedProcessModel = processDao.findById(directionModel.getProcessModel().getProcessCode());
+						
+						if (updatedProcessModel != null) {
+							updatedProcessModel.setCurrentDateOf(toDate);
+							processDao.update(updatedProcessModel);	
+						}
+					}
+					
+					//Salva o log do processo concluído
+					ReplicationProcessedProcess processedItem = processedProcesses.get(directionModel.getProcessModel().getProcess());
+					
+					ExecutionModel log = new ExecutionModel();
+					log.setOriginDatabase(directionModel.getOriginDatabase());
+					log.setOriginUser(directionModel.getOriginUser());
+					log.setDestinatioDatabase(directionModel.getDestinationDatabase());
+					log.setDestinationUser(directionModel.getDestinationUser());
+					log.setDateHourInitial(processedItem.getStartDate());
+					log.setDateHourFinal(new Timestamp(System.currentTimeMillis()));
+					log.setCurrenteDateTo(toDate);
+					log.setProcess(directionModel.getProcess());
+					log.setOccurrence(status.getCode());
+					
+					executionDao.insert(log);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
-			
-			//Salva o log do processo concluído
-			//TODO
-			System.out.println("Salva log do processamento geral");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		}).start();
 	}
 	
 	private SupportedTypes getDatabaseType(String databaseType) {

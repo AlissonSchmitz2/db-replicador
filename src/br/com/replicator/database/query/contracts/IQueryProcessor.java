@@ -8,7 +8,7 @@ public interface IQueryProcessor {
 	
 	public ResultSet execute(IQuery query) throws SQLException;
 	
-	public Object executeUpdate(IQuery query) throws SQLException;
+	public int executeUpdate(IQuery query) throws SQLException;
 	
 	public <T> T executeUpdate(IQuery query, String uniqueKeyColumn) throws SQLException;
 }

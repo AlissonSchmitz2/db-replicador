@@ -6,11 +6,10 @@ public class TableExecutionModel extends AbstractModel {
 	private Integer codigo_tabela;
 	private Timestamp data_atual;
 	private String processo;
-	private int database_origem;
+	private String database_origem;
 	private String usuario_origem;
-	private int database_destino;
+	private String database_destino;
 	private String usuario_destino;
-	private Timestamp execucao_inicio_data_hora;
 	private Integer ordem;
 	private Timestamp inicio_data_hora;
 	private Timestamp fim_data_hora;
@@ -70,7 +69,7 @@ public class TableExecutionModel extends AbstractModel {
 	/**
 	 * database_origem
 	 */
-	public int getOriginDatabase() {
+	public String getOriginDatabase() {
 		return database_origem;
 	}
 	
@@ -79,7 +78,7 @@ public class TableExecutionModel extends AbstractModel {
 	 * 
 	 * @param originDatabase
 	 */
-	public void setOriginDatabase(int originDatabase) {
+	public void setOriginDatabase(String originDatabase) {
 		this.database_origem = originDatabase;
 	}
 	
@@ -102,7 +101,7 @@ public class TableExecutionModel extends AbstractModel {
 	/**
 	 * database_destino
 	 */
-	public int getDestinationDatabase() {
+	public String getDestinationDatabase() {
 		return database_destino;
 	}
 	
@@ -111,7 +110,7 @@ public class TableExecutionModel extends AbstractModel {
 	 * 
 	 * @param destinationDatabase
 	 */
-	public void setDestinationDatabase(int destinationDatabase) {
+	public void setDestinationDatabase(String destinationDatabase) {
 		this.database_destino = destinationDatabase;
 	}
 	
@@ -129,22 +128,6 @@ public class TableExecutionModel extends AbstractModel {
 	 */
 	public void setDestinationUser(String destinationUser) {
 		this.usuario_destino = destinationUser;
-	}
-	
-	/**
-	 * execucao_inicio_data_hora
-	 */
-	public Timestamp getExecutionStartDateTime() {
-		return execucao_inicio_data_hora;
-	}
-	
-	/**
-	 * execucao_inicio_data_hora
-	 * 
-	 * @param executionStartDateTime
-	 */
-	public void setExecutionStartDateTime(Timestamp executionStartDateTime) {
-		this.execucao_inicio_data_hora = executionStartDateTime;
 	}
 	
 	/**

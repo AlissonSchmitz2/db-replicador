@@ -1,0 +1,2 @@
+INSERT INTO tb_replicacao (codigo_replicacao, data_atual, usuario, nome, endereco, porta, database, tipo_banco, url) VALUES (1, '2019-06-08 23:47:40.304000', 'admin', 'Nocaute 1', '127.0.0.1', 5432, 'master', 'PostgreSQL', 'postgresql://127.0.0.1:5432/master');
+INSERT INTO tb_replicacao (codigo_replicacao, data_atual, usuario, nome, endereco, porta, database, tipo_banco, url) VALUES (2, '2019-06-08 23:48:19.249000', 'admin', 'Nocaute 2', '127.0.0.1', 5432, 'nocaute2', 'PostgreSQL', 'postgresql://127.0.0.1:5432/nocaute2');
