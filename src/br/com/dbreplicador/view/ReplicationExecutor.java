@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ import br.com.replicator.exceptions.InvalidDatabaseTypeException;
 import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
 public class ReplicationExecutor implements IReplicationExecutor, IReplicationProcessingInfo, IReplicationSubject {
-	private static int EXECUTOR_TIMEOUT = 50;
+	private static int EXECUTOR_TIMEOUT = 0;
 	
 	private Timestamp toDate;
 	
@@ -168,60 +169,76 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 		}).start();
 	}
 	
+	private List<Thread> arrThreads = new ArrayList<Thread>();
+	
 	private void generateQueue(Map<Integer, DirectionModel> directions) {
-		for (DirectionModel direction : directions.values()) {
-			ConnectionInfo originConnInfo = new ConnectionInfo(
-				getDatabaseType(direction.getOriginConnectionModel().getDatebaseType()),
-				direction.getOriginConnectionModel().getAddress(),
-				direction.getOriginConnectionModel().getPort(),
-				direction.getOriginConnectionModel().getDatabase(),
-				direction.getOriginUser(),
-				direction.getOriginPassword()
-			);
-			ConnectionInfo destinationConnInfo = new ConnectionInfo(
-				getDatabaseType(direction.getDestinationConnectionModel().getDatebaseType()),
-				direction.getDestinationConnectionModel().getAddress(),
-				direction.getDestinationConnectionModel().getPort(),
-				direction.getDestinationConnectionModel().getDatabase(),
-				direction.getDestinationUser(),
-				direction.getDestinationPassword()
-			);
-			
-			try {
-				IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);
-				
-				//Desabilita auto commit da conexão de destino
-				replicator.getDestinationProvider().getConn().setAutoCommit(false);
-					
-				for (TableModel table : direction.getTables().values()) {
-					Timestamp tableToDate = table.isIncrementalBackup() && table.getCurrentDateOf() != null ? table.getCurrentDateOf() : new Timestamp(0);
-					
-					List<IQuery> queries = replicator.getQueriesForReplication(
-						table.getOriginTable(),
-						table.getDestinationTable(),
-						table.getKeyColumn(),
-						table.getControlColumn(),
-						tableToDate
-					);
-					
-					//Adiciona as queries a fila
-					queries.forEach(query -> {
-						queue.put(
-								(queue.size() + 1), 
-								new ReplicationQueueItem(
-										query, 
-										replicator.getDestinationProvider(), 
-										direction, 
-										table
-								));
-					});
+		try {
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					for (DirectionModel direction : directions.values()) {
+						ConnectionInfo originConnInfo = new ConnectionInfo(
+							getDatabaseType(direction.getOriginConnectionModel().getDatebaseType()),
+							direction.getOriginConnectionModel().getAddress(),
+							direction.getOriginConnectionModel().getPort(),
+							direction.getOriginConnectionModel().getDatabase(),
+							direction.getOriginUser(),
+							direction.getOriginPassword()
+						);
+						ConnectionInfo destinationConnInfo = new ConnectionInfo(
+							getDatabaseType(direction.getDestinationConnectionModel().getDatebaseType()),
+							direction.getDestinationConnectionModel().getAddress(),
+							direction.getDestinationConnectionModel().getPort(),
+							direction.getDestinationConnectionModel().getDatabase(),
+							direction.getDestinationUser(),
+							direction.getDestinationPassword()
+						);
+						
+						try {
+							IReplicator replicator = new Replicator(originConnInfo, destinationConnInfo);
+							
+							//Desabilita auto commit da conexão de destino
+							replicator.getDestinationProvider().getConn().setAutoCommit(false);
+								
+							for (TableModel table : direction.getTables().values()) {
+								Timestamp tableToDate = table.isIncrementalBackup() && table.getCurrentDateOf() != null ? table.getCurrentDateOf() : new Timestamp(0);
+								
+								List<IQuery> queries = replicator.getQueriesForReplication(
+									table.getOriginTable(),
+									table.getDestinationTable(),
+									table.getKeyColumn(),
+									table.getControlColumn(),
+									tableToDate
+								);
+								
+								//Adiciona as queries a fila
+								queries.forEach(query -> {
+									queue.put(
+											(queue.size() + 1), 
+											new ReplicationQueueItem(
+													query, 
+													replicator.getDestinationProvider(), 
+													direction, 
+													table
+											));
+								});
+							}
+						} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
+							e.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 				}
-			} catch (SQLException | InvalidDatabaseTypeException | InvalidQueryAttributesException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+			});
+			thread.start();
+			arrThreads.add(thread);
+			
+			for (int i = 0; i < arrThreads.size(); i++) {
+				arrThreads.get(i).join(); 
+            }
+		} catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 	}
 	
 	private void processQueue() {
@@ -339,12 +356,12 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 						break;
 					}
 				}
-				
-				totalOfTables = processedTables.size();
 
 				//Caso seja o último item da sequência, faz o commit
 				if (i == indexLimit) {
 					provider.getConn().commit();
+					
+					totalOfTables = processedTables.size();
 					
 					//Notifica evento
 					notifyObservers(ReplicationEvents.ON_PROCESS);
