@@ -6,8 +6,10 @@ import br.com.replicator.exceptions.InvalidDatabaseTypeException;
 
 abstract public class QueryBuilderFactory {
 	public static IQueryBuilder getQueryBuilder(SupportedTypes dbType) throws InvalidDatabaseTypeException {
-		switch (dbType.getCode()) {
-			case "postgresql":
+		switch (dbType) {
+			case POSTGRESQL:
+				return new PostgreSqlQueryBuilder();
+			case MYSQL:
 				return new MySqlQueryBuilder();
 			default:
 				throw new InvalidDatabaseTypeException("Invalid database type");

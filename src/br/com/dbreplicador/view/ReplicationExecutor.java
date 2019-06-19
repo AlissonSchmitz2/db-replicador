@@ -325,9 +325,8 @@ public class ReplicationExecutor implements IReplicationExecutor, IReplicationPr
 				
 				currentProcessedTable.updateQueryTotals(queue.get(i).getQuery());
 				
-				Integer result = provider.getProcessor()
-						.executeUpdate(queue.get(i).getQuery(), queue.get(i).getTableModel().getKeyColumn());
-	
+				int result = provider.getProcessor().executeUpdate(queue.get(i).getQuery());
+				
 				if (result > 0) {
 					processingProgress = (currentQueueIndex * 100) / queue.size();
 				} else {

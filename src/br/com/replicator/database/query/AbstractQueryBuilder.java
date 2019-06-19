@@ -5,12 +5,13 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import br.com.replicator.database.query.contracts.IQuery;
-import br.com.replicator.database.query.contracts.IQueryBuilder;
 import br.com.replicator.enums.QueryTypes;
 import br.com.replicator.exceptions.InvalidQueryAttributesException;
 
-public abstract class AbstractQueryBuilder implements IQueryBuilder {
-	public IQuery insert(String tableName, String[] columns, String[] values) throws InvalidQueryAttributesException {
+public abstract class AbstractQueryBuilder {
+	protected abstract TreeMap<String, String> parseColumnsValuesPairs(String[] columns, String[] values, int[] types);
+	
+	public IQuery insert(String tableName, String[] columns, String[] values, int[] types) throws InvalidQueryAttributesException {
 		if (columns.length == 0) {
 			throw new InvalidQueryAttributesException("O total de colunas não pode ser zero");
 		}
@@ -19,12 +20,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 			throw new InvalidQueryAttributesException("Número de colunas é diferente do número de colunas");
 		}
 		
-		TreeMap<String, String> columnsValuesPairs = new TreeMap<String, String>();
-		for (int i = 0; i < columns.length; i++) {
-			if(values.length > i && values[i] != null) {
-				columnsValuesPairs.put(columns[i], "'" + values[i].toString().replaceAll("'", "''") + "'");
-			}
-        }
+		TreeMap<String, String> columnsValuesPairs = parseColumnsValuesPairs(columns,  values, types);
 		
 		String query = "INSERT INTO " + tableName + " (";
 		
@@ -41,7 +37,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		return new Query(query, QueryTypes.INSERT);
 	}
 	
-	public IQuery update(String tableName, String[] columns, String[] values, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
+	public IQuery update(String tableName, String[] columns, String[] values, int[] types, String identifierColumn, String identifierValue) throws InvalidQueryAttributesException {
 		if (columns.length == 0) {
 			throw new InvalidQueryAttributesException("O total de colunas não pode ser zero");
 		}
@@ -56,17 +52,15 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 		
 		String query = "UPDATE " + tableName + " SET ";
 		
-		String[] columnsValuesPairs = new String[columns.length];
+		TreeMap<String, String> columnsValuesPairs = parseColumnsValuesPairs(columns,  values, types);
+		
+		String[] updateSegments = new String[columns.length];
 		for (int i = 0; i < columns.length; i++) {
-			if (values.length > i && values[i] != null) {
-				columnsValuesPairs[i] = columns[i] + "='" + values[i].toString().replaceAll("'", "''") + "'";
-			} else {
-				columnsValuesPairs[i] = columns[i] + "=" + values[i];
-			}
+			updateSegments[i] = columns[i] + "=" + columnsValuesPairs.get(columns[i]);
         }
 		
 		// Concatena colunas
-		query += String.join(", ", columnsValuesPairs);
+		query += String.join(", ", updateSegments);
 		query += " ";
 		query += createSimpleWhereCondition(identifierColumn, "=", identifierValue);
 		

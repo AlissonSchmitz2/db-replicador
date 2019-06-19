@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import br.com.replicator.database.query.contracts.IQueryBuilder;
 
-public class MySqlQueryBuilder extends AbstractQueryBuilder implements IQueryBuilder {
+public class PostgreSqlQueryBuilder extends AbstractQueryBuilder implements IQueryBuilder {
 
 	@Override
 	protected TreeMap<String, String> parseColumnsValuesPairs(String[] columns, String[] values, int[] types) {
@@ -15,8 +15,7 @@ public class MySqlQueryBuilder extends AbstractQueryBuilder implements IQueryBui
 			if(values.length > i && values[i] != null) {
 				switch(types[i]) {
 					case Types.TIMESTAMP:
-					case Types.TIMESTAMP_WITH_TIMEZONE:
-						columnsValuesPairs.put(columns[i], "'" + values[i].substring(0, 19) + "'");
+						columnsValuesPairs.put(columns[i], "'" + values[i] + "'");
 					break;
 					case Types.INTEGER:
 					case Types.TINYINT:

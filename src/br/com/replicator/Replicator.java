@@ -61,9 +61,11 @@ public class Replicator implements IReplicator {
 			//Crias as listas com colunas e valores que serão usados para gerar as queries de resposta
 			String[] columns = new String[rstmdFindNewestRecords.getColumnCount()];
 			String[] values = new String[rstmdFindNewestRecords.getColumnCount()];
+			int[] types = new int[rstmdFindNewestRecords.getColumnCount()];
 			
 			for (int i = 1; i <= rstmdFindNewestRecords.getColumnCount(); i++) {
 				columns[i-1] = rstmdFindNewestRecords.getColumnName(i);
+				types[i-1] = rstmdFindNewestRecords.getColumnType(i);
 				values[i-1] = rstFindNewestRecords.getString(i);
 			}
 			
@@ -71,11 +73,11 @@ public class Replicator implements IReplicator {
 			if (rstFindRecord.next()) {
 				//Update
 				queries.add(destinationProvider.getQueryBuilder()
-						.update(destinationTableName, columns, values, tableUniqueKey, rstFindNewestRecords.getString(tableUniqueKey))
+						.update(destinationTableName, columns, values, types, tableUniqueKey, rstFindNewestRecords.getString(tableUniqueKey))
 				);
 			} else {
 				queries.add(destinationProvider.getQueryBuilder()
-						.insert(destinationTableName, columns, values)
+						.insert(destinationTableName, columns, values, types)
 				);
 			}
 		}
