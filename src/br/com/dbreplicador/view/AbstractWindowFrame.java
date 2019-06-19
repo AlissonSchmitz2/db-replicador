@@ -38,7 +38,7 @@ public abstract class AbstractWindowFrame extends JInternalFrame {
 		setIconifiable(true);
 		
 		// Abrir janela centralizada
-//		setLocation((desktop.getWidth() - this.getSize().width) / 2, (desktop.getHeight() - this.getSize().height) / 2);
+		setLocation((desktop.getWidth() - this.getSize().width) / 2, (desktop.getHeight() - this.getSize().height) / 2);
 
 		// Bloquear movimento da janela
 		// windowWasMove();
