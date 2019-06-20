@@ -280,6 +280,12 @@ public class TableFormWindow extends AbstractWindowFrame implements KeyEventPost
 						}
 					}
 				} catch (Exception error) {
+					
+					if(error.getMessage().contains("Chave (processo, ordem)=(novo, "+txfOrder.getText()+") já existe.")) {
+					bubbleWarning("A Ordem informada já foi cadastrada!");
+					return;
+					}
+					
 					error.printStackTrace();
 					bubbleError(error.getMessage());
 				}
