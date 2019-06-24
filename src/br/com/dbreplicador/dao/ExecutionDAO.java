@@ -200,8 +200,8 @@ public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 
 		model.setCurrentDate(rst.getTimestamp("data_atual"));
 		model.setCurrenteDateTo(rst.getTimestamp("data_atual_ate"));
-		model.setDateHourFinal(rst.getTimestamp("data_hora_final"));
-		model.setDateHourInitial(rst.getTimestamp("data_hora_inicial"));
+		model.setDateHourFinal(rst.getTimestamp("fim_data_hora"));
+		model.setDateHourInitial(rst.getTimestamp("inicio_data_hora"));
 		model.setDestinatioDatabase(rst.getInt("database_destino"));
 		model.setDestinationUser(rst.getString("usuario_destino"));
 		model.setExecuteCode(rst.getInt("codigo_execucao"));
@@ -210,7 +210,6 @@ public class ExecutionDAO extends AbstractCrudDAO<ExecutionModel>{
 		model.setOriginUser(rst.getString("usuario_origem"));
 		model.setUser(rst.getString("usuario"));
 		
-
 		return model;
 	}
 

@@ -43,7 +43,8 @@ public class Window extends JFrame {
 	private TableFormWindow frameTableForm;
 	private DirectionFormWindow frameDirectionForm;
 	private ReplicationWindow frameReplicatorWindow;
-
+	private QueryFormWindow frameQueryForm;
+	
 	private JMenu menuSistema;
 	private JMenu menuCadastros;
 	private JMenu menuProcessos;
@@ -169,6 +170,7 @@ public class Window extends JFrame {
 		menuCadastros.add(getMenuItemProcessos());
 		menuCadastros.add(getMenuItemTabelas());
 		menuCadastros.add(getMenuItemDirecao());
+		menuCadastros.add(getMenuItemConsulta());
 
 		return menuCadastros;
 	}
@@ -227,6 +229,20 @@ public class Window extends JFrame {
 		});
 
 		return menuItem;
+	}
+	
+	private JMenuItem getMenuItemConsulta() {
+		JMenuItem menuItem = new JMenuItem("Consulta", MasterImage.information_16x16);
+		menuItem.setFont(getDefaultFont());
+
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameQueryForm = new QueryFormWindow(desktop, getConnection());
+				abrirFrame(frameQueryForm);
+			}
+		});
+
+		return menuItem;		
 	}
 
 	// Menu Processos
