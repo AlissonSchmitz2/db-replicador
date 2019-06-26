@@ -10,8 +10,8 @@ import br.com.dbreplicador.model.TableModel;
 public class ExecutionTTableModel  extends AbstractTableModel<TableExecutionModel>{
 
 	public ExecutionTTableModel() {
-		super(new String[] {"Data","Processo","Database Origem",
-							"Database Destino","Ordem","Linhas Processadas","Sucesso","Descrição"});
+		super(new String[] {"Data","Processo","Tabela Origem",
+							"Tabela Destino","Ordem","Linhas Processadas","Sucesso","Descrição"});
 	}
 
 	/**
